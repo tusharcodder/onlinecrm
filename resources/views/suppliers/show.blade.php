@@ -30,7 +30,11 @@
 						<div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
 								<strong>Email ID:</strong><br/>
+<<<<<<< HEAD
 								{{ $supplier->email }}
+=======
+								{{ $supplier->contact_person_email }}
+>>>>>>> c2af4a94ba28c2b89b181ea06c59a75ab2dd191a
 							</div>
 						</div>
 					</div>				
