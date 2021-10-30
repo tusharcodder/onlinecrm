@@ -1,9 +1,9 @@
 <header class="navbar navbar-header navbar-header-fixed"> <a href="" id="mainMenuOpen" class="burger-menu"><i data-feather="menu"></i></a>
-	<div class="navbar-brand"> <a href="{{route('home')}}" class="df-logo">Kult<span>prit</span></a> </div>
+	<div class="navbar-brand"> <a href="{{route('home')}}" class="df-logo">Online<span>CRM</span></a> </div>
 	<!-- navbar-brand -->
 	<div id="navbarMenu" class="navbar-menu-wrapper">
 		<div class="navbar-menu-header"> 
-			<a href="/" class="df-logo">Kult<span>prit</span></a> 
+			<a href="/" class="df-logo">Online<span>CRM</span></a> 
 			<a id="mainMenuClose" href=""><i data-feather="x"></i></a> 
 		</div>
 		<!-- navbar-menu-header -->
@@ -35,7 +35,16 @@
 						<ul class="navbar-menu-sub"> 
 							@can('vendor-list')
 								<li class="nav-sub-item"><a href="{{ route('vendorss.index') }}" class="nav-sub-link">Manage Vendors</a></li> 
-							@endcan 						
+							@endcan
+							@can('market-place-list')
+								<li class="nav-sub-item"><a href="{{ route('marketplaces.index') }}" class="nav-sub-link">Manage Market Places</a></li> 
+							@endcan
+							@can('supplier-list')
+								<li class="nav-sub-item"><a href="{{ route('suppliers.index') }}" class="nav-sub-link">Manage Suppliers</a></li> 
+							@endcan
+							@can('binding-list')
+								<li class="nav-sub-item"><a href="{{ route('bindings.index') }}" class="nav-sub-link">Manage Bindings</a></li> 
+							@endcan
 						</ul>
 					</li>
 				@endcanany 				

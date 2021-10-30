@@ -3,10 +3,10 @@
  <!-- CSRF Token -->
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<title>{{ config('app.name', 'Kultprit') }}</title>
+<title>{{ config('app.name', 'Online CRM') }}</title>
 	
 <!-- Meta -->
-<meta name="description" content="Kultprit Stock Management">
+<meta name="description" content="Online CRM">
 <meta name="author" content="Tushar Gupta">
 
 <!-- Favicon -->

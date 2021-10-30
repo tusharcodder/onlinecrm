@@ -21,7 +21,7 @@ Route::get('/clear-cache-all', function() {
 });
 
 // reset password false and true
-Auth::routes(['reset' => true]);
+Auth::routes(['reset' => false]);
 Route::get('/autocomplete/{table}/{column}', 'CommonController@autocomplete')->name('autocomplete');
 
 Route::get('/logged-in-devices', 'LoggedInDeviceManager@index')
@@ -49,6 +49,9 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::resource('permissions','PermissionController');
 	Route::resource('users','UserController');	
 	Route::resource('vendorss','VendorController');
+	Route::resource('marketplaces','MarketPlaceController');
+	Route::resource('suppliers','SupplierController');
+	Route::resource('bindings','BindingController');
 	
 	
 	// Route::get('performances-import-export', 'PerformanceController@performancesImportExport')->name('performances-import-export');
