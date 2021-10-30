@@ -40,7 +40,8 @@ class VendorController extends Controller
 		$vendors = Vendor::select('vendors.*')->where(function($query) use ($search) {
 					$query->where('name','LIKE','%'.$search.'%')						
 						->orWhere('number','LIKE','%'.$search.'%')
-						->orWhere('email','LIKE','%'.$search.'%');
+						->orWhere('email','LIKE','%'.$search.'%')
+						->orWhere('address','LIKE','%'.$search.'%');
 
 				})->orderBy('id','DESC')->paginate(10)->setPath('');
 		
@@ -81,7 +82,6 @@ class VendorController extends Controller
 			'vendor_name' => 'required|unique:vendors,name',			
 		]);
 		
-	
 		// save value in db
 		$vendor = Vendor::create([
 								'name' => $request->input('vendor_name'),

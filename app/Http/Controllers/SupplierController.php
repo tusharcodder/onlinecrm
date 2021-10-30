@@ -31,7 +31,8 @@ class SupplierController extends Controller
 		$supplier = Supplier::select('suppliers.*')->where(function($query) use ($search) {
 					$query->where('name','LIKE','%'.$search.'%')						
 						->orWhere('number','LIKE','%'.$search.'%')
-						->orWhere('email','LIKE','%'.$search.'%');
+						->orWhere('email','LIKE','%'.$search.'%')
+						->orWhere('address','LIKE','%'.$search.'%');
 
 				})->orderBy('id','DESC')->paginate(10)->setPath('');
 		
@@ -71,13 +72,12 @@ class SupplierController extends Controller
 		$request->validate([
 			'name' => 'required|unique:suppliers,name',			
 		]);
-		
-	
+
 		// save value in db
 		$vendor = Supplier::create([
 								'name' => $request->input('name'),
 								'address' => $request->input('address'),
-								'number' => $request->input('phone'),
+								'number' => $request->input('cphone'),
 								'email' => $request->input('email'),
 								'created_by' => $uid,
 								'updated_by' => $uid
@@ -140,7 +140,7 @@ class SupplierController extends Controller
         $supplier->updated_by = $uid;
         $supplier->save();
 		return redirect()->route('suppliers.index')
-                        ->with('success','supplier updated successfully.');
+                        ->with('success','Supplier updated successfully.');
     }
 
     /**
@@ -154,6 +154,6 @@ class SupplierController extends Controller
         //delete the record
         DB::table("suppliers")->where('id',$id)->delete();
         return redirect()->route('suppliers.index')
-                        ->with('success','supplier deleted successfully.');
+                        ->with('success','Supplier deleted successfully.');
     }
 }

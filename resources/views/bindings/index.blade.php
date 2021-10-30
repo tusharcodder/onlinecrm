@@ -32,7 +32,7 @@
 							<form method="GET" action="{{ route('bindings.index') }}" role="search">
 								<div class="input-group">
 									<input type="text" class="form-control" name="search"
-										placeholder="Search market places" value="{{ $search }}"> <span class="input-group-btn">
+										placeholder="Search bindings" value="{{ $search }}"> <span class="input-group-btn">
 										<button type="submit" class="btn btn-primary">
 											<i class="fa fa-search"></i>
 										</button>
@@ -44,15 +44,16 @@
 					 <div class="table-responsive">
 						<table class="table table-bordered">
 							<tr>
-								<th>No</th>
-								<th>Name</th>
+								<th>No</th>								
+								<th>Name</th>							
 								<th width="227px">Action</th>
 							</tr>
 							@if($bindings->total() > 0)
 								@foreach ($bindings as $key => $binding)
 								<tr>
 									<td>{{ ($bindings->currentPage()-1) * $bindings->perPage() + $loop->index + 1 }}</td>
-									<td>{{ $binding->name }}</td>
+								
+									<td>{{ $binding->name }}</td>									
 									<td>
 										<a class="btn btn-info btn-sm" href="{{ route('bindings.show',$binding->id) }}">Show</a>
 										@can('binding-edit')
@@ -71,7 +72,7 @@
 								</tr>
 								@endforeach
 							@else
-								<tr><td colspan="1">No records found.</td></tr>
+								<tr><td colspan="3">No records found.</td></tr>
 							@endif
 						</table>
 						{{ $bindings->links() }}

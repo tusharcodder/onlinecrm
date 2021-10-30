@@ -45,9 +45,9 @@
 						<table class="table table-bordered">
 							<tr>
 								<th>No</th>								
-								<th>Vendor name</th>
-								<th>Phone No</th>
-								<th>Email ID</th>		
+								<th>Name</th>
+								<th>Phone Number</th>
+								<th>Email</th>		
 								<th>Address</th>								
 								<th width="227px">Action</th>
 							</tr>
@@ -78,7 +78,7 @@
 								</tr>
 								@endforeach
 							@else
-								<tr><td colspan="8">No records found.</td></tr>
+								<tr><td colspan="6">No records found.</td></tr>
 							@endif
 						</table>
 						{{ $vendors->links() }}

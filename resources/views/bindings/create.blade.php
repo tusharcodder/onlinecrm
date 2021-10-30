@@ -6,7 +6,7 @@
             <div class="card">
                 <div class="card-header">
 					<div class="float-left">
-						{{ __('Create Binding Place*') }}
+						{{ __('Create Binding*') }}
 					</div>
 					<div class="float-right">
 						<a class="btn btn-primary btn-sm" href="{{ route('bindings.index') }}"> Back to list</a>

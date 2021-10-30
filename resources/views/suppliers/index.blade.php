@@ -10,7 +10,7 @@
 					</div>
 					<div class="float-right">
 						@can('supplier-create')
-							<a class="btn btn-success btn-sm" href="{{ route('suppliers.create') }}"> Create New Vendor</a>
+							<a class="btn btn-success btn-sm" href="{{ route('suppliers.create') }}"> Create New Supplier</a>
 						@endcan
 						@if(!empty($search))
 							<a class="btn btn-primary btn-sm" href="{{ route('suppliers.index') }}"> Reset Search</a>
@@ -32,7 +32,7 @@
 							<form method="GET" action="{{ route('suppliers.index') }}" role="search">
 								<div class="input-group">
 									<input type="text" class="form-control" name="search"
-										placeholder="Search vendors" value="{{ $search }}"> <span class="input-group-btn">
+										placeholder="Search suppliers" value="{{ $search }}"> <span class="input-group-btn">
 										<button type="submit" class="btn btn-primary">
 											<i class="fa fa-search"></i>
 										</button>
@@ -45,9 +45,9 @@
 						<table class="table table-bordered">
 							<tr>
 								<th>No</th>								
-								<th>Supplier name</th>
-								<th>Phone No</th>
-								<th>Email ID</th>		
+								<th>Name</th>
+								<th>Phone Number</th>
+								<th>Email</th>		
 								<th>Address</th>								
 								<th width="227px">Action</th>
 							</tr>
@@ -62,10 +62,10 @@
 									<td>{{ $vendor->address }}</td>
 									<td>
 										<a class="btn btn-info btn-sm" href="{{ route('suppliers.show',$vendor->id) }}">Show</a>
-										@can('vendor-edit')
+										@can('supplier-edit')
 											<a class="btn btn-primary btn-sm" href="{{ route('suppliers.edit',$vendor->id) }}">Edit</a>
 										@endcan
-										@can('vendor-delete')
+										@can('supplier-delete')
 											<form method="POST" action="{{ route('suppliers.destroy',$vendor->id) }}" style="display:inline">
 												@csrf
 												@method('DELETE')
@@ -78,7 +78,7 @@
 								</tr>
 								@endforeach
 							@else
-								<tr><td colspan="8">No records found.</td></tr>
+								<tr><td colspan="6">No records found.</td></tr>
 							@endif
 						</table>
 						{{ $supplier->links() }}

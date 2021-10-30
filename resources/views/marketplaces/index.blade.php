@@ -46,7 +46,7 @@
 							<tr>
 								<th>No</th>
 								<th>Name</th>
-								<th>Phone number</th>
+								<th>Phone Number</th>
 								<th>Email</th>
 								<th>Address</th>
 								<th width="227px">Action</th>

@@ -17,20 +17,20 @@
 					<div class="row">					
 						<div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
-								<strong>Vendor name:</strong><br/>
+								<strong>Name:</strong><br/>
 								{{ $vendor->name }}
 							</div>
 						</div>
 						<div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
-								<strong>Phone No:</strong><br/>
+								<strong>Phone Number:</strong><br/>
 								{{ $vendor->number }}
 							</div>
 						</div>
 						<div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
 								<strong>Email:</strong><br/>
-								{{ $vendor->contact_person_email }}
+								{{ $vendor->email }}
 							</div>
 						</div>
 					</div>				

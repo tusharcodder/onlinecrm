@@ -94,7 +94,7 @@ class BindingController extends Controller
      * @param  \App\Binding  $binding
      * @return \Illuminate\Http\Response
      */
-    public function show(Binding $binding, $id)
+    public function show($id)
     {
         //
 		$binding = Binding::find($id);
@@ -107,7 +107,7 @@ class BindingController extends Controller
      * @param  \App\Binding  $binding
      * @return \Illuminate\Http\Response
      */
-    public function edit(Binding $binding, $id)
+    public function edit($id)
     {
         //
 		$binding = Binding::find($id);
@@ -121,7 +121,7 @@ class BindingController extends Controller
      * @param  \App\Binding  $binding
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Binding $binding, $id)
+    public function update(Request $request, $id)
     {
         //
 		$user = Auth::user();
@@ -134,9 +134,6 @@ class BindingController extends Controller
 		// update value in db
 		$binding = Binding::find($id);
         $binding->name = $request->input('name');
-        $binding->number = $request->input('number');
-        $binding->email = $request->input('email');
-        $binding->address = $request->input('address');
         $binding->updated_by = $uid;
         $binding->save();
 
@@ -150,7 +147,7 @@ class BindingController extends Controller
      * @param  \App\Binding  $binding
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Binding $binding, $id)
+    public function destroy($id)
     {
          //
 		DB::table("bindings")->where('id',$id)->delete();

@@ -45,7 +45,7 @@
 							</div>
 							<div class="col-md-4">
 								<div class="form-group">
-									<label for="email" class="col-form-label text-md-right">{{ __('Email ID') }}</label>
+									<label for="email" class="col-form-label text-md-right">{{ __('Email') }}</label>
 									<input id="email" type="email" class="form-control" name="email" value="{{ old('email',$supplier->email) }}"  autocomplete="email">
 								</div>
 							</div>
@@ -54,7 +54,7 @@
 							<div class="col-md-12">
 								<div class="form-group">
 									<label for="address" class="col-form-label text-md-right">{{ __('Address') }}</label>
-									<textarea id="address" class="form-control" name="address" rows="2" cols="6">{{ old('address',$supplier->address) }}</textarea>
+									<textarea id="address" class="form-control" name="address" rows="4" cols="50">{{ old('address',$supplier->address) }}</textarea>
 								</div>
 							</div>
 						</div>
@@ -71,7 +71,4 @@
 		</div>
 	</div>
 </div>
-@endsection
-@section('footer-script')
-<!-- <script src="{{ asset('js/vendor.js') }}" defer></script> -->
 @endsection

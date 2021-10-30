@@ -39,7 +39,7 @@
 							
 							<div class="col-md-4">
 								<div class="form-group">
-									<label for="number" class="col-form-label text-md-right">{{ __('Phone number*') }}</label>
+									<label for="number" class="col-form-label text-md-right">{{ __('Phone number') }}</label>
 									<input id="number" type="number" class="form-control" name="number" value="{{ old('marketplace',$marketplace->number) }}"  autocomplete="number">
 								</div>
 							</div>

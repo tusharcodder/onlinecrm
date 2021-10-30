@@ -33,7 +33,7 @@
 							
 							<div class="col-md-4">
 								<div class="form-group">
-									<label for="vendor_name" class="col-form-label text-md-right">{{ __('Vendor name*') }}</label>
+									<label for="vendor_name" class="col-form-label text-md-right">{{ __('Name*') }}</label>
 									<input id="vendor_name" type="text" class="form-control" name="vendor_name" value="{{ old('vendor_name') }}"  autocomplete="vendor_name" required>
 								</div>
 							</div>
@@ -55,14 +55,10 @@
 							<div class="col-md-12">
 								<div class="form-group">
 									<label for="address" class="col-form-label text-md-right">{{ __('Address') }}</label>
-									<textarea id="address" class="form-control" name="address" rows="2" cols="6">{{ old('address') }}</textarea>
+									<textarea id="address" class="form-control" name="address" rows="4" cols="50">{{ old('address') }}</textarea>
 								</div>
 							</div>
-							
 						</div>
-						
-						
-
 						<div class="form-group row mb-0">
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-primary">
@@ -76,7 +72,4 @@
 		</div>
 	</div>
 </div>
-@endsection
-@section('footer-script')
-<script src="{{ asset('js/vendor.js') }}" defer></script>
 @endsection

@@ -17,24 +17,20 @@
 					<div class="row">					
 						<div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
-								<strong>Supplier name:</strong><br/>
+								<strong>Name:</strong><br/>
 								{{ $supplier->name }}
 							</div>
 						</div>
 						<div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
-								<strong>Phone No:</strong><br/>
+								<strong>Phone Number:</strong><br/>
 								{{ $supplier->number }}
 							</div>
 						</div>
 						<div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
-								<strong>Email ID:</strong><br/>
-<<<<<<< HEAD
+								<strong>Email:</strong><br/>
 								{{ $supplier->email }}
-=======
-								{{ $supplier->contact_person_email }}
->>>>>>> c2af4a94ba28c2b89b181ea06c59a75ab2dd191a
 							</div>
 						</div>
 					</div>				
