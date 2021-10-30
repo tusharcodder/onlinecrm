@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVendorsTable extends Migration
+class CreateSupplierMasterTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,19 +12,17 @@ class CreateVendorsTable extends Migration
      * @return void
      */
     public function up()
-    {
-        Schema::create('vendors', function (Blueprint $table) {
-			$table->bigIncrements('id');           
-            $table->string('name')->nullable();           
+    { 
+        Schema::create('suppliers', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('name')->nullable();
             $table->string('number')->nullable();
             $table->string('email')->nullable();
 			$table->longText('address')->nullable();		
 			$table->integer('created_by');
 			$table->integer('updated_by');
             $table->timestamps();
-			$table->index(['name']); 
-        });	
-		
+        });
     }
 
     /**
@@ -34,6 +32,6 @@ class CreateVendorsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('vendors');        
+        Schema::dropIfExists('suppliers');
     }
 }

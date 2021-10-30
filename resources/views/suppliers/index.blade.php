@@ -6,14 +6,14 @@
             <div class="card">
                 <div class="card-header">
 					<div class="float-left">
-						{{ __('Vendor Management') }}
+						{{ __('Supplier Management') }}
 					</div>
 					<div class="float-right">
-						@can('vendor-create')
-							<a class="btn btn-success btn-sm" href="{{ route('vendorss.create') }}"> Create New Vendor</a>
+						@can('supplier-create')
+							<a class="btn btn-success btn-sm" href="{{ route('suppliers.create') }}"> Create New Vendor</a>
 						@endcan
 						@if(!empty($search))
-							<a class="btn btn-primary btn-sm" href="{{ route('vendorss.index') }}"> Reset Search</a>
+							<a class="btn btn-primary btn-sm" href="{{ route('suppliers.index') }}"> Reset Search</a>
 						@endif
 					</div>
 					<div class="clearfix"></div>
@@ -26,10 +26,10 @@
 					@endif
 					<div class="row mb-1">
 						<div class="col-sm-8">	
-							Showing {{($vendors->currentPage()-1)* $vendors->perPage()+($vendors->total() ? 1:0)}} to {{($vendors->currentPage()-1)*$vendors->perPage()+count($vendors)}}  of  {{$vendors->total()}}  Results
+							Showing {{($supplier->currentPage()-1)* $supplier->perPage()+($supplier->total() ? 1:0)}} to {{($supplier->currentPage()-1)*$supplier->perPage()+count($supplier)}}  of  {{$supplier->total()}}  Results
 						</div>
 						<div class="col-sm-4">
-							<form method="GET" action="{{ route('vendorss.index') }}" role="search">
+							<form method="GET" action="{{ route('suppliers.index') }}" role="search">
 								<div class="input-group">
 									<input type="text" class="form-control" name="search"
 										placeholder="Search vendors" value="{{ $search }}"> <span class="input-group-btn">
@@ -45,28 +45,28 @@
 						<table class="table table-bordered">
 							<tr>
 								<th>No</th>								
-								<th>Vendor name</th>
+								<th>Supplier name</th>
 								<th>Phone No</th>
 								<th>Email ID</th>		
 								<th>Address</th>								
 								<th width="227px">Action</th>
 							</tr>
-							@if($vendors->total() > 0)
-								@foreach ($vendors as $key => $vendor)
+							@if($supplier->total() > 0)
+								@foreach ($supplier as $key => $vendor)
 								<tr>
-									<td>{{ ($vendors->currentPage()-1) * $vendors->perPage() + $loop->index + 1 }}</td>
+									<td>{{ ($supplier->currentPage()-1) * $supplier->perPage() + $loop->index + 1 }}</td>
 								
 									<td>{{ $vendor->name }}</td>									
 									<td>{{ $vendor->number }}</td>
 									<td>{{ $vendor->email }}</td>
 									<td>{{ $vendor->address }}</td>
 									<td>
-										<a class="btn btn-info btn-sm" href="{{ route('vendorss.show',$vendor->id) }}">Show</a>
+										<a class="btn btn-info btn-sm" href="{{ route('suppliers.show',$vendor->id) }}">Show</a>
 										@can('vendor-edit')
-											<a class="btn btn-primary btn-sm" href="{{ route('vendorss.edit',$vendor->id) }}">Edit</a>
+											<a class="btn btn-primary btn-sm" href="{{ route('suppliers.edit',$vendor->id) }}">Edit</a>
 										@endcan
 										@can('vendor-delete')
-											<form method="POST" action="{{ route('vendorss.destroy',$vendor->id) }}" style="display:inline">
+											<form method="POST" action="{{ route('suppliers.destroy',$vendor->id) }}" style="display:inline">
 												@csrf
 												@method('DELETE')
 												<button type="submit" class="btn btn-danger btn-sm">
@@ -81,7 +81,7 @@
 								<tr><td colspan="8">No records found.</td></tr>
 							@endif
 						</table>
-						{{ $vendors->links() }}
+						{{ $supplier->links() }}
 					</div>
 				</div>
 			</div>

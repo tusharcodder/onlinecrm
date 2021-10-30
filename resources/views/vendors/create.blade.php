@@ -29,104 +29,39 @@
 					<form method="POST" action="{{ route('vendorss.store') }}">
 					@csrf
 					
-						<div class="row">
-							<div class="col-md-4">
-								<div class="form-group">
-									<label for="type" class="col-form-label text-md-right">{{ __('Type*') }}</label>
-									<select class="form-control" id="type" name="type" autofocus required>
-										<option value="">-- Select --</option>
-										@foreach ($type as $key => $val)
-											<option value="{{ $val }}" {{ $val == old('type') ? 'selected' : '' }}>{{ $val }}</option>
-										@endforeach
-									</select>
-								</div>
-							</div>
+						<div class="row">					
 							
 							<div class="col-md-4">
 								<div class="form-group">
 									<label for="vendor_name" class="col-form-label text-md-right">{{ __('Vendor name*') }}</label>
-									<input id="vendor_name" type="text" class="form-control" name="vendor_name" value="{{ old('vendor_name') }}"  autocomplete="vendor_name" >
+									<input id="vendor_name" type="text" class="form-control" name="vendor_name" value="{{ old('vendor_name') }}"  autocomplete="vendor_name" required>
 								</div>
 							</div>
 							
-							
-							
+							<div class="col-md-4">
+								<div class="form-group">
+									<label for="cphone" class="col-form-label text-md-right">{{ __('Phone number') }}</label>
+									<input id="cphone" type="text" class="form-control" name="cphone" value="{{ old('cphone') }}"  autocomplete="cphone" >
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label for="cemail" class="col-form-label text-md-right">{{ __('Email') }}</label>
+									<input id="cemail" type="email" class="form-control" name="cemail" value="{{ old('cemail') }}"  autocomplete="cemail" multiple >
+								</div>
+							</div>
 						</div>
-						
 						<div class="row">
-							<div class="col-md-4">
+							<div class="col-md-12">
 								<div class="form-group">
-									<label for="cname" class="col-form-label text-md-right">{{ __('Conatct person name*') }}</label>
-									<input id="cname" type="text" class="form-control" name="cname" value="{{ old('cname') }}"  autocomplete="cname" required>
+									<label for="address" class="col-form-label text-md-right">{{ __('Address') }}</label>
+									<textarea id="address" class="form-control" name="address" rows="2" cols="6">{{ old('address') }}</textarea>
 								</div>
 							</div>
 							
-							<div class="col-md-4">
-								<div class="form-group">
-									<label for="cemail" class="col-form-label text-md-right">{{ __('Conatct person email*') }}</label>
-									<input id="cemail" type="email" class="form-control" name="cemail" value="{{ old('cemail') }}"  autocomplete="cemail" multiple required>
-								</div>
-							</div>
-							
-							<div class="col-md-4">
-								<div class="form-group">
-									<label for="cphone" class="col-form-label text-md-right">{{ __('Conatct person phone number*') }}</label>
-									<input id="cphone" type="text" class="form-control" name="cphone" value="{{ old('cphone') }}"  autocomplete="cphone" required>
-								</div>
-							</div>
-							
-
 						</div>
 						
-						<div class="row">
-							
-							<div class="col-md-4">
-								<div class="form-group">
-									<label for="ctype" class="col-form-label text-md-right">{{ __('Commsion Type*') }}</label>
-									<select class="form-control" id="ctype" name="ctype" required>
-										<option value="">-- Select --</option>
-										<option value="Commsion Based">Commsion Based</option>
-										<option value="NOT Based">NOT Based</option>
-									</select>
-								</div>
-							</div>
-							
-							<div class="col-md-4">
-								<div class="form-group">
-									<label for="commission" class="col-form-label text-md-right">{{ __('Commsion(%)*') }}</label>
-									<input id="commission" type="number" class="form-control" name="commission" value="{{ old('commission') }}" step="any" autocomplete="commission" min="0" max="100" required>
-								</div>
-							</div>
-
-						</div>
 						
-						<div class="row addmorecontainer" style={{ old('type') != 'Aggregator' ? 'display:none' : 'display:block' }}>
-							@php
-								$oldValues = empty(old('addmore')) ? [1] : old('addmore');
-							@endphp
-							<div class="table-responsive">
-								<table class="table table-hover" id="dynamicTable">  
-									<tr>
-										<th>Vendor name*</th>
-										<th>Vendor commission(%)*</th>
-										<th>Action</th>
-									</tr>
-									@foreach ($oldValues as $key=>$val)
-										<tr>
-											<td><input type="text" name="addmore[{{$key}}][vname]" placeholder="Enter vendor name" class="form-control" value="{{ $val['vname'] }}" /></td>
-											
-											<td><input type="number" name="addmore[{{$key}}][vcomm]" placeholder="Enter vendor commission(%)" class="form-control" value="{{ $val['vcomm'] }}" step="any" min="0" max="100"/></td>
-											
-											@if($key == '0')
-												<td><button type="button" name="add" id="add" class="btn btn-success btn-sm">Add More</button></td> 
-											@else
-												<td><button type="button" class="btn btn-danger remove-tr">Remove</button></td>
-											@endif
-										</tr> 
-									@endforeach 
-								</table>
-							</div>
-						</div>
 
 						<div class="form-group row mb-0">
                             <div class="col-md-12">
