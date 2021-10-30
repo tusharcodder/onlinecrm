@@ -30,57 +30,15 @@
 						</ul>
 					</li> 
 				@endcanany 
-				@canany(['manufacturer-list','vendor-list','discount-list','stock-list','sale-list','performances-list', 'gstslab-list'])
+				@canany(['vendor-list'])
 					<li class="nav-item with-sub"> <a href="" class="nav-link"><i data-feather="package"></i> Settings</a>
 						<ul class="navbar-menu-sub"> 
-							@can('manufacturer-list')
-								<li class="nav-sub-item"><a href="{{ route('buyers.index') }}" class="nav-sub-link">Manage Manufacturer</a></li>
-							@endcan 
 							@can('vendor-list')
 								<li class="nav-sub-item"><a href="{{ route('vendorss.index') }}" class="nav-sub-link">Manage Vendors</a></li> 
-							@endcan 
-							@can('discount-list')
-								<li class="nav-sub-item"><a href="{{ route('discounts.index') }}" class="nav-sub-link">Manage Discounts</a></li> 
-							@endcan 
-							@can('gstslab-list')
-								<li class="nav-sub-item"><a href="{{ route('gstslab.index') }}" class="nav-sub-link">Manage GST Slabs</a></li> 
-							@endcan 
-							@can('stock-list')
-								<li class="nav-sub-item"><a href="{{ route('stocks.index') }}" class="nav-sub-link">Manage Stocks</a></li> 
-							@endcan 
-							@can('sale-list')
-								<li class="nav-sub-item"><a href="{{ route('sales.index') }}" class="nav-sub-link">Manage Sales</a></li> 
-							@endcan 
-							@can('performances-list')
-								<li class="nav-sub-item"><a href="{{ route('performances.index') }}" class="nav-sub-link">Manage Performances</a></li>
-							@endcan 
+							@endcan 						
 						</ul>
 					</li>
-				@endcanany 
-				@canany(['commission-report-list','discount-report-list','stock-report-list', 'performancereport'])
-					<li class="nav-item with-sub"> 
-						<a href="" class="nav-link"><i data-feather="layers"></i> Reports</a>
-						<div class="navbar-menu-sub">
-							<div class="d-lg-flex">
-								<ul> 
-									@can('commission-report-list')
-										<li class="nav-sub-item"><a href="{{ route('commissionreport') }}" class="nav-sub-link"> Commission report</a></li>
-									@endcan 
-									@can('discount-report-list')
-										<li class="nav-sub-item"><a href="{{ route('discountreport') }}" class="nav-sub-link"> Discount report</a></li>
-									@endcan 
-									@can('stock-report-list')
-										<li class="nav-sub-item"><a href="{{ route('stockreport') }}" class="nav-sub-link"> Stock report</a></li> 
-									@endcan 
-									@can('performancereport')
-										<li class="nav-sub-item"><a href="{{ route('performancereport') }}" class="nav-sub-link"> Performance report</a></li> 
-									@endcan
-								</ul>
-							</div>
-						</div>
-						<!-- nav-sub -->
-					</li>
-				@endcanany
+				@endcanany 				
 			@endauth
 		</ul>
 	</div>
