@@ -30,7 +30,7 @@
 						<div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
 								<strong>Email ID:</strong><br/>
-								{{ $supplier->contact_person_email }}
+								{{ $supplier->email }}
 							</div>
 						</div>
 					</div>				
