@@ -4,9 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Vendor extends Model
+class Supplier extends Model
 {
-    protected $table = 'vendors';
+    protected $table = 'suppliers';
 	
 	/**
      * The attributes that are mass assignable.

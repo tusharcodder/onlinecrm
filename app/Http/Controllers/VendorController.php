@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use App\Rules\Emails; // multiple email rule validation
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class VendorController extends Controller
 {
@@ -36,15 +36,12 @@ class VendorController extends Controller
     {
         //
 		$search = $request->input('search');
-        //
-		$vendors = Vendor::where(function($query) use ($search) {
-					$query->where('type','LIKE','%'.$search.'%')
-						->orWhere('vendor_name','LIKE','%'.$search.'%')	
-						->orWhere('contact_person_name','LIKE','%'.$search.'%')
-						->orWhere('contact_person_number','LIKE','%'.$search.'%')
-						->orWhere('contact_person_email','LIKE','%'.$search.'%')
-						->orWhere('commission_type','LIKE','%'.$search.'%')
-						->orWhere('commission','LIKE','%'.$search.'%');
+        
+		$vendors = Vendor::select('vendors.*')->where(function($query) use ($search) {
+					$query->where('name','LIKE','%'.$search.'%')						
+						->orWhere('number','LIKE','%'.$search.'%')
+						->orWhere('email','LIKE','%'.$search.'%');
+
 				})->orderBy('id','DESC')->paginate(10)->setPath('');
 		
 		// bind value with pagination link
@@ -63,9 +60,8 @@ class VendorController extends Controller
      */
     public function create()
     {
-        //
-		$type = ['Aggregator', 'Online', 'SOR', 'Outride'];
-		return view('vendors.create', compact('type'));
+        //call the view		
+		 return view('vendors.create');
     }
 
     /**
@@ -80,66 +76,22 @@ class VendorController extends Controller
 		$user = Auth::user();
 		$uid = $user->id;
 		
-        //
-		if($request->input('type') != 'Aggregator'){ // not for Aggregator vendor validation
-			$request->validate([
-				'type' => 'required',
-				'vendor_name' => [
-					'required',
-					Rule::unique('vendors')->where(function ($query) use($request){
-						return $query->where('type', $request->input('type'));
-					}),
-				],
-				'cname' => 'required',
-				'cemail' => ['required', new Emails],
-				'cphone' => 'required',
-				'ctype' => 'required',
-				'commission' => 'required|min:0|max:100',
-			]);
-		}else{
-			$request->validate([ // for Aggregator vendor validation
-				'type' => 'required',
-				'vendor_name' => [
-					'required',
-					Rule::unique('vendors')->where(function ($query) use($request){
-						return $query->where('type', $request->input('type'));
-					}),
-				],
-				'cname' => 'required',
-				'cemail' => ['required', new Emails],
-				'cphone' => 'required',
-				'ctype' => 'required',
-				'commission' => 'required|min:0|max:100',
-				'addmore.*.vname' => 'required',
-				'addmore.*.vcomm' => 'required|min:0|max:100',
-			],
-			[
-				'addmore.*.vname.required' => 'Each vendor must have a name.',
-				'addmore.*.vcomm.required' => 'Each vendor must have a commission.',
-			]);
-		}
-
+        //check validation
+		$request->validate([
+			'vendor_name' => 'required|unique:vendors,name',			
+		]);
+		
+	
 		// save value in db
-		$vendor = Vendor::create(['type' => $request->input('type'),'vendor_name' => $request->input('vendor_name'),'contact_person_name' => $request->input('cname'),'contact_person_number' => $request->input('cphone'),'contact_person_email' => $request->input('cemail'),'commission_type' => $request->input('ctype'),'commission' => $request->input('commission'),'created_by' => $uid,'updated_by' => $uid]);
-		
-		// last insert id of vendor
-		$vendorid= $vendor->id;
-		
-		// save aggregator vendor info into table aggregator_has_vendors table
-		if(!empty($request->input('addmore'))){
-			foreach($request->input('addmore') as $val){
-				if(!empty($val['vname'])){
-					$data[] = [
-						'vendor_id' => $vendorid,
-						'aggregator_vendor_name' => $val['vname'],
-						'aggregator_vendor_commission' => $val['vcomm'],
-					];
-				}
-			}
-			if(!empty($data))
-				DB::table('aggregator_has_vendors')->insert($data);
-		}
-		
+		$vendor = Vendor::create([
+								'name' => $request->input('vendor_name'),
+								'address' => $request->input('address'),
+								'number' => $request->input('cphone'),
+								'email' => $request->input('cemail'),
+								'created_by' => $uid,
+								'updated_by' => $uid
+							]);
+				
 		return redirect()->route('vendorss.index')
                         ->with('success','Vendor created successfully.');
     }
@@ -154,12 +106,7 @@ class VendorController extends Controller
     {
 		//
 		$vendor = Vendor::find($id);
-        $aggregatordetails = Vendor::select('aggregator_has_vendors.*')->join("aggregator_has_vendors","aggregator_has_vendors.vendor_id","=","vendors.id")
-            ->where("vendors.id",$id)
-            ->get();
-
-
-        return view('vendors.show',compact('vendor','aggregatordetails'));
+        return view('vendors.show',compact('vendor'));
     }
 
     /**
@@ -170,14 +117,9 @@ class VendorController extends Controller
      */
     public function edit($id)
     {
-        //
-		$type = ['Aggregator', 'Online', 'SOR', 'Outride'];
+        //get data
 		$vendor = Vendor::find($id);
-        $aggregatordetails = Vendor::select('aggregator_has_vendors.aggregator_vendor_name as vname', 'aggregator_has_vendors.aggregator_vendor_commission as vcomm', 'aggregator_has_vendors.id as vid')->join("aggregator_has_vendors","aggregator_has_vendors.vendor_id","=","vendors.id")
-            ->where("vendors.id",$id)
-            ->get()->toArray();
-
-        return view('vendors.edit',compact('type', 'vendor', 'aggregatordetails'));
+        return view('vendors.edit',compact('vendor'));
     }
 
     /**
@@ -193,78 +135,19 @@ class VendorController extends Controller
 		$user = Auth::user();
 		$uid = $user->id;
 		
-        //
-		if($request->input('type') != 'Aggregator'){ // not for Aggregator vendor validation
-			$request->validate([
-				'type' => 'required',
-				'vendor_name' => [
-					'required',
-					Rule::unique('vendors')->where(function ($query) use($request){
-						return $query->where('type', $request->input('type'));
-					})->ignore($id),
-				],
-				'cname' => 'required',
-				'cemail' => ['required', new Emails],
-				'cphone' => 'required',
-				'ctype' => 'required',
-				'commission' => 'required|min:0|max:100',
-			]);
-		}else{
-			$request->validate([ // for Aggregator vendor validation
-				'type' => 'required',
-				'vendor_name' => [
-					'required',
-					Rule::unique('vendors')->where(function ($query) use($request){
-						return $query->where('type', $request->input('type'));
-					})->ignore($id),
-				],
-				'cname' => 'required',
-				'cemail' => ['required', new Emails],
-				'cphone' => 'required',
-				'ctype' => 'required',
-				'commission' => 'required|min:0|max:100',
-				'addmore.*.vname' => 'required',
-				'addmore.*.vcomm' => 'required|min:0|max:100',
-			],
-			[
-				'addmore.*.vname.required' => 'Each vendor must have a name.',
-				'addmore.*.vcomm.required' => 'Each vendor must have a commission.',
-			]);
-		}
-		
+        //		
+		$request->validate([
+			'vendor_name' => 'required|unique:vendors,name,'.$id,				
+		]);		
+			
 		// update value in db
-		$vendor = Vendor::find($id);
-        $vendor->type = $request->input('type');
-        $vendor->vendor_name = $request->input('vendor_name');
-        $vendor->contact_person_name = $request->input('cname');
-        $vendor->contact_person_number = $request->input('cphone');
-        $vendor->contact_person_email = $request->input('cemail');
-        $vendor->commission_type = $request->input('ctype');
-        $vendor->commission = $request->input('commission');
+		$vendor = Vendor::find($id);       
+        $vendor->name = $request->input('vendor_name');      
+        $vendor->number = $request->input('cphone');
+        $vendor->email = $request->input('cemail');  
+		$vendor->address = $request->input('address');        
         $vendor->updated_by = $uid;
         $vendor->save();
-		
-		// last insert id of vendor
-		$vendorid= $id;
-		
-		// save aggregator vendor info into table aggregator_has_vendors table
-		if(!empty($request->input('addmore'))){
-			// delete all records from aggregator has vendors
-			DB::table("aggregator_has_vendors")->where('vendor_id',$id)->delete();
-			
-			foreach($request->input('addmore') as $val){
-				if(!empty($val['vname'])){
-					$data[] = [
-						'vendor_id' => $vendorid,
-						'aggregator_vendor_name' => $val['vname'],
-						'aggregator_vendor_commission' => $val['vcomm'],
-					];
-				}
-			}
-			if(!empty($data))
-				DB::table('aggregator_has_vendors')->insert($data);
-		}
-		
 		return redirect()->route('vendorss.index')
                         ->with('success','Vendor updated successfully.');
     }

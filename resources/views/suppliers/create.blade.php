@@ -6,10 +6,10 @@
             <div class="card">
                 <div class="card-header">
 					<div class="float-left">
-						{{ __('Edit Vendor*') }}
+						{{ __('Create New Supplier*') }}
 					</div>
 					<div class="float-right">
-						<a class="btn btn-primary btn-sm" href="{{ route('vendorss.index') }}"> Back to list</a>
+						<a class="btn btn-primary btn-sm" href="{{ route('suppliers.index') }}"> Back to list</a>
 					</div>
 					<div class="clearfix"></div>
 				</div>
@@ -26,38 +26,43 @@
 						</div>
 					@endif
 		
-					<form method="POST" action="{{ route('vendorss.update',$vendor->id) }}">
+					<form method="POST" action="{{ route('suppliers.store') }}">
 					@csrf
-					@method('PATCH')
-						<div class="row">				
+					
+						<div class="row">					
 							
 							<div class="col-md-4">
 								<div class="form-group">
-									<label for="vendor_name" class="col-form-label text-md-right">{{ __('Vendor name*') }}</label>
-									<input id="vendor_name" type="text" class="form-control" name="vendor_name" value="{{ old('vendor_name',$vendor->name) }}"  autocomplete="vendor_name" required>
+									<label for="name" class="col-form-label text-md-right">{{ __('Supplier name*') }}</label>
+									<input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}"  autocomplete="name" required>
+								</div>
+							</div>
+							
+							<div class="col-md-4">
+								<div class="form-group">
+									<label for="phone" class="col-form-label text-md-right">{{ __('Phone number') }}</label>
+									<input id="phone" type="text" class="form-control" name="cphone" value="{{ old('cphone') }}"  autocomplete="phone" >
 								</div>
 							</div>
 							<div class="col-md-4">
 								<div class="form-group">
-									<label for="cphone" class="col-form-label text-md-right">{{ __('Phone number') }}</label>
-									<input id="cphone" type="number" class="form-control" name="cphone" value="{{ old('cphone',$vendor->number) }}"  autocomplete="cphone" >
+									<label for="email" class="col-form-label text-md-right">{{ __('Email ID') }}</label>
+									<input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}"  autocomplete="email" multiple >
 								</div>
 							</div>
-							<div class="col-md-4">
-								<div class="form-group">
-									<label for="cemail" class="col-form-label text-md-right">{{ __('Email') }}</label>
-									<input id="cemail" type="email" class="form-control" name="cemail" value="{{ old('cemail',$vendor->email) }}"  autocomplete="cemail"  >
-								</div>
-							</div>
-						</div>						
+						</div>
 						<div class="row">
 							<div class="col-md-12">
 								<div class="form-group">
 									<label for="address" class="col-form-label text-md-right">{{ __('Address') }}</label>
-									<textarea id="address" class="form-control" name="address" rows="2" cols="6">{{ old('address',$vendor->address) }}</textarea>
+									<textarea id="address" class="form-control" name="address" rows="2" cols="6">{{ old('address') }}</textarea>
 								</div>
 							</div>
+							
 						</div>
+						
+						
+
 						<div class="form-group row mb-0">
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-primary">
@@ -73,5 +78,5 @@
 </div>
 @endsection
 @section('footer-script')
-<script src="{{ asset('js/vendor.js') }}" defer></script>
+<!-- <script src="{{ asset('js/vendor.js') }}" defer></script> -->
 @endsection
