@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Kultprit') }}</title>
+    <title>{{ config('app.name', 'Online CRM') }}</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -32,7 +32,7 @@
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container-fluid">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Kultprit') }}
+                    {{ config('app.name', 'Online CRM') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -42,7 +42,6 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
 						@guest
-
                         @else
 							@canany(['role-list','user-list'])
 							<li class="nav-item dropdown">
@@ -62,50 +61,14 @@
 								</div>
 							</li>
 							@endcanany
-							@canany(['manufacturer-list','vendor-list','discount-list','stock-list','sale-list','performances-list'])
+							@canany(['vendor-list'])
 							<li class="nav-item dropdown">
 								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 									Settings
 								</a>
 								<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-									@can('manufacturer-list')
-										<a class="dropdown-item" href="{{ route('buyers.index') }}">Manage Manufacturer</a>
-									@endcan
 									@can('vendor-list')
 										<a class="dropdown-item" href="{{ route('vendorss.index') }}">Manage Vendors</a>
-									@endcan
-									@can('discount-list')
-										<a class="dropdown-item" href="{{ route('discounts.index') }}">Manage Discounts</a>
-									@endcan
-									@can('stock-list')
-										<a class="dropdown-item" href="{{ route('stocks.index') }}">Manage Stocks</a>
-									@endcan
-									<!--@can('bcstock-list')
-										<a class="dropdown-item" href="{{ route('bcstocks.index') }}">Manage Stocks Add/Update</a>
-									@endcan-->
-									@can('sale-list')
-										<a class="dropdown-item" href="{{ route('sales.index') }}">Manage Sales</a>
-									@endcan
-									@can('performances-list')
-										<a class="dropdown-item" href="{{ route('performances.index') }}">Manage Performances</a>
-									@endcan
-								</div>
-							</li>
-							@endcanany
-							@canany(['discount-report-list','stock-report-list'])
-							<li class="nav-item dropdown">
-								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-									Reports
-								</a>
-								<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-									@can('discount-report')
-										<a class="dropdown-item" href="{{ route('discountreport') }}">Discount report</a>
-									@endcan
-									@can('stock-report')
-										<a class="dropdown-item" href="{{ route('stockreport') }}">Stock report</a>
-									@endcan
-									@can('performancereport')
-										<a class="dropdown-item" href="{{ route('performancereport') }}">Performance report</a>
 									@endcan
 								</div>
 							</li>

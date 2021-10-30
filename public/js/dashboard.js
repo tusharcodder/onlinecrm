@@ -1,6 +1,5 @@
 $(function(){
 	'use strict';
-	
 	var saledata = [];
 	// Fetch data of last 12 month sale report
 	$.ajax({

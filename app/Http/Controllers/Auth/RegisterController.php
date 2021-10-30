@@ -95,7 +95,7 @@ class RegisterController extends Controller
 			'password' => $data['password'],
 		);
 		
-		Mail::to($data['email'])->send(new WelcomeMail($data));
+		//Mail::to($data['email'])->send(new WelcomeMail($data));
 		
 		/* // send email with the template
 		Mail::send('welcome_email', $email_data, function ($message) use ($email_data) {
