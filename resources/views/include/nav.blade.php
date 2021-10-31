@@ -51,6 +51,15 @@
 						</ul>
 					</li>
 				@endcanany
+				@canany(['vendor-stock-list'])
+					<li class="nav-item with-sub"> <a href="" class="nav-link"><i data-feather="package"></i> Stocks</a>
+						<ul class="navbar-menu-sub"> 
+							@can('vendor-stock-list')
+								<li class="nav-sub-item"><a href="{{ route('vendorstocks.index') }}" class="nav-sub-link">Manage Vendor Stock</a></li>
+							@endcan
+						</ul>
+					</li>
+				@endcanany
 			@endauth
 		</ul>
 	</div>

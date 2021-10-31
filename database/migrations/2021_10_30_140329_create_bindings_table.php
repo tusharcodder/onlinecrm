@@ -14,7 +14,7 @@ class CreateBindingsTable extends Migration
     public function up()
     {
         Schema::create('bindings', function (Blueprint $table) {
-            $table->id();
+			$table->bigIncrements('id');
 			$table->string('name')->nullable();
 			$table->integer('created_by');
 			$table->integer('updated_by');

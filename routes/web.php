@@ -53,6 +53,12 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::resource('suppliers','SupplierController');
 	Route::resource('bindings','BindingController');
 	Route::resource('currencies','CurrenciesController');
+	Route::resource('vendorstocks','VendorStockController');
+	
+	Route::get('stock-import-export', 'StockController@stockImportExport')->name('stock-import-export');
+	Route::post('stockexport', 'StockController@export')->name('stockexport');
+	Route::post('stockimport', 'StockController@import')->name('stockimport');
+	Route::delete('deletestockall', 'StockController@deleteStockAll')->name('deletestockall');
 
 	
 	// Route::get('performances-import-export', 'PerformanceController@performancesImportExport')->name('performances-import-export');
