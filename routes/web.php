@@ -52,7 +52,8 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::resource('marketplaces','MarketPlaceController');
 	Route::resource('suppliers','SupplierController');
 	Route::resource('bindings','BindingController');
-	
+	Route::resource('currencies','CurrenciesController');
+
 	
 	// Route::get('performances-import-export', 'PerformanceController@performancesImportExport')->name('performances-import-export');
 	// Route::post('performancesexport', 'PerformanceController@export')->name('performancesexport');
@@ -60,7 +61,7 @@ Route::group(['middleware' => ['auth']], function() {
 	// Route::delete('deleteperformancesall', 'PerformanceController@deletePerformancesAll')->name('deleteperformancesall');
 
 	
-
+	//Route::post('vendorstock', 'VendorController@import')->name('vendorstock');
 	Route::get('loadvendor/{val}', 'CommonController@getVendor')->name('loadvendor');
 	Route::get('loadaggregatorvendor/{val}/{type}', 'CommonController@getAggregatorVendor')->name('loadaggregatorvendor');
 	
