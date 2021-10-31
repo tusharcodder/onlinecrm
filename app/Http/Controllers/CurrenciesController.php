@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Binding;
+use App\currencies;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -10,7 +10,7 @@ use Illuminate\Validation\Rule;
 use App\Rules\Emails; // multiple email rule validation
 use DB;
 
-class BindingController extends Controller
+class CurrenciesController extends Controller
 {
 	/**
      * Display a listing of the resource.
@@ -19,11 +19,11 @@ class BindingController extends Controller
      */
     function __construct()
     {
-		$this->middleware('permission:binding-list|binding-create|binding-edit|binding-delete', ['only' => ['index','store']]);
-		$this->middleware('permission:binding-list', ['only' => ['index']]);
-		$this->middleware('permission:binding-create', ['only' => ['create','store']]);
-		$this->middleware('permission:binding-edit', ['only' => ['edit','update']]);
-		$this->middleware('permission:binding-delete', ['only' => ['destroy']]);
+		$this->middleware('permission:currencies-list|currencies-create|currencies-edit|currencies-delete', ['only' => ['index','store']]);
+		$this->middleware('permission:currencies-list', ['only' => ['index']]);
+		$this->middleware('permission:currencies-create', ['only' => ['create','store']]);
+		$this->middleware('permission:currencies-edit', ['only' => ['edit','update']]);
+		$this->middleware('permission:currencies-delete', ['only' => ['destroy']]);
     }
 	
     /**
@@ -36,16 +36,17 @@ class BindingController extends Controller
         //
 		$search = $request->input('search');
         //
-		$bindings = Binding::where(function($query) use ($search) {
-					$query->where('name','LIKE','%'.$search.'%');
+		$currenciess = Currencies::where(function($query) use ($search) {
+					$query->where('name','LIKE','%'.$search.'%')
+					->orWhere('symbol','LIKE','%'.$search.'%');
 				})->orderBy('id','DESC')->paginate(10)->setPath('');
 		
 		// bind value with pagination link
-		$pagination = $bindings->appends ( array (
+		$pagination = $currenciess->appends ( array (
 			'search' => $search
 		));
 		
-        return view('bindings.index',compact('bindings','search'))
+        return view('currencies.index',compact('currenciess','search'))
             ->with('i', ($request->input('page', 1) - 1) * 10);
     }
 
@@ -57,7 +58,7 @@ class BindingController extends Controller
     public function create()
     {
         //
-		return view('bindings.create');
+		return view('currencies.create');
     }
 
     /**
@@ -68,57 +69,58 @@ class BindingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+		//
 		$user = Auth::user();
 		$uid = $user->id;
 
         //
 		$request->validate([ // validation
-			'name' => 'required|unique:bindings,name',
+			'name' => 'required|unique:currenciess,name',
 		]);
 
 		// save value in db
-		$binding = Binding::create([
+		$currencies = Currencies::create([
 			'name' => $request->input('name'),
+			'symbol' => $request->input('symbol'),
 			'created_by' => $uid,
 			'updated_by' => $uid
 		]);
 	
-		return redirect()->route('bindings.index')
-                        ->with('success','Binding created successfully.');
+		return redirect()->route('currencies.index')
+                        ->with('success','Currencies created successfully.');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Binding  $binding
+     * @param  \App\currenciess  $currenciess
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         //
-		$binding = Binding::find($id);
-        return view('bindings.show',compact('binding'));
+		$currencies = Currencies::find($id);
+        return view('currencies.show',compact('currencies'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Binding  $binding
+     * @param  \App\currenciess  $currenciess
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
         //
-		$binding = Binding::find($id);
-        return view('bindings.edit',compact('binding'));
+		$currencies = Currencies::find($id);
+        return view('currencies.edit',compact('currencies'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Binding  $binding
+     * @param  \App\currenciess  $currenciess
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -128,30 +130,31 @@ class BindingController extends Controller
 		$uid = $user->id;
 		
         $request->validate([ // for validation
-			'name' => 'required|unique:bindings,name,'.$id,
+			'name' => 'required|unique:currenciess,name,'.$id,
 		]);
 		
 		// update value in db
-		$binding = Binding::find($id);
-        $binding->name = $request->input('name');
-        $binding->updated_by = $uid;
-        $binding->save();
+		$currencies = Currencies::find($id);
+        $currencies->name = $request->input('name');
+        $currencies->symbol = $request->input('symbol');
+        $currencies->updated_by = $uid;
+        $currencies->save();
 
-		return redirect()->route('bindings.index')
-                        ->with('success','Binding updated successfully.');
+		return redirect()->route('currencies.index')
+                        ->with('success','Currencies updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Binding  $binding
+     * @param  \App\currenciess  $currenciess
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-		//
-		DB::table("bindings")->where('id',$id)->delete();
-        return redirect()->route('bindings.index')
-                        ->with('success','Binding deleted successfully.');
+        //
+		DB::table("currenciess")->where('id',$id)->delete();
+        return redirect()->route('currencies.index')
+                        ->with('success','Currencies deleted successfully.');
     }
 }

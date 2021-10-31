@@ -15,27 +15,33 @@
 				</div>				
                 <div class="card-body">
 					<div class="row">					
-						<div class="col-xs-12 col-sm-4 col-md-4">
+						<div class="col-xs-12 col-sm-3 col-md-3">
 							<div class="form-group">
 								<strong>Name:</strong><br/>
 								{{ $vendor->name }}
 							</div>
 						</div>
-						<div class="col-xs-12 col-sm-4 col-md-4">
+						<div class="col-xs-12 col-sm-3 col-md-3">
 							<div class="form-group">
 								<strong>Phone Number:</strong><br/>
 								{{ $vendor->number }}
 							</div>
 						</div>
-						<div class="col-xs-12 col-sm-4 col-md-4">
+						<div class="col-xs-12 col-sm-3 col-md-3">
 							<div class="form-group">
 								<strong>Email:</strong><br/>
 								{{ $vendor->email }}
 							</div>
 						</div>
+						<div class="col-xs-12 col-sm-3 col-md-3">
+							<div class="form-group">
+								<strong>Priority:</strong><br/>
+								{{ $vendor->priority }}
+							</div>
+						</div>
 					</div>				
 					<div class="row">
-						<div class="col-xs-12 col-sm-4 col-md-4">
+						<div class="col-xs-12 col-sm-12 col-md-12">
 							<div class="form-group">
 								<strong>Address:</strong><br/>
 								{{ $vendor->address }}

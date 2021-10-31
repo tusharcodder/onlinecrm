@@ -44,22 +44,25 @@
 					 <div class="table-responsive">
 						<table class="table table-bordered">
 							<tr>
-								<th>No</th>								
+								<th>#ID</th>								
 								<th>Name</th>
 								<th>Phone Number</th>
 								<th>Email</th>		
 								<th>Address</th>								
+								<th>Priority</th>								
 								<th width="227px">Action</th>
 							</tr>
 							@if($vendors->total() > 0)
 								@foreach ($vendors as $key => $vendor)
 								<tr>
-									<td>{{ ($vendors->currentPage()-1) * $vendors->perPage() + $loop->index + 1 }}</td>
+									<!--<<td>{{ ($vendors->currentPage()-1) * $vendors->perPage() + $loop->index + 1 }}</td>-->
 								
+									<td>{{ $vendor->id }}</td>									
 									<td>{{ $vendor->name }}</td>									
 									<td>{{ $vendor->number }}</td>
 									<td>{{ $vendor->email }}</td>
 									<td>{{ $vendor->address }}</td>
+									<td>{{ $vendor->priority }}</td>
 									<td>
 										<a class="btn btn-info btn-sm" href="{{ route('vendorss.show',$vendor->id) }}">Show</a>
 										@can('vendor-edit')
@@ -78,7 +81,7 @@
 								</tr>
 								@endforeach
 							@else
-								<tr><td colspan="6">No records found.</td></tr>
+								<tr><td colspan="7">No records found.</td></tr>
 							@endif
 						</table>
 						{{ $vendors->links() }}

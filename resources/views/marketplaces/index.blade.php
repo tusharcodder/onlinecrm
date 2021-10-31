@@ -44,7 +44,7 @@
 					 <div class="table-responsive">
 						<table class="table table-bordered">
 							<tr>
-								<th>No</th>
+								<th>#ID</th>
 								<th>Name</th>
 								<th>Phone Number</th>
 								<th>Email</th>
@@ -54,7 +54,8 @@
 							@if($marketplaces->total() > 0)
 								@foreach ($marketplaces as $key => $marketplace)
 								<tr>
-									<td>{{ ($marketplaces->currentPage()-1) * $marketplaces->perPage() + $loop->index + 1 }}</td>
+									<!--<<td>{{ ($marketplaces->currentPage()-1) * $marketplaces->perPage() + $loop->index + 1 }}</td>-->
+									<td>{{ $marketplace->id }}</td>
 									<td>{{ $marketplace->name }}</td>
 									<td>{{ $marketplace->number }}</td>
 									<td>{{ $marketplace->email}}</td>

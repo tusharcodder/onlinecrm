@@ -30,7 +30,7 @@
 						</ul>
 					</li> 
 				@endcanany 
-				@canany(['vendor-list'])
+				@canany(['vendor-list','market-place-list','supplier-list','binding-list','currencies-list'])
 					<li class="nav-item with-sub"> <a href="" class="nav-link"><i data-feather="package"></i> Settings</a>
 						<ul class="navbar-menu-sub"> 
 							@can('vendor-list')
@@ -45,9 +45,12 @@
 							@can('binding-list')
 								<li class="nav-sub-item"><a href="{{ route('bindings.index') }}" class="nav-sub-link">Manage Bindings</a></li> 
 							@endcan
+							@can('currencies-list')
+								<li class="nav-sub-item"><a href="{{ route('currencies.index') }}" class="nav-sub-link">Manage Currencies</a></li> 
+							@endcan
 						</ul>
 					</li>
-				@endcanany 				
+				@endcanany
 			@endauth
 		</ul>
 	</div>

@@ -31,22 +31,28 @@
 					@method('PATCH')
 						<div class="row">				
 							
-							<div class="col-md-4">
+							<div class="col-md-3">
 								<div class="form-group">
 									<label for="vendor_name" class="col-form-label text-md-right">{{ __('Name*') }}</label>
 									<input id="vendor_name" type="text" class="form-control" name="vendor_name" value="{{ old('vendor_name',$vendor->name) }}"  autocomplete="vendor_name" required>
 								</div>
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-3">
 								<div class="form-group">
 									<label for="cphone" class="col-form-label text-md-right">{{ __('Phone number') }}</label>
 									<input id="cphone" type="number" class="form-control" name="cphone" value="{{ old('cphone',$vendor->number) }}"  autocomplete="cphone" >
 								</div>
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-3">
 								<div class="form-group">
 									<label for="cemail" class="col-form-label text-md-right">{{ __('Email') }}</label>
 									<input id="cemail" type="email" class="form-control" name="cemail" value="{{ old('cemail',$vendor->email) }}"  autocomplete="cemail"  >
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group">
+									<label for="priority" class="col-form-label text-md-right">{{ __('Priority*') }}</label>
+									<input id="priority" type="number" class="form-control" name="priority" value="{{ old('priority',$vendor->priority) }}"  autocomplete="priority" required>
 								</div>
 							</div>
 						</div>						

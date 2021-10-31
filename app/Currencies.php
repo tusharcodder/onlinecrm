@@ -4,9 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Vendor extends Model
+class Currencies extends Model
 {
-    protected $table = 'vendors';
+	protected $table = 'currenciess';
 	
 	/**
      * The attributes that are mass assignable.
@@ -14,6 +14,6 @@ class Vendor extends Model
      * @var array
      */
     protected $fillable = [
-         'name', 'number', 'email', 'address', 'priority', 'created_by', 'updated_by'
+        'name', 'symbol', 'created_by', 'updated_by'
     ];
 }

@@ -44,15 +44,16 @@
 					 <div class="table-responsive">
 						<table class="table table-bordered">
 							<tr>
-								<th>No</th>								
+								<th>#ID</th>							
 								<th>Name</th>							
 								<th width="227px">Action</th>
 							</tr>
 							@if($bindings->total() > 0)
 								@foreach ($bindings as $key => $binding)
 								<tr>
-									<td>{{ ($bindings->currentPage()-1) * $bindings->perPage() + $loop->index + 1 }}</td>
+									<!--<<td>{{ ($bindings->currentPage()-1) * $bindings->perPage() + $loop->index + 1 }}</td>-->
 								
+									<td>{{ $binding->id }}</td>									
 									<td>{{ $binding->name }}</td>									
 									<td>
 										<a class="btn btn-info btn-sm" href="{{ route('bindings.show',$binding->id) }}">Show</a>

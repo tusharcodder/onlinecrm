@@ -44,7 +44,7 @@
 					 <div class="table-responsive">
 						<table class="table table-bordered">
 							<tr>
-								<th>No</th>								
+								<th>#ID</th>							
 								<th>Name</th>
 								<th>Phone Number</th>
 								<th>Email</th>		
@@ -54,8 +54,9 @@
 							@if($supplier->total() > 0)
 								@foreach ($supplier as $key => $vendor)
 								<tr>
-									<td>{{ ($supplier->currentPage()-1) * $supplier->perPage() + $loop->index + 1 }}</td>
+								<!--<td>{{ ($supplier->currentPage()-1) * $supplier->perPage() + $loop->index + 1 }}</td>-}}-->
 								
+									<td>{{ $vendor->id }}</td>									
 									<td>{{ $vendor->name }}</td>									
 									<td>{{ $vendor->number }}</td>
 									<td>{{ $vendor->email }}</td>

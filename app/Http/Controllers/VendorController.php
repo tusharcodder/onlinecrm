@@ -41,9 +41,10 @@ class VendorController extends Controller
 					$query->where('name','LIKE','%'.$search.'%')						
 						->orWhere('number','LIKE','%'.$search.'%')
 						->orWhere('email','LIKE','%'.$search.'%')
-						->orWhere('address','LIKE','%'.$search.'%');
+						->orWhere('address','LIKE','%'.$search.'%')
+						->orWhere('priority','LIKE','%'.$search.'%');
 
-				})->orderBy('id','DESC')->paginate(10)->setPath('');
+				})->orderBy('priority','ASC')->paginate(10)->setPath('');
 		
 		// bind value with pagination link
 		$pagination = $vendors->appends ( array (
@@ -80,6 +81,7 @@ class VendorController extends Controller
         //check validation
 		$request->validate([
 			'vendor_name' => 'required|unique:vendors,name',			
+			'priority' => 'required|unique:vendors,priority',			
 		]);
 		
 		// save value in db
@@ -88,6 +90,7 @@ class VendorController extends Controller
 								'address' => $request->input('address'),
 								'number' => $request->input('cphone'),
 								'email' => $request->input('cemail'),
+								'priority' => $request->input('priority'),
 								'created_by' => $uid,
 								'updated_by' => $uid
 							]);
@@ -138,6 +141,7 @@ class VendorController extends Controller
         //		
 		$request->validate([
 			'vendor_name' => 'required|unique:vendors,name,'.$id,				
+			'priority' => 'required|unique:vendors,priority,'.$id,				
 		]);		
 			
 		// update value in db
@@ -146,6 +150,7 @@ class VendorController extends Controller
         $vendor->number = $request->input('cphone');
         $vendor->email = $request->input('cemail');  
 		$vendor->address = $request->input('address');        
+		$vendor->priority = $request->input('priority');        
         $vendor->updated_by = $uid;
         $vendor->save();
 		return redirect()->route('vendorss.index')
