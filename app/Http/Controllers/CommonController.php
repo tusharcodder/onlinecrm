@@ -29,20 +29,6 @@ class CommonController extends Controller{
      *
      * @return \Illuminate\Http\Response
      */
-    public function getAggregatorVendor($val,$type)
-    {
-        $aggregatordetails = Vendor::select('aggregator_has_vendors.*')->join("aggregator_has_vendors","aggregator_has_vendors.vendor_id","=","vendors.id")
-            ->where("vendors.vendor_name",$val)
-            ->where("vendors.type",$type)
-            ->get();
-        return json_encode($aggregatordetails);
-	}
-	
-	/**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function autocomplete($table, $column, Request $request)
     {
 		$data = DB::table($table)->select($column)

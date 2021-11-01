@@ -31,11 +31,11 @@
 			<div class="card">
 				<div class="card-header">
 					<div class="float-left">
-						{{ __('Stock Import') }}
+						{{ __('Vendor Stock Import') }}
 					</div>
 					<div class="float-right">
-						@can('stock-create')
-							<a class="btn btn-primary btn-sm" href="{{ route('stocks.index') }}"> Back to list</a>
+						@can('vendor-stock-create')
+							<a class="btn btn-primary btn-sm" href="{{ route('vendorstocks.index') }}"> Back to list</a>
 						@endcan
 					</div>
 					<div class="clearfix"></div>
@@ -48,7 +48,7 @@
 						<small>	<i class="fa fa-save"></i> Max upload size: 500MB</small><br>
 						<small>	<i class="fa fa-image"></i> Product image name in excel sheet should be same in zip folder</small>
 					</span>
-					<form action="{{ route('stockimport') }}" method="POST" enctype="multipart/form-data">
+					<form action="{{ route('vendorstockimport') }}" method="POST" enctype="multipart/form-data">
 						@csrf
 						<div class="row mt-3">
 							<div class="col-md-5">
@@ -57,36 +57,13 @@
 									<input type="file" class="form-control" name="importfile" id="importfile" accept=".csv,.xls,.xlsx" autofocus required>
 								</div>
 							</div>
-							
-							<div class="col-md-4">
-								<div class="form-group mb-20">
-									<label class="control-label mb-10 text-left" for="zipdir">Upload Images zip directory</label>
-									<input type="file" class="form-control" name="zipdir" id="zipdir" accept=".zip">
-								</div>
-							</div>
 
 							<div class="col-md-3">
 								<div class="form-group mb-20">
 									<label class="control-label mb-10 text-left" for="importtype">Import Type*</label>
 									<select class="form-control" id="importtype" name="importtype" required>
 										<option value="newimport">New import</option>
-										<option value="importwithupdate">Delete with new</option>
 									</select>
-								</div>
-							</div>
-						</div>
-						<div class="row importupdate" style="display:none;">	
-							<div class="col-md-3">
-								<div class="form-group">
-									<label for="import_from_date" class="col-form-label text-md-right">{{ __('From stock date*') }}</label>
-									<input id="import_from_date" type="date" class="form-control" name="import_from_date" value="{{ old('import_from_date',date('Y-m-d')) }}"  autocomplete="import_from_date">
-								</div>
-							</div>
-							
-							<div class="col-md-3">
-								<div class="form-group">
-									<label for="import_to_date" class="col-form-label text-md-right">{{ __('To stock date*') }}</label>
-									<input id="import_to_date" type="date" class="form-control" name="import_to_date" value="{{ old('import_to_date',date('Y-m-d')) }}"  autocomplete="import_to_date">
 								</div>
 							</div>
 						</div>
@@ -111,17 +88,17 @@
 			<div class="card">
 				<div class="card-header">
 					<div class="float-left">
-						{{ __('Stock Export') }}
+						{{ __('Vendor Stock Export') }}
 					</div>
 					<div class="float-right">
-						@can('stock-create')
-							<a class="btn btn-primary btn-sm" href="{{ route('stocks.index') }}"> Back to list</a>
+						@can('vendor-stock-create')
+							<a class="btn btn-primary btn-sm" href="{{ route('vendorstocks.index') }}"> Back to list</a>
 						@endcan
 					</div>
 					<div class="clearfix"></div>
 				</div>
 				<div class="card-body">
-					<form action="{{ route('stockexport') }}" method="POST">
+					<form action="{{ route('vendorstockexport') }}" method="POST">
 						@csrf
 						<div class="row">
 							<div class="col-md-3">
@@ -221,5 +198,5 @@
 </div>
 @endsection
 @section('footer-script')
-<script src="{{ asset('js/stock.js') }}" defer></script>
+<script src="{{ asset('js/vendorstock.js') }}" defer></script>
 @endsection

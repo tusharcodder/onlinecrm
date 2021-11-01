@@ -7,7 +7,7 @@ function autocomplete(textid, table, column){
 		source: function( request, response ) {
 			// Fetch data
 			$.ajax({
-				url: "/autocomplete/"+table+"/"+column,
+				url: "../autocomplete/"+table+"/"+column,
 				type: 'GET',
 				data: {
 				   search: request.term

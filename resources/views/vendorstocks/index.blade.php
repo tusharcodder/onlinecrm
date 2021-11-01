@@ -10,13 +10,13 @@
 					</div>
 					<div class="float-right">
 						@can('vendor-stock-create')
-							<a class="btn btn-success btn-sm" href="{{ route('stocks.create') }}"> Add New Vendor Stock</a>
+							<a class="btn btn-success btn-sm" href="{{ route('vendorstocks.create') }}"> Add New Vendor Stock</a>
 						@endcan
 						@can('vendor-stock-import-export')
-							<a class="btn btn-secondary btn-sm" href="{{ route('stock-import-export') }}"> Stock import/export</a>
+							<a class="btn btn-secondary btn-sm" href="{{ route('vendor-stock-import-export') }}"> Stock import/export</a>
 						@endcan
 						@if(!empty($search))
-							<a class="btn btn-primary btn-sm" href="{{ route('stocks.index') }}"> Reset Search</a>
+							<a class="btn btn-primary btn-sm" href="{{ route('vendorstocks.index') }}"> Reset Search</a>
 						@endif
 					</div>
 					<div class="clearfix"></div>
@@ -35,7 +35,7 @@
 					<div class="row mb-1">
 						<div class="col-sm-8">
 							@can('vendor-stock-delete')
-								<form method="POST" action="{{ route('deletestockall') }}" style="display:inline">
+								<form method="POST" action="{{ route('deletevendorstockall') }}" style="display:inline">
 									@csrf
 									@method('DELETE')
 									<input type="hidden" id="selectedval" name="selectedval">
@@ -47,10 +47,10 @@
 							Showing {{($stocks->currentPage()-1)* $stocks->perPage()+($stocks->total() ? 1:0)}} to {{($stocks->currentPage()-1)*$stocks->perPage()+count($stocks)}}  of  {{$stocks->total()}}  Results
 						</div>
 						<div class="col-sm-4">
-							<form method="GET" action="{{ route('stocks.index') }}" role="search">
+							<form method="GET" action="{{ route('vendorstocks.index') }}" role="search">
 								<div class="input-group">
 									<input type="text" class="form-control" name="search"
-										placeholder="Search stocks" value="{{ $search }}"> <span class="input-group-btn">
+										placeholder="Search vendor stocks" value="{{ $search }}"> <span class="input-group-btn">
 										<button type="submit" class="btn btn-primary">
 											<i class="fa fa-search"></i>
 										</button>
@@ -66,15 +66,17 @@
 									<th><input type="checkbox" id="master"></th>
 								@endcan
 								<th>No</th>
-								<th>Date</th>
-								<th>Brand</th>
-								<th>Category</th>
-								<th>Gender</th>
-								<th>Colour</th>
-								<th>Size</th>
-								<th>Product code</th>
+								<th>Stock date</th>
+								<th>Vendor name</th>
+								<th>ISBN no</th>
+								<th>Name</th>
+								<th>Author</th>
+								<th>Publisher</th>
+								<th>Binding type</th>
+								<th>Currency</th>
+								<th>Price</th>
+								<th>Discount</th>
 								<th>Qty</th>
-								<th>Image</th>
 								<th width="227px">Action</th>
 							</tr>
 							@if($stocks->total() > 0)
@@ -85,20 +87,23 @@
 									@endcan
 									<td>{{ ($stocks->currentPage()-1) * $stocks->perPage() + $loop->index + 1 }}</td>
 									<td> {{ \Carbon\Carbon::parse($stock->stock_date)->format('d-m-Y')}}</td>
-									<td>{{ $stock->brand }}</td>
-									<td>{{ $stock->category }}</td>
-									<td>{{ $stock->gender }}</td>
-									<td>{{ $stock->colour}}</td>
-									<td>{{ $stock->size }}</td>
-									<td>{{ $stock->product_code }}</td>
+									<td>{{ $stock->vendor_name }}</td>
+									<td>{{ $stock->isbnno }}</td>
+									<td>{{ $stock->name }}</td>
+									<td>{{ $stock->author }}</td>
+									<td>{{ $stock->publisher }}</td>
+									<td>{{ $stock->binding_type }}</td>
+									<td>{{ $stock->currency }}</td>
+									<td>{{ $stock->price }}</td>
+									<td>{{ $stock->discount }}</td>
 									<td>{{ $stock->quantity }}</td>
 									<td>
-										<a class="btn btn-info btn-sm" href="{{ route('stocks.show',$stock->id) }}">Show</a>
+										<a class="btn btn-info btn-sm" href="{{ route('vendorstocks.show',$stock->id) }}">Show</a>
 										@can('vendor-stock-edit')
-											<a class="btn btn-primary btn-sm" href="{{ route('stocks.edit',$stock->id) }}">Edit</a>
+											<a class="btn btn-primary btn-sm" href="{{ route('vendorstocks.edit',$stock->id) }}">Edit</a>
 										@endcan
 										@can('vendor-stock-delete')
-											<form method="POST" action="{{ route('stocks.destroy',$stock->id) }}" style="display:inline">
+											<form method="POST" action="{{ route('vendorstocks.destroy',$stock->id) }}" style="display:inline">
 												@csrf
 												@method('DELETE')
 												<button type="submit" class="btn btn-danger btn-sm">
@@ -110,7 +115,13 @@
 								</tr>
 								@endforeach
 							@else
-								<tr><td colspan="11">No records found.</td></tr>
+								<tr>
+									@can('vendor-stock-delete')
+										<td colspan="14">No records found.</td>
+									@else
+										<td colspan="13">No records found.</td>
+									@endcan
+								</tr>
 							@endif
 						</table>
 						{{ $stocks->links() }}
@@ -122,5 +133,5 @@
 </div>
 @endsection
 @section('footer-script')
-<script src="{{ asset('js/stock.js') }}" defer></script>
+<script src="{{ asset('js/vendorstock.js') }}" defer></script>
 @endsection

@@ -16,6 +16,7 @@ class CreateVendorStocksTable extends Migration
         Schema::create('vendor_stocks', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('isbnno')->nullable();
+            $table->string('vendor_name')->nullable();
             $table->string('name')->nullable();
 			$table->string('author')->nullable();
             $table->string('publisher')->nullable();

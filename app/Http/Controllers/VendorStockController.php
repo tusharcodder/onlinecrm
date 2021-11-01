@@ -45,35 +45,26 @@ class VendorStockController extends Controller
     {
         //
 		$search = $request->input('search');
-		$stocks = VendorStock::select('stocks.*', 'product_images.image_url as img_url')
-				->join('product_images', 'product_images.product_code', '=', 'stocks.product_code')
-				->where(function($query) use ($search) {
-					$query->where('stocks.manufacturer_name','LIKE','%'.$search.'%')	
-						->orWhere('stocks.country','LIKE','%'.$search.'%')	
-						->orWhere(DB::raw("DATE_FORMAT(stocks.manufacture_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')	
-						->orWhere('stocks.cost','LIKE','%'.$search.'%')
-						->orWhere(DB::raw("DATE_FORMAT(stocks.stock_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')
-						->orWhere('stocks.brand','LIKE','%'.$search.'%')
-						->orWhere('stocks.category','LIKE','%'.$search.'%')
-						->orWhere('stocks.gender','LIKE','%'.$search.'%')
-						->orWhere('stocks.colour','LIKE','%'.$search.'%')
-						->orWhere('stocks.size','LIKE','%'.$search.'%')
-						->orWhere('stocks.lotno','LIKE','%'.$search.'%')
-						->orWhere('stocks.sku_code','LIKE','%'.$search.'%')
-						->orWhere('stocks.product_code','LIKE','%'.$search.'%')
-						->orWhere('stocks.hsn_code','LIKE','%'.$search.'%')
-						->orWhere('stocks.online_mrp','LIKE','%'.$search.'%')
-						->orWhere('stocks.offline_mrp','LIKE','%'.$search.'%')
-						->orWhere('stocks.description','LIKE','%'.$search.'%')
-						->orWhere('stocks.quantity','LIKE','%'.$search.'%');
-				})->orderBy('stocks.id','DESC')->paginate(10)->setPath('');
+		$stocks = VendorStock::where(function($query) use ($search) {
+					$query->where('isbnno','LIKE','%'.$search.'%')	
+						->orWhere('vendor_name','LIKE','%'.$search.'%')
+						->orWhere('name','LIKE','%'.$search.'%')
+						->orWhere('author','LIKE','%'.$search.'%')
+						->orWhere('publisher','LIKE','%'.$search.'%')
+						->orWhere(DB::raw("DATE_FORMAT(stock_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')
+						->orWhere('binding_type','LIKE','%'.$search.'%')
+						->orWhere('currency','LIKE','%'.$search.'%')
+						->orWhere('price','LIKE','%'.$search.'%')
+						->orWhere('discount','LIKE','%'.$search.'%')
+						->orWhere('quantity','LIKE','%'.$search.'%');
+				})->orderBy('vendor_name','ASC')->paginate(10)->setPath('');
 		
 		// bind value with pagination link
 		$pagination = $stocks->appends ( array (
 			'search' => $search
 		));
 		
-        return view('stocks.index',compact('stocks','search'))
+        return view('vendorstocks.index',compact('stocks','search'))
             ->with('i', ($request->input('page', 1) - 1) * 10);
     }
 
@@ -84,7 +75,7 @@ class VendorStockController extends Controller
      */
     public function create()
     {
-		return view('stocks.create');
+		return view('vendorstocks.create');
     }
 
     /**
@@ -101,76 +92,38 @@ class VendorStockController extends Controller
 		
 		// validation
         $request->validate([
-			'manufacturer_name' => 'required',
-			'manufacture_date' => 'required',
 			'stock_date' => 'required',
-			'brand' => 'required',
-			'category' => 'required',
-			'size' => 'required',
-			'lotno' => 'required',
-			'sku_code' => 'required',
-			'product_code' => 'required',
-			'online_mrp' => 'required',
-			'offline_mrp' => 'required',
+			'vendor_name' => 'required',
+			'isbnno' => 'required',
+			'name' => 'required',
+			'author' => 'required',
+			'publisher' => 'required',
+			'binding_type' => 'required',
+			'currency' => 'required',
+			'price' => 'required',
+			'discount' => 'required',
 			'quantity' => 'required',
-			'product_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
 		]);
 		
-		$storefilepath = '';
-		$path = '';
-		if ($request->hasFile('product_image')) {
-            //  Let's do everything here
-            if ($request->file('product_image')->isValid()) {
-				
-				$dirname = 'productimages';
-                $extension = $request->product_image->extension();
-				$imagename = $request->product_image->getClientOriginalName();
-				$filename = pathinfo($imagename, PATHINFO_FILENAME);
-				$orgname = $filename.'_'.time().'.'.$extension; 
-				
-				$year = date("Y");   
-				$month = date("m");   
-				$day = date("d");
-
-				$path = $dirname.'/'.$year.'/'.$month.'/'.$day;
-						
-				// upload image in define path
-				$request->product_image->move(public_path($path), $orgname);
-				$storefilepath = $path.'/'.$orgname;
-            }
-        }
-		
 		// save value in db
-		Stock::create([
-			'manufacturer_name' => $request->input('manufacturer_name'),
-			'country' => $request->input('country'),
-			'manufacture_date' => $request->input('manufacture_date'),
-			'cost' => $request->input('cost'),
+		VendorStock::create([
 			'stock_date' => $request->input('stock_date'),
-			'brand' => $request->input('brand'),
-			'category' => $request->input('category'),
-			'gender' => $request->input('gender'),
-			'colour' => $request->input('colour'),
-			'size' => $request->input('size'),
-			'lotno' => $request->input('lotno'),
-			'sku_code' => $request->input('sku_code'),
-			'product_code' => $request->input('product_code'),
-			'hsn_code' => $request->input('hsn_code'),
-			'online_mrp' => $request->input('online_mrp'),
-			'offline_mrp' => $request->input('offline_mrp'),
+			'vendor_name' => $request->input('vendor_name'),
+			'isbnno' => $request->input('isbnno'),
+			'name' => $request->input('name'),
+			'author' => $request->input('author'),
+			'publisher' => $request->input('publisher'),
+			'binding_type' => $request->input('binding_type'),
+			'currency' => $request->input('currency'),
+			'price' => $request->input('price'),
+			'discount' => $request->input('discount'),
 			'quantity' => $request->input('quantity'),
-			'description' => $request->input('description'),
-			'image_url' => $storefilepath,
 			'created_by' => $uid,
 			'updated_by' => $uid
 		]);
-
-		// call common method for adding product image
-		$common = new Common();
-		$common -> addProductImage($request->input('product_code'), $storefilepath);
 		
-		return redirect()->route('stocks.index')
-                        ->with('success','Stock added successfully.');
+		return redirect()->route('vendorstocks.index')
+                        ->with('success','Vendor stock added successfully.');
     }
 
     /**
@@ -181,9 +134,8 @@ class VendorStockController extends Controller
      */
     public function show($id)
     {
-        $stock = VendorStock::select('stocks.*', 'product_images.image_url as img_url')
-				->join('product_images', 'product_images.product_code', '=', 'stocks.product_code')->find($id);
-		return view('stocks.show',compact('stock'));
+        $stock = VendorStock::find($id);
+		return view('vendorstocks.show',compact('stock'));
     }
 
     /**
@@ -195,9 +147,8 @@ class VendorStockController extends Controller
     public function edit($id)
     {
         //
-        $stock = VendorStock::select('stocks.*', 'product_images.image_url as img_url')
-				->join('product_images', 'product_images.product_code', '=', 'stocks.product_code')->find($id);
-		return view('stocks.edit',compact('stock'));
+        $stock = VendorStock::find($id);
+		return view('vendorstocks.edit',compact('stock'));
     }
 
     /**
@@ -215,81 +166,37 @@ class VendorStockController extends Controller
 		
 		// validation
         $request->validate([
-			'manufacturer_name' => 'required',
-			'manufacture_date' => 'required',
 			'stock_date' => 'required',
-			'brand' => 'required',
-			'category' => 'required',
-			'size' => 'required',
-			'lotno' => 'required',
-			'sku_code' => 'required',
-			'product_code' => 'required',
-			'online_mrp' => 'required',
-			'offline_mrp' => 'required',
+			'vendor_name' => 'required',
+			'isbnno' => 'required',
+			'name' => 'required',
+			'author' => 'required',
+			'publisher' => 'required',
+			'binding_type' => 'required',
+			'currency' => 'required',
+			'price' => 'required',
+			'discount' => 'required',
 			'quantity' => 'required',
-			'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
 		]);
 		
-		$storefilepath = '';
-		$path = '';
-		if ($request->hasFile('product_image')) {
-            //  Let's do everything here
-            if ($request->file('product_image')->isValid()) {
-				
-				$dirname = 'productimages';
-                $extension = $request->product_image->extension();
-				$imagename = $request->product_image->getClientOriginalName();
-				$filename = pathinfo($imagename, PATHINFO_FILENAME);
-				$orgname = $filename.'_'.time().'.'.$extension; 
-				
-				$year = date("Y");   
-				$month = date("m");   
-				$day = date("d");
-
-				$path = $dirname.'/'.$year.'/'.$month.'/'.$day;
-						
-				// upload image in define path
-				$request->product_image->move(public_path($path), $orgname);
-				$storefilepath = $path.'/'.$orgname;
-            }
-        }
-		
 		// update value in db
-		$stock = Stock::find($id);			
-        $stock->manufacturer_name = $request->input('manufacturer_name');
-        $stock->country = $request->input('country');
-        $stock->manufacture_date = $request->input('manufacture_date');
-        $stock->cost = $request->input('cost');
+		$stock = VendorStock::find($id);			
         $stock->stock_date = $request->input('stock_date');
-        $stock->brand = $request->input('brand');
-        $stock->category = $request->input('category');
-        $stock->gender = $request->input('gender');
-        $stock->colour = $request->input('colour');
-        $stock->size = $request->input('size');
-        $stock->lotno = $request->input('lotno');
-        $stock->sku_code = $request->input('sku_code');
-        $stock->product_code = $request->input('product_code');
-        $stock->hsn_code = $request->input('hsn_code');
-        $stock->online_mrp = $request->input('online_mrp');
-        $stock->offline_mrp = $request->input('offline_mrp');
+        $stock->isbnno = $request->input('isbnno');
+        $stock->vendor_name = $request->input('vendor_name');
+        $stock->name = $request->input('name');
+        $stock->author = $request->input('author');
+        $stock->publisher = $request->input('publisher');
+        $stock->binding_type = $request->input('binding_type');
+        $stock->currency = $request->input('currency');
+        $stock->price = $request->input('price');
+        $stock->discount = $request->input('discount');
         $stock->quantity = $request->input('quantity');
-        $stock->description = $request->input('description');
-		if(!empty($storefilepath)){
-			/* $imgurl = $stock->image_url;
-			if(file_exists( public_path($imgurl)) && !empty($imgurl)) {
-				unlink($imgurl);
-			} */
-			$stock->image_url = $storefilepath;
-		}
         $stock->updated_by = $uid;
         $stock->save();
 		
-		// call common method for adding product image
-		$common = new Common();
-		$common -> addProductImage($request->input('product_code'), $storefilepath);
-		
-		return redirect()->route('stocks.index')
-                        ->with('success','Stock updated successfully.');
+		return redirect()->route('vendorstocks.index')
+                        ->with('success','Vendor stock updated successfully.');
     }
 
     /**
@@ -303,14 +210,10 @@ class VendorStockController extends Controller
         //
 		// remove image file if it exists
 		$stock = VendorStock::find($id);
-		$imgurl = $stock->image_url;
-		/* if(file_exists( public_path($imgurl)) && !empty($imgurl)) {
-			unlink($imgurl);
-		} */
 		// delete row
-		DB::table("stocks")->where('id',$id)->delete();
-        return redirect()->route('stocks.index')
-                        ->with('success','Stock deleted successfully.');
+		DB::table("vendor_stocks")->where('id',$id)->delete();
+        return redirect()->route('vendorstocks.index')
+                        ->with('success','Vendor stock deleted successfully.');
     }
 	
 	/**
@@ -318,22 +221,12 @@ class VendorStockController extends Controller
 	*
 	* @return \Illuminate\Http\Response
 	*/
-    public function deleteStockAll(Request $request)
+    public function deleteVendorStockAll(Request $request)
     {
         $ids = $request->input('selectedval');
-		$stocks = DB::table("stocks")->whereIn('id',explode(",",$ids))->get();
-		if(!empty( count($stocks) )){
-			// remove selected item images
-			foreach($stocks as $val){
-				$imgurl = $val->image_url;
-				/* if(file_exists( public_path($imgurl)) && !empty($imgurl)) {
-					unlink($imgurl);
-				} */
-			}
-		}
-        DB::table("stocks")->whereIn('id',explode(",",$ids))->delete();
-        return redirect()->route('stocks.index')
-                        ->with('success','Stock deleted successfully.');
+        DB::table("vendor_stocks")->whereIn('id',explode(",",$ids))->delete();
+        return redirect()->route('vendorstocks.index')
+                        ->with('success','Vendor stocks deleted successfully.');
     }
 	
 	/**
@@ -341,7 +234,7 @@ class VendorStockController extends Controller
     */
     public function stockImportExport()
     {
-		return view('stocks.import-export');
+		return view('vendorstocks.import-export');
     }
    
     /**
