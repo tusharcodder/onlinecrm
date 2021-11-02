@@ -12,8 +12,8 @@ use Illuminate\Support\Carbon;
 use DateTime;
 use App\Rules\DateRange; // date range rule validation
 use DB;
-use App\Exports\StockExport;
-use App\Imports\StockImport;
+use App\Exports\VendorStockExport;
+use App\Imports\VendorStockImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Zip;
@@ -242,12 +242,8 @@ class VendorStockController extends Controller
     */
     public function export(Request $request) 
     {	
-		$request->validate([
-			'from_date' => ['required','date',new DateRange($request->input('from_date'),$request->input('to_date'))],
-			'to_date' => 'required|date',
-		]);
 			
-		return Excel::download(new StockExport($request), "stocks.".$request['exporttype']);
+		return Excel::download(new VendorStockExport($request), "vendorstocks.".$request['exporttype']);
 			
         //return Excel::download(new StockExport($request), "stocks.".$request['exporttype']);
     }
@@ -262,20 +258,6 @@ class VendorStockController extends Controller
 			$this->validate($request,
 				[
 					'importfile' => 'required|max:512000',
-					'zipdir' => 'file|mimes:zip',
-				],
-				[
-					'importfile.required' => 'Please select file to import.',
-					'importfile.max' => 'Please upload upto 500MB file.'
-				]
-			);
-		}else{ // for delete with new
-			$this->validate($request,
-				[
-					'import_from_date' => ['required','date',new DateRange($request->input('import_from_date'),$request->input('import_to_date'))],
-					'import_to_date' => 'required|date',
-					'importfile' => 'required|max:512000',
-					'zipdir' => 'file|mimes:zip',
 				],
 				[
 					'importfile.required' => 'Please select file to import.',
@@ -291,80 +273,33 @@ class VendorStockController extends Controller
 						
 			if ($extension == "xlsx" || $extension == "xls" || $extension == "csv") {				
 				try{
-					// import with delete old record and insert 
-					if($request->input('importtype') == 'importwithupdate'){
-						$stocks = DB::table("stocks")->whereBetween('stock_date',[$request->input('import_from_date'), $request->input('import_to_date')])->get();
-						if(!empty( count($stocks) )){
-							// remove selected item images
-							foreach($stocks as $val){
-								$imgurl = $val->image_url;
-								if(file_exists( public_path($imgurl))) {
-									unlink($imgurl);
-								}
-							}
-						}
-		
-						// delete value between date and new update
-						DB::table("stocks")->whereBetween('stock_date',[$request->input('import_from_date'), $request->input('import_to_date')])->delete();
-					}
-					
-					$path = '';
-					$filelist = '';
-					// for unzip folder and extract images into the pload directory
-					if($request->hasFile('zipdir')){
-						
-						$dirname = 'productimages';
-						$year = date("Y");   
-						$month = date("m");   
-						$day = date("d");
-
-						$path = $dirname.'/'.$year.'/'.$month.'/'.$day;
-							
-						$filename = $request->zipdir->getClientOriginalName();
-						// upload image in define path
-						$request->zipdir->move(public_path($path), $filename);
-						
-						// extract file
-						$zip = Zip::open(public_path($path).'/'.$filename);
-						$zip->extract(public_path() . "/$path");
-						
-						// delete zip file after extract
-						$filelist = $zip->listFiles();
-						
-						// zip object close
-						$zip->close();
-						
-						if(file_exists(public_path($path).'/'.$filename)) {
-							// unlink zip file after extract
-							unlink(public_path($path).'/'.$filename);
-						}
-					}
+					// truncate table
+					DB::table("vendor_stocks")->truncate();
 					
 					// import data into the database
-					$import = new StockImport($request, $path, $filelist);
+					$import = new VendorStockImport($request);
 					$path = $request->importfile->getRealPath();
-		
                     Excel::import($import, $request->importfile);
 				}catch(\Exception $ex){
-					return redirect()->route('stock-import-export')
+					return redirect()->route('vendor-stock-import-export')
                         ->with('error','Something wrong.');
 				}catch(\InvalidArgumentException $ex){
-					return redirect()->route('stock-import-export')
+					return redirect()->route('vendor-stock-import-export')
                         ->with('error','Wrong date format in some column.');
 				}catch(\Error $ex){
-					return redirect()->route('stock-import-export')
+					return redirect()->route('vendor-stock-import-export')
                         ->with('error','Something went wrong. check your file.');
 				}
 
 				if(empty($import->getRowCount())){
-					return redirect()->route('stock-import-export')
+					return redirect()->route('vendor-stock-import-export')
                         ->with('error','No data found to imported.');
 				}
                
-				return redirect()->route('stocks.index')
+				return redirect()->route('vendorstocks.index')
                         ->with('success','Your Data has successfully imported.');
 			}else{
-				return redirect()->route('stock-import-export')
+				return redirect()->route('vendor-stock-import-export')
                         ->with('error','File is a '.$extension.' file.!! Please upload a valid xls/xlsx/csv file..!!');
 			} 
 		}

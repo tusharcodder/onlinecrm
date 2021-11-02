@@ -2,7 +2,7 @@
 
 namespace App\Imports;
 
-use App\Stock;
+use App\VendorStock;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Illuminate\Support\Facades\Auth;
@@ -16,19 +16,17 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 use App\Common;
 
 HeadingRowFormatter::default('none');
-class StockImport implements ToModel, WithHeadingRow, WithBatchInserts, WithChunkReading
+class VendorStockImport implements ToModel, WithHeadingRow, WithBatchInserts, WithChunkReading
 {
 	
 	use Importable;
 	private $rows = 0;
 	
 	// request constructor
-	public function __construct($request, $path, $filelist)
+	public function __construct($request)
     {
 		// get form request value
 		$this->request = $request;
-		$this->path = $path;
-		$this->filelist = $filelist;
     }
 	
     /**
@@ -45,36 +43,19 @@ class StockImport implements ToModel, WithHeadingRow, WithBatchInserts, WithChun
 		$user = Auth::user();
 		$uid = $user->id;
 		
-		$storefilepath = '';
-		if(!empty($row['product_image'])){
-			$storefilepath = $this->path.'/'.$row['product_image'];
-		}
-		
-		// call common method for adding product image
-		$common = new Common();
-		$common -> addProductImage($row['product_code'], $storefilepath);
-		
 		// insert and update product image path in product image table
-        return new Stock([
-            'manufacturer_name' => $row['manufacturer_name'],
-            'country' => $row['country'],
-            'manufacture_date' => Carbon::parse($row['manufacture_date'])->format('Y-m-d'),
-            'cost' => $row['cost'],
+        return new VendorStock([
+            'vendor_name' => $row['vendor_name'],
+            'isbnno' => $row['isbnno'],
+            'name' => $row['name'],
             'stock_date' => Carbon::parse($row['stock_date'])->format('Y-m-d'),
-            'brand' => $row['brand'],
-            'category' => $row['category'],
-            'gender' => $row['gender'],
-            'colour' => $row['colour'],
-            'size' => $row['size'],
-            'lotno' => $row['lotno'],
-            'sku_code' => $row['sku_code'],
-            'product_code' => $row['product_code'],
-            'hsn_code' => $row['hsn_code'],
-            'online_mrp' => $row['online_mrp'],
-            'offline_mrp' => $row['offline_mrp'],
+            'author' => $row['author'],
+            'publisher' => $row['publisher'],
+            'binding_type' => $row['binding_type'],
+            'currency' => $row['currency'],
+            'price' => $row['price'],
+            'discount' => $row['discount'],
             'quantity' => $row['quantity'],
-            'description' => $row['description'],
-            'image_url' => $storefilepath,
             'created_by' => $uid,
             'updated_by' => $uid,
         ]);

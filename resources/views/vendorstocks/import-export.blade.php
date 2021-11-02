@@ -103,59 +103,54 @@
 						<div class="row">
 							<div class="col-md-3">
 								<div class="form-group">
-									<label for="manufacturer_name" class="col-form-label text-md-right">{{ __('Manufacturer name') }}</label>
-									<input id="manufacturer_name" type="text" class="form-control" name="manufacturer_name" value="{{ old('manufacturer_name') }}"  autocomplete="manufacturer_name" >
+									<label for="stock_date" class="col-form-label text-md-right">{{ __('Stock date') }}</label>
+									<input id="stock_date" type="date" class="form-control" name="stock_date" value="{{ old('stock_date') }}"  autocomplete="stock_date" >
 								</div>
 							</div>
 							
 							<div class="col-md-3">
 								<div class="form-group">
-									<label for="brand" class="col-form-label text-md-right">{{ __('Brand') }}</label>
-									<input id="brand" type="text" class="form-control" name="brand" value="{{ old('brand') }}"  autocomplete="brand" >
+									<label for="vendor_name" class="col-form-label text-md-right">{{ __('Vendor name') }}</label>
+									<input id="vendor_name" type="text" class="form-control" name="vendor_name" value="{{ old('vendor_name') }}"  autocomplete="vendor_name" >
 								</div>
 							</div>
 							
 							<div class="col-md-3">
 								<div class="form-group">
-									<label for="category" class="col-form-label text-md-right">{{ __('Category') }}</label>
-									<input id="category" type="text" class="form-control" name="category" value="{{ old('category') }}"  autocomplete="category" >
+									<label for="isbnno" class="col-form-label text-md-right">{{ __('ISBN no') }}</label>
+									<input id="isbnno" type="text" class="form-control" name="isbnno" value="{{ old('isbnno') }}"  autocomplete="isbnno" >
 								</div>
 							</div>
 							
 							<div class="col-md-3">
 								<div class="form-group">
-									<label for="gender" class="col-form-label text-md-right">{{ __('Gender') }}</label>
-									<input id="gender" type="text" class="form-control" name="gender" value="{{ old('gender') }}"  autocomplete="gender" >
+									<label for="name" class="col-form-label text-md-right">{{ __('Name') }}</label>
+									<input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}"  autocomplete="name" >
 								</div>
 							</div>
+							
+							
 						</div>
 						
 						<div class="row">
 							<div class="col-md-3">
 								<div class="form-group">
-									<label for="colour" class="col-form-label text-md-right">{{ __('Colour') }}</label>
-									<input id="colour" type="text" class="form-control" name="colour" value="{{ old('colour') }}"  autocomplete="colour" >
+									<label for="author" class="col-form-label text-md-right">{{ __('Author') }}</label>
+									<input id="author" type="text" class="form-control" name="author" value="{{ old('author') }}"  autocomplete="author" >
 								</div>
 							</div>
 							
 							<div class="col-md-3">
 								<div class="form-group">
-									<label for="type" class="col-form-label text-md-right">{{ __('Product code') }}</label>
-									<input id="product_code" type="text" class="form-control" name="product_code" value="{{ old('product_code') }}"  autocomplete="product_code" >
+									<label for="publisher" class="col-form-label text-md-right">{{ __('Publisher') }}</label>
+									<input id="publisher" type="text" class="form-control" name="publisher" value="{{ old('publisher') }}"  autocomplete="publisher" >
 								</div>
 							</div>
 							
 							<div class="col-md-3">
 								<div class="form-group">
-									<label for="from_date" class="col-form-label text-md-right">{{ __('From stock date*') }}</label>
-									<input id="from_date" type="date" class="form-control" name="from_date" value="{{ old('from_date',date('Y-m-d')) }}"  autocomplete="from_date" required>
-								</div>
-							</div>
-							
-							<div class="col-md-3">
-								<div class="form-group">
-									<label for="to_date" class="col-form-label text-md-right">{{ __('To stock date*') }}</label>
-									<input id="to_date" type="date" class="form-control" name="to_date" value="{{ old('to_date',date('Y-m-d')) }}"  autocomplete="to_date" required>
+									<label for="binding_type" class="col-form-label text-md-right">{{ __('Binding type') }}</label>
+									<input id="binding_type" type="text" class="form-control" name="binding_type" value="{{ old('binding_type') }}"  autocomplete="binding_type" >
 								</div>
 							</div>
 							
