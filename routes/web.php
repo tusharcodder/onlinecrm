@@ -54,6 +54,7 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::resource('bindings','BindingController');
 	Route::resource('currencies','CurrenciesController');
 	Route::resource('vendorstocks','VendorStockController');
+	Route::resource('warehouse','WarehouseController');
 	
 	Route::get('vendor-stock-import-export', 'VendorStockController@stockImportExport')->name('vendor-stock-import-export');
 	Route::post('vendorstockexport', 'VendorStockController@export')->name('vendorstockexport');
