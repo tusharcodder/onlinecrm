@@ -6,11 +6,11 @@
             <div class="card">
                 <div class="card-header">
 					<div class="float-left">
-						{{ __('Supplier Management') }}
+						{{ __('Shipper Management') }}
 					</div>
 					<div class="float-right">
 						@can('supplier-create')
-							<a class="btn btn-success btn-sm" href="{{ route('suppliers.create') }}"> Create New Supplier</a>
+							<a class="btn btn-success btn-sm" href="{{ route('suppliers.create') }}"> Create New Shipper</a>
 						@endcan
 						@if(!empty($search))
 							<a class="btn btn-primary btn-sm" href="{{ route('suppliers.index') }}"> Reset Search</a>
@@ -32,7 +32,7 @@
 							<form method="GET" action="{{ route('suppliers.index') }}" role="search">
 								<div class="input-group">
 									<input type="text" class="form-control" name="search"
-										placeholder="Search suppliers" value="{{ $search }}"> <span class="input-group-btn">
+										placeholder="Search Shipper" value="{{ $search }}"> <span class="input-group-btn">
 										<button type="submit" class="btn btn-primary">
 											<i class="fa fa-search"></i>
 										</button>

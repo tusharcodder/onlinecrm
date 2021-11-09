@@ -41,7 +41,7 @@ class SupplierController extends Controller
 			'search' => $search
 		));
 		
-        return view('suppliers.index',compact('supplier','search'))
+        return view('shippers.index',compact('supplier','search'))
             ->with('i', ($request->input('page', 1) - 1) * 10);
     }
 
@@ -53,7 +53,7 @@ class SupplierController extends Controller
     public function create()
     {
         //call the view
-        return view('suppliers.create');
+        return view('shippers.create');
     }
 
     /**
@@ -97,7 +97,7 @@ class SupplierController extends Controller
     {
         //
         $supplier = Supplier::find($id);
-        return view('suppliers.show',compact('supplier'));
+        return view('shippers.show',compact('supplier'));
     }
 
     /**
@@ -110,7 +110,7 @@ class SupplierController extends Controller
     {
         //get data
 		$supplier = Supplier::find($id);
-        return view('suppliers.edit',compact('supplier'));
+        return view('shippers.edit',compact('supplier'));
     }
 
     /**

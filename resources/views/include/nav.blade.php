@@ -30,7 +30,7 @@
 						</ul>
 					</li> 
 				@endcanany 
-				@canany(['vendor-list','market-place-list','supplier-list','binding-list','currencies-list','warehouse-list'])
+				@canany(['vendor-list','market-place-list','supplier-list','binding-list','currencies-list','warehouse-list','sku-list'])
 					<li class="nav-item with-sub"> <a href="" class="nav-link"><i data-feather="package"></i> Settings</a>
 						<ul class="navbar-menu-sub"> 
 							@can('vendor-list')
@@ -40,7 +40,7 @@
 								<li class="nav-sub-item"><a href="{{ route('marketplaces.index') }}" class="nav-sub-link">Manage Market Places</a></li> 
 							@endcan
 							@can('supplier-list')
-								<li class="nav-sub-item"><a href="{{ route('suppliers.index') }}" class="nav-sub-link">Manage Suppliers</a></li> 
+								<li class="nav-sub-item"><a href="{{ route('suppliers.index') }}" class="nav-sub-link">Manage Shipper</a></li> 
 							@endcan
 							@can('binding-list')
 								<li class="nav-sub-item"><a href="{{ route('bindings.index') }}" class="nav-sub-link">Manage Bindings</a></li> 
@@ -51,7 +51,9 @@
 							@can('warehouse-list')
 								<li class="nav-sub-item"><a href="{{ route('warehouse.index') }}" class="nav-sub-link">Manage Warehouse</a></li> 
 							@endcan
-
+							@can('sku-list')
+								<li class="nav-sub-item"><a href="{{ route('skudetails.index') }}" class="nav-sub-link">Manage Sku Code</a></li> 
+							@endcan
 						</ul>
 					</li>
 				@endcanany
