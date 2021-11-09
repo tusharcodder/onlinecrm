@@ -15,6 +15,6 @@ class VendorStock extends Model
      * @var array
      */
     protected $fillable = [
-       'isbnno', 'vendor_name', 'name', 'author', 'publisher', 'stock_date', 'binding_type', 'currency', 'price', 'discount', 'quantity', 'created_by', 'updated_by'
+       'isbnno', 'vendor_id', 'name', 'author', 'publisher', 'stock_date', 'binding_id', 'currency_id', 'price', 'discount', 'quantity', 'created_by', 'updated_by'
     ];
 }

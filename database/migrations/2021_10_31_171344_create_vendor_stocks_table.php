@@ -16,19 +16,31 @@ class CreateVendorStocksTable extends Migration
         Schema::create('vendor_stocks', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('isbnno')->nullable();
-            $table->string('vendor_name')->nullable();
             $table->string('name')->nullable();
 			$table->string('author')->nullable();
             $table->string('publisher')->nullable();
             $table->date('stock_date')->nullable();
-			$table->string('binding_type')->nullable();
-            $table->string('currency')->nullable();
             $table->string('price')->nullable();
 			$table->string('discount')->nullable();
 			$table->string('quantity')->nullable();
 			$table->integer('created_by');
 			$table->integer('updated_by');
             $table->timestamps();
+			
+			$table->foreignId('vendor_id')
+                ->references('id')
+                ->on('vendors')
+                ->onDelete('cascade');
+				
+			$table->foreignId('binding_id')
+                ->references('id')
+                ->on('bindings')
+                ->onDelete('cascade');
+				
+			$table->foreignId('currency_id')
+                ->references('id')
+                ->on('currenciess')
+                ->onDelete('cascade');
         });
     }
 

@@ -36,8 +36,9 @@ class UserController extends Controller
 		//
 		$search = $request->input('search');
 		
-        $data = User::select('users.id','users.name','users.email')->join("model_has_roles","model_has_roles.model_id","=","users.id")->
-				join("roles","roles.id","=","model_has_roles.role_id")->
+        $data = User::select('users.id','users.name','users.email')
+				->join("model_has_roles","model_has_roles.model_id","=","users.id")
+				->join("roles","roles.id","=","model_has_roles.role_id")->
 				where(function($query) use ($search) {
 					$query->where('users.name','LIKE','%'.$search.'%')
 						->orWhere('users.email','LIKE','%'.$search.'%')	

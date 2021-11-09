@@ -36,23 +36,28 @@ class VendorStockExport implements FromView
 		
 		if($format == "withheading"){ // data with heading
 			// get details of discounts from query
-			$query = VendorStock::select('vendor_stocks.*');
+			$query = VendorStock::select('vendor_stocks.*','bindings.name as binding_type','currenciess.name as currency','vendors.name as vendor_name')
+			->join("bindings","bindings.id","=","vendor_stocks.binding_id")
+			->join("currenciess","currenciess.id","=","vendor_stocks.currency_id")
+			->join("vendors","vendors.id","=","vendor_stocks.vendor_id");
 			if(!empty($vendor_name))
-				$query->where('vendor_name', '=', $vendor_name);
+				$query->where('vendor_stocks.vendor_id', '=', $vendor_name);
 			if(!empty($isbnno))
-				$query->where('isbnno', '=', $isbnno);
+				$query->where('vendor_stocks.isbnno', '=', $isbnno);
 			if(!empty($name))
-				$query->where('name', '=', $name);
+				$query->where('vendor_stocks.name', '=', $name);
 			if(!empty($author))
-				$query->where('author', '=', $author);
+				$query->where('vendor_stocks.author', '=', $author);
 			if(!empty($publisher))
-				$query->where('publisher', '=', $publisher);
+				$query->where('vendor_stocks.publisher', '=', $publisher);
 			if(!empty($binding_type))
-				$query->where('binding_type', '=', $binding_type);
+				$query->where('vendor_stocks.binding_id', '=', $binding_type);
 			if(!empty($stock_date))
-				$query->where('stock_date', '=', $stock_date);
+				$query->where('vendor_stocks.stock_date', '=', $stock_date);
+			if(!empty($currency))
+				$query->where('vendor_stocks.currency_id', '=', $currency);
 				
-			$results = $query->orderBy('vendor_name', 'ASC')->get();
+			$results = $query->orderBy('vendor_stocks.vendor_id', 'ASC')->get();
 		}else // only data heading for format
 			$results = collect([]);
 			

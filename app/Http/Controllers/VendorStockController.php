@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use File;
 use Session;
 use App\Vendor;
+use App\Binding;
+use App\Currencies;
 use App\VendorStock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -45,19 +47,23 @@ class VendorStockController extends Controller
     {
         //
 		$search = $request->input('search');
-		$stocks = VendorStock::where(function($query) use ($search) {
-					$query->where('isbnno','LIKE','%'.$search.'%')	
-						->orWhere('vendor_name','LIKE','%'.$search.'%')
-						->orWhere('name','LIKE','%'.$search.'%')
-						->orWhere('author','LIKE','%'.$search.'%')
-						->orWhere('publisher','LIKE','%'.$search.'%')
-						->orWhere(DB::raw("DATE_FORMAT(stock_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')
-						->orWhere('binding_type','LIKE','%'.$search.'%')
-						->orWhere('currency','LIKE','%'.$search.'%')
-						->orWhere('price','LIKE','%'.$search.'%')
-						->orWhere('discount','LIKE','%'.$search.'%')
-						->orWhere('quantity','LIKE','%'.$search.'%');
-				})->orderBy('vendor_name','ASC')->paginate(10)->setPath('');
+		$stocks = VendorStock::select('vendor_stocks.*','bindings.name as binding_type','currenciess.name as currency','vendors.name as vendor_name')
+					->join("bindings","bindings.id","=","vendor_stocks.binding_id")
+					->join("currenciess","currenciess.id","=","vendor_stocks.currency_id")
+					->join("vendors","vendors.id","=","vendor_stocks.vendor_id")
+					->where(function($query) use ($search) {
+						$query->where('vendor_stocks.isbnno','LIKE','%'.$search.'%')	
+						->orWhere('vendors.name','LIKE','%'.$search.'%')
+						->orWhere('vendor_stocks.name','LIKE','%'.$search.'%')
+						->orWhere('vendor_stocks.author','LIKE','%'.$search.'%')
+						->orWhere('vendor_stocks.publisher','LIKE','%'.$search.'%')
+						->orWhere(DB::raw("DATE_FORMAT(vendor_stocks.stock_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')
+						->orWhere('bindings.name','LIKE','%'.$search.'%')
+						->orWhere('currenciess.name','LIKE','%'.$search.'%')
+						->orWhere('vendor_stocks.price','LIKE','%'.$search.'%')
+						->orWhere('vendor_stocks.discount','LIKE','%'.$search.'%')
+						->orWhere('vendor_stocks.quantity','LIKE','%'.$search.'%');
+				})->orderBy('vendor_stocks.vendor_id','ASC')->paginate(10)->setPath('');
 		
 		// bind value with pagination link
 		$pagination = $stocks->appends ( array (
@@ -75,7 +81,11 @@ class VendorStockController extends Controller
      */
     public function create()
     {
-		return view('vendorstocks.create');
+		// get vendor, binding and currency list
+		$vendor = Vendor::get();
+		$currency = Currencies::get();
+		$binding = Binding::get();
+		return view('vendorstocks.create',compact('vendor','currency','binding'));
     }
 
     /**
@@ -108,13 +118,13 @@ class VendorStockController extends Controller
 		// save value in db
 		VendorStock::create([
 			'stock_date' => $request->input('stock_date'),
-			'vendor_name' => $request->input('vendor_name'),
+			'vendor_id' => $request->input('vendor_name'),
 			'isbnno' => $request->input('isbnno'),
 			'name' => $request->input('name'),
 			'author' => $request->input('author'),
 			'publisher' => $request->input('publisher'),
-			'binding_type' => $request->input('binding_type'),
-			'currency' => $request->input('currency'),
+			'binding_id' => $request->input('binding_type'),
+			'currency_id' => $request->input('currency'),
 			'price' => $request->input('price'),
 			'discount' => $request->input('discount'),
 			'quantity' => $request->input('quantity'),
@@ -134,7 +144,10 @@ class VendorStockController extends Controller
      */
     public function show($id)
     {
-        $stock = VendorStock::find($id);
+        $stock = VendorStock::select('vendor_stocks.*','bindings.name as binding_type','currenciess.name as currency','vendors.name as vendor_name')
+					->join("bindings","bindings.id","=","vendor_stocks.binding_id")
+					->join("currenciess","currenciess.id","=","vendor_stocks.currency_id")
+					->join("vendors","vendors.id","=","vendor_stocks.vendor_id")->find($id);
 		return view('vendorstocks.show',compact('stock'));
     }
 
@@ -148,7 +161,11 @@ class VendorStockController extends Controller
     {
         //
         $stock = VendorStock::find($id);
-		return view('vendorstocks.edit',compact('stock'));
+		// get vendor, binding and currency list
+		$vendor = Vendor::get();
+		$currency = Currencies::get();
+		$binding = Binding::get();
+		return view('vendorstocks.edit',compact('stock','vendor','currency','binding'));
     }
 
     /**
@@ -183,12 +200,12 @@ class VendorStockController extends Controller
 		$stock = VendorStock::find($id);			
         $stock->stock_date = $request->input('stock_date');
         $stock->isbnno = $request->input('isbnno');
-        $stock->vendor_name = $request->input('vendor_name');
+        $stock->vendor_id = $request->input('vendor_name');
         $stock->name = $request->input('name');
         $stock->author = $request->input('author');
         $stock->publisher = $request->input('publisher');
-        $stock->binding_type = $request->input('binding_type');
-        $stock->currency = $request->input('currency');
+        $stock->binding_id = $request->input('binding_type');
+        $stock->currency_id = $request->input('currency');
         $stock->price = $request->input('price');
         $stock->discount = $request->input('discount');
         $stock->quantity = $request->input('quantity');
@@ -234,7 +251,10 @@ class VendorStockController extends Controller
     */
     public function stockImportExport()
     {
-		return view('vendorstocks.import-export');
+		$vendor = Vendor::get();
+		$currency = Currencies::get();
+		$binding = Binding::get();
+		return view('vendorstocks.import-export',compact('vendor','currency','binding'));
     }
    
     /**

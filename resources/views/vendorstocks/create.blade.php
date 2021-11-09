@@ -39,7 +39,12 @@
 							<div class="col-md-3">
 								<div class="form-group">
 									<label for="vendor_name" class="col-form-label text-md-right">{{ __('Vendor name*') }}</label>
-									<input id="vendor_name" type="text" class="form-control" name="vendor_name" value="{{ old('vendor_name') }}"  autocomplete="vendor_name" required />
+									<select class="form-control" id="vendor_name" name="vendor_name" required>
+										<option value="">-- Select --</option>
+										@foreach ($vendor as $key => $val)
+											<option value="{{ $val->id }}" {{ $val->id == old('vendor_name') ? 'selected' : '' }}>{{ $val->name }}</option>
+										@endforeach
+									</select>
 								</div>
 							</div>
 							
@@ -76,14 +81,24 @@
 							<div class="col-md-3">
 								<div class="form-group">
 									<label for="binding_type" class="col-form-label text-md-right">{{ __('Binding type*') }}</label>
-									<input id="binding_type" type="text" class="form-control" name="binding_type" value="{{ old('binding_type') }}"  autocomplete="binding_type" required />
+									<select class="form-control" id="binding_type" name="binding_type" required>
+										<option value="">-- Select --</option>
+										@foreach ($binding as $key => $val)
+											<option value="{{ $val->id }}" {{ $val->id == old('binding_type') ? 'selected' : '' }}>{{ $val->name }}</option>
+										@endforeach
+									</select>
 								</div>
 							</div>
 							
 							<div class="col-md-3">
 								<div class="form-group">
 									<label for="currency" class="col-form-label text-md-right">{{ __('Currency*') }}</label>
-									<input id="currency" type="text" class="form-control" name="currency" value="{{ old('currency') }}"  autocomplete="currency" required />
+									<select class="form-control" id="currency" name="currency" required>
+										<option value="">-- Select --</option>
+										@foreach ($currency as $key => $val)
+											<option value="{{ $val->id }}" {{ $val->id == old('currency') ? 'selected' : '' }}>{{ $val->name }}</option>
+										@endforeach
+									</select>
 								</div>
 							</div>
 						</div>
