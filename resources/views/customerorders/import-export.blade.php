@@ -31,11 +31,11 @@
 			<div class="card">
 				<div class="card-header">
 					<div class="float-left">
-						{{ __('Vendor Stock Import') }}
+						{{ __('Customer Order Import') }}
 					</div>
 					<div class="float-right">
-						@can('vendor-stock-create')
-							<a class="btn btn-primary btn-sm" href="{{ route('vendorstocks.index') }}"> Back to list</a>
+						@can('customer-order-list')
+							<a class="btn btn-primary btn-sm" href="{{ route('customerorders.index') }}"> Back to list</a>
 						@endcan
 					</div>
 					<div class="clearfix"></div>
@@ -44,17 +44,17 @@
 					<h6 class="txt-dark capitalize-font"><i class="fa fa-file"></i> File to import:</h6>
 					<hr class="light-grey-hr">
 					<span class="help-block mb-3">
-						<small>	<i class="fa fa-upload"></i> File extension allow to import: (xls, xlsx, csv)</small><br>
+						<small>	<i class="fa fa-upload"></i> File extension allow to import: (xls, xlsx, csv, txt)</small><br>
 						<small>	<i class="fa fa-save"></i> Max upload size: 500MB</small><br>
 						<small>	<i class="fa fa-image"></i> Product image name in excel sheet should be same in zip folder</small>
 					</span>
-					<form action="{{ route('vendorstockimport') }}" method="POST" enctype="multipart/form-data">
+					<form action="{{ route('customerorderimport') }}" method="POST" enctype="multipart/form-data">
 						@csrf
 						<div class="row mt-3">
 							<div class="col-md-5">
 								<div class="form-group mb-20">
 									<label class="control-label mb-10 text-left" for="importfile">Browse your computer*</label>
-									<input type="file" class="form-control" name="importfile" id="importfile" accept=".csv,.xls,.xlsx" autofocus required>
+									<input type="file" class="form-control" name="importfile" id="importfile" accept=".csv,.xls,.xlsx,.txt" autofocus required>
 								</div>
 							</div>
 
@@ -88,35 +88,23 @@
 			<div class="card">
 				<div class="card-header">
 					<div class="float-left">
-						{{ __('Vendor Stock Export') }}
+						{{ __('Customer Order Export') }}
 					</div>
 					<div class="float-right">
-						@can('vendor-stock-create')
-							<a class="btn btn-primary btn-sm" href="{{ route('vendorstocks.index') }}"> Back to list</a>
+						@can('customer-order-list')
+							<a class="btn btn-primary btn-sm" href="{{ route('customerorders.index') }}"> Back to list</a>
 						@endcan
 					</div>
 					<div class="clearfix"></div>
 				</div>
 				<div class="card-body">
-					<form action="{{ route('vendorstockexport') }}" method="POST">
+					<form action="{{ route('customerorderexport') }}" method="POST">
 						@csrf
 						<div class="row">
 							<div class="col-md-3">
 								<div class="form-group">
 									<label for="stock_date" class="col-form-label text-md-right">{{ __('Stock date') }}</label>
 									<input id="stock_date" type="date" class="form-control" name="stock_date" value="{{ old('stock_date') }}"  autocomplete="stock_date" >
-								</div>
-							</div>
-							
-							<div class="col-md-3">
-								<div class="form-group">
-									<label for="vendor_name" class="col-form-label text-md-right">{{ __('Vendor name') }}</label>
-									<select class="form-control" id="vendor_name" name="vendor_name">
-										<option value="">-- Select --</option>
-										@foreach ($vendor as $key => $val)
-											<option value="{{ $val->id }}" {{ $val->id == old('vendor_name') ? 'selected' : '' }}>{{ $val->name }}</option>
-										@endforeach
-									</select>
 								</div>
 							</div>
 							
@@ -134,17 +122,15 @@
 								</div>
 							</div>
 							
-							
-						</div>
-						
-						<div class="row">
 							<div class="col-md-3">
 								<div class="form-group">
 									<label for="author" class="col-form-label text-md-right">{{ __('Author') }}</label>
 									<input id="author" type="text" class="form-control" name="author" value="{{ old('author') }}"  autocomplete="author" >
 								</div>
 							</div>
-							
+						</div>
+						
+						<div class="row">
 							<div class="col-md-3">
 								<div class="form-group">
 									<label for="publisher" class="col-form-label text-md-right">{{ __('Publisher') }}</label>
@@ -152,33 +138,6 @@
 								</div>
 							</div>
 							
-							<div class="col-md-3">
-								<div class="form-group">
-									<label for="binding_type" class="col-form-label text-md-right">{{ __('Binding type') }}</label>
-									<select class="form-control" id="binding_type" name="binding_type">
-										<option value="">-- Select --</option>
-										@foreach ($binding as $key => $val)
-											<option value="{{ $val->id }}" {{ $val->id == old('binding_type') ? 'selected' : '' }}>{{ $val->name }}</option>
-										@endforeach
-									</select>
-								</div>
-							</div>
-							
-							<div class="col-md-3">
-								<div class="form-group">
-									<label for="currency" class="col-form-label text-md-right">{{ __('Currency') }}</label>
-									<select class="form-control" id="currency" name="currency">
-										<option value="">-- Select --</option>
-										@foreach ($currency as $key => $val)
-											<option value="{{ $val->id }}" {{ $val->id == old('currency') ? 'selected' : '' }}>{{ $val->name }}</option>
-										@endforeach
-									</select>
-								</div>
-							</div>
-							
-						</div>
-						
-						<div class="row">
 							<div class="col-md-3">
 								<div class="form-group">
 									<label class="col-form-label text-md-right" for="format">{{ __('Format*') }}</label>
