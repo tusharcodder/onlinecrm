@@ -66,6 +66,15 @@
 						</ul>
 					</li>
 				@endcanany
+				@canany(['customer-order-list'])
+					<li class="nav-item with-sub"> <a href="" class="nav-link"><i data-feather="package"></i> Orders</a>
+						<ul class="navbar-menu-sub"> 
+							@can('customer-order-list')
+								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Manage Customer Order</a></li>
+							@endcan
+						</ul>
+					</li>
+				@endcanany
 			@endauth
 		</ul>
 	</div>
