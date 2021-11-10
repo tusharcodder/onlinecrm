@@ -96,13 +96,13 @@
 							</div>
                             <div class="col-md-4">
 								<div class="form-group">
-									<label for="wght" class="col-form-label text-md-right">{{ __('Wgtk(kg)*') }}</label>
+									<label for="wght" class="col-form-label text-md-right">{{ __('Weight(kg)*') }}</label>
 									<input type="text" id="wght" name="wght" class="form-control" value="{{ old('wght',$skudetails->wght) }}" autocomplete="wght" required />
 								</div>                               
 							</div>
                             <div class="col-md-4">
                             <div class="form-group">
-									<label for="pgkwght" class="col-form-label text-md-right">{{ __('Pkg-wght(kg)*') }}</label>
+									<label for="pgkwght" class="col-form-label text-md-right">{{ __('Pkg-weight(kg)*') }}</label>
 									<input type="text" id="pgkwght" name="pgkwght" class="form-control" value="{{ old('pgkwght',$skudetails->pkg_wght) }}" autocomplete="pgkwght" required />
 								</div>
                             </div>

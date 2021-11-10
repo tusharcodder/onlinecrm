@@ -56,11 +56,19 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::resource('vendorstocks','VendorStockController');
 	Route::resource('warehouse','WarehouseController');
 	Route::resource('skudetails','SkuDetailController');
+	Route::resource('customerorders','CustomerOrderController');
 	
+	Route::get('skucode-detail-import', 'SKUDetailController@detailImport')->name('skucode-detail-import');
+	Route::post('skucodedetailimport', 'SKUDetailController@import')->name('skucodedetailimport');
+
 	Route::get('vendor-stock-import-export', 'VendorStockController@stockImportExport')->name('vendor-stock-import-export');
 	Route::post('vendorstockexport', 'VendorStockController@export')->name('vendorstockexport');
 	Route::post('vendorstockimport', 'VendorStockController@import')->name('vendorstockimport');
 	Route::delete('deletevendorstockall', 'VendorStockController@deleteVendorStockAll')->name('deletevendorstockall');
+	
+	Route::get('customer-order-import-export', 'CustomerOrderController@customerOrderImportExport')->name('customer-order-import-export');
+	Route::post('customerorderexport', 'CustomerOrderController@export')->name('customerorderexport');
+	Route::post('customerorderimport', 'CustomerOrderController@import')->name('customerorderimport');
 
 	
 	// Route::get('performances-import-export', 'PerformanceController@performancesImportExport')->name('performances-import-export');
@@ -68,8 +76,6 @@ Route::group(['middleware' => ['auth']], function() {
 	// Route::post('performancesimport', 'PerformanceController@import')->name('performancesimport');
 	// Route::delete('deleteperformancesall', 'PerformanceController@deletePerformancesAll')->name('deleteperformancesall');
 
-	
-	//Route::post('vendorstock', 'VendorController@import')->name('vendorstock');
 	Route::get('loadvendor/{val}', 'CommonController@getVendor')->name('loadvendor');
 	Route::get('loadaggregatorvendor/{val}/{type}', 'CommonController@getAggregatorVendor')->name('loadaggregatorvendor');
 	

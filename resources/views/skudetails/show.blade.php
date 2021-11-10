@@ -63,13 +63,13 @@
 						</div>
                         <div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
-								<strong>Wght(kg):</strong><br/>
+								<strong>Weight(kg):</strong><br/>
 								{{ $skudetail[0]->wght }}
 							</div>
 						</div>
                         <div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
-								<strong>Pkg-wght(kg):</strong><br/>
+								<strong>Pkg-weight(kg):</strong><br/>
 								{{ $skudetail[0]->pkg_wght }}
 							</div>
 						</div>

@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use File;
 use App\SkuDetail;
 use App\MarketPlace;
 use App\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Imports\skucodeimport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SKUDetailController extends Controller
 {
@@ -181,5 +184,70 @@ class SKUDetailController extends Controller
         DB::table("skudetails")->where('id',$id)->delete();
         return redirect()->route('skudetails.index')
                         ->with('success','Sku Detail deleted successfully.');
+    }
+
+    	/**
+    * @return \Illuminate\Support\Collection
+    */
+    public function detailImport()
+    {		
+		return view('skudetails.skucode-import');
+    }
+
+      /**
+    * @return \Illuminate\Support\Collection
+    */
+    public function import(Request $request) 
+    {
+		if($request->input('importtype') == "newimport"){ // for new import
+			//validate required
+			$this->validate($request,
+				[
+					'importfile' => 'required|max:512000',
+				],
+				[
+					'importfile.required' => 'Please select file to import.',
+					'importfile.max' => 'Please upload upto 500MB file.'
+				]
+			);
+		}
+		
+		if($request->hasFile('importfile')){
+			$extension = File::extension($request->importfile->getClientOriginalName());
+			$filesize = File::size($request->importfile->getRealPath());
+			$filetype = File::mimeType($request->importfile->getRealPath());
+						
+			if ($extension == "xlsx" || $extension == "xls" || $extension == "csv") {				
+				try{
+					// truncate table
+				//	DB::table("vendor_stocks")->truncate();
+					
+					// import data into the database
+					$import = new skucodeimport($request);
+					$path = $request->importfile->getRealPath();
+                    Excel::import($import, $request->importfile);
+				}catch(\Exception $ex){
+					return redirect()->route('skucode-detail-import')
+                        ->with('error',$ex->getMessage());
+				}catch(\InvalidArgumentException $ex){
+					return redirect()->route('skucode-detail-import')
+                        ->with('error','Wrong date format in some column.');
+				}catch(\Error $ex){
+					return redirect()->route('skucode-detail-import')
+                        ->with('error','Something went wrong. check your file.');
+				}
+
+				if(empty($import->getRowCount())){
+					return redirect()->route('skucode-detail-import')
+                        ->with('error','No data found to imported.');
+				}
+               
+				return redirect()->route('skudetails.index')
+                        ->with('success','Your Data has successfully imported.');
+			}else{
+				return redirect()->route('skucode-detail-import')
+                        ->with('error','File is a '.$extension.' file.!! Please upload a valid xls/xlsx/csv file..!!');
+			} 
+		}
     }
 }

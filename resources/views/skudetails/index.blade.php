@@ -12,6 +12,9 @@
 						@can('market-place-create')
 							<a class="btn btn-success btn-sm" href="{{ route('skudetails.create') }}"> Create New Sku Code</a>
 						@endcan
+						@can('skucode-import')
+							<a class="btn btn-secondary btn-sm" href="{{ route('skucode-detail-import') }}"> Sku Code Detail import</a>
+						@endcan
 						@if(!empty($search))
 							<a class="btn btn-primary btn-sm" href="{{ route('skudetails.index') }}"> Reset Search</a>
 						@endif
@@ -52,8 +55,8 @@
                                 <th>Sku Code</th>
                                 <th>MRP</th>
                                 <th>Disc</th>
-                                <th>Wght(kg)</th>
-                                <th>Pkg-Wght(kg)</th>
+                                <th>Weight(kg)</th>
+                                <th>Pkg-weight(kg)</th>
 								<th width="227px">Action</th>
 							</tr>
 							@if($skudetails->total() > 0)                          
