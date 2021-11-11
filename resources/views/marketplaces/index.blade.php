@@ -6,7 +6,7 @@
             <div class="card">
                 <div class="card-header">
 					<div class="float-left">
-						{{ __('Market Place Management Tushar') }}
+						{{ __('Market Place Management Tushar Gupta') }}
 					</div>
 					<div class="float-right">
 						@can('market-place-create')
