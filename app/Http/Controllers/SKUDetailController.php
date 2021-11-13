@@ -9,7 +9,8 @@ use App\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Imports\skucodeimport;
+use App\Imports\SkuDetailimport;
+use App\Exports\SkuDetailExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class SKUDetailController extends Controller
@@ -189,10 +190,21 @@ class SKUDetailController extends Controller
     	/**
     * @return \Illuminate\Support\Collection
     */
-    public function detailImport()
+    public function detailImportexport()
     {		
-		return view('skudetails.skucode-import');
+        $marketplaces = MarketPlace::get();
+        $warehouses = warehouse::get();
+        
+		return view('skudetails.skucode-import',compact('marketplaces','warehouses'));
     }
+
+      /**
+    * @return \Illuminate\Support\Collection
+    */
+    public function export(Request $request) 
+    {				
+		return Excel::download(new SkuDetailExport($request), "Skudetails.".$request['exporttype']);	
+    }  
 
       /**
     * @return \Illuminate\Support\Collection
@@ -223,7 +235,7 @@ class SKUDetailController extends Controller
 				//	DB::table("vendor_stocks")->truncate();
 					
 					// import data into the database
-					$import = new skucodeimport($request);
+					$import = new SkuDetailimport($request);
 					$path = $request->importfile->getRealPath();
                     Excel::import($import, $request->importfile);
 				}catch(\Exception $ex){

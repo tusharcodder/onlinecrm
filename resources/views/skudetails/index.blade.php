@@ -13,7 +13,7 @@
 							<a class="btn btn-success btn-sm" href="{{ route('skudetails.create') }}"> Create New Sku Code</a>
 						@endcan
 						@can('skucode-import')
-							<a class="btn btn-secondary btn-sm" href="{{ route('skucode-detail-import') }}"> Sku Code Detail import</a>
+							<a class="btn btn-secondary btn-sm" href="{{ route('skucode-detail-import-export') }}"> Sku Import/Export</a>
 						@endcan
 						@if(!empty($search))
 							<a class="btn btn-primary btn-sm" href="{{ route('skudetails.index') }}"> Reset Search</a>

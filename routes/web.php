@@ -58,8 +58,9 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::resource('skudetails','SkuDetailController');
 	Route::resource('customerorders','CustomerOrderController');
 	
-	Route::get('skucode-detail-import', 'SKUDetailController@detailImport')->name('skucode-detail-import');
+	Route::get('skucode-detail-import-export', 'SKUDetailController@detailImportexport')->name('skucode-detail-import-export');
 	Route::post('skucodedetailimport', 'SKUDetailController@import')->name('skucodedetailimport');
+	Route::post('skucodedetailexport', 'SKUDetailController@export')->name('skucodedetailexport');
 
 	Route::get('vendor-stock-import-export', 'VendorStockController@stockImportExport')->name('vendor-stock-import-export');
 	Route::post('vendorstockexport', 'VendorStockController@export')->name('vendorstockexport');

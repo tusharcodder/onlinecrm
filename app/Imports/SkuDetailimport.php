@@ -14,7 +14,7 @@ use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 use Illuminate\Support\Carbon;
 
 HeadingRowFormatter::default('none');
-class skucodeimport implements ToModel, WithHeadingRow, WithBatchInserts, WithChunkReading
+class SkuDetailimport implements ToModel, WithHeadingRow, WithBatchInserts, WithChunkReading
 {
     use Importable;
 	private $rows = 0;
