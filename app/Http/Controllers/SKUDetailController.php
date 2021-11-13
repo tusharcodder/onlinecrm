@@ -191,10 +191,9 @@ class SKUDetailController extends Controller
     * @return \Illuminate\Support\Collection
     */
     public function detailImportexport()
-    {		
+    {	//view details	
         $marketplaces = MarketPlace::get();
-        $warehouses = warehouse::get();
-        
+        $warehouses = warehouse::get();        
 		return view('skudetails.skucode-import',compact('marketplaces','warehouses'));
     }
 
