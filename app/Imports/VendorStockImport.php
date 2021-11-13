@@ -43,6 +43,7 @@ class VendorStockImport implements ToModel, WithHeadingRow, WithBatchInserts, Wi
 		$user = Auth::user();
 		$uid = $user->id;
 		
+		
 		// insert and update product image path in product image table
         return new VendorStock([
             'vendor_name' => $row['vendor_name'],
