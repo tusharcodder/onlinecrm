@@ -44,7 +44,7 @@ class CustomerOrderImport implements ToModel, WithHeadingRow, WithBatchInserts, 
 		$uid = $user->id;
 		
 		$customerdata = CustomerOrder::where('order_id', '=', $row['order-id'])->get();
-		if(!empty($customerdata)){ // not inserted duplicated data
+		if(!empty(count($customerdata))) // not inserted duplicated data
 			return '';
 		
 		// insert and update product image path in product image table
