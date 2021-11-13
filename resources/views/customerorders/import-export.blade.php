@@ -103,29 +103,60 @@
 						<div class="row">
 							<div class="col-md-3">
 								<div class="form-group">
-									<label for="stock_date" class="col-form-label text-md-right">{{ __('Stock date') }}</label>
-									<input id="stock_date" type="date" class="form-control" name="stock_date" value="{{ old('stock_date') }}"  autocomplete="stock_date" >
+									<label for="order_id" class="col-form-label text-md-right">{{ __('Order ID') }}</label>
+									<input id="order_id" type="text" class="form-control" name="order_id" value="{{ old('order_id') }}"  autocomplete="order_id" >
 								</div>
 							</div>
 							
 							<div class="col-md-3">
 								<div class="form-group">
-									<label for="isbnno" class="col-form-label text-md-right">{{ __('ISBN no') }}</label>
-									<input id="isbnno" type="text" class="form-control" name="isbnno" value="{{ old('isbnno') }}"  autocomplete="isbnno" >
+									<label for="order_item_id" class="col-form-label text-md-right">{{ __('Order Item ID') }}</label>
+									<input id="order_item_id" type="text" class="form-control" name="order_item_id" value="{{ old('order_item_id') }}"  autocomplete="order_item_id" >
 								</div>
 							</div>
 							
 							<div class="col-md-3">
 								<div class="form-group">
-									<label for="name" class="col-form-label text-md-right">{{ __('Name') }}</label>
-									<input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}"  autocomplete="name" >
+									<label for="purchase_date" class="col-form-label text-md-right">{{ __('Purchase Date') }}</label>
+									<input id="purchase_date" type="date" class="form-control" name="purchase_date" value="{{ old('purchase_date') }}"  autocomplete="purchase_date" >
 								</div>
 							</div>
 							
 							<div class="col-md-3">
 								<div class="form-group">
-									<label for="author" class="col-form-label text-md-right">{{ __('Author') }}</label>
-									<input id="author" type="text" class="form-control" name="author" value="{{ old('author') }}"  autocomplete="author" >
+									<label for="payments_date" class="col-form-label text-md-right">{{ __('Payment Date') }}</label>
+									<input id="payments_date" type="date" class="form-control" name="payments_date" value="{{ old('payments_date') }}"  autocomplete="payments_date" >
+								</div>
+							</div>
+						</div>
+						
+						<div class="row">
+							
+							<div class="col-md-3">
+								<div class="form-group">
+									<label for="reporting_date" class="col-form-label text-md-right">{{ __('Reporting Date') }}</label>
+									<input id="reporting_date" type="date" class="form-control" name="reporting_date" value="{{ old('reporting_date') }}"  autocomplete="reporting_date" >
+								</div>
+							</div>
+							
+							<div class="col-md-3">
+								<div class="form-group">
+									<label for="promise_date" class="col-form-label text-md-right">{{ __('Promise Date') }}</label>
+									<input id="promise_date" type="date" class="form-control" name="promise_date" value="{{ old('promise_date') }}"  autocomplete="promise_date" >
+								</div>
+							</div>
+							
+							<div class="col-md-3">
+								<div class="form-group">
+									<label for="buyer_name" class="col-form-label text-md-right">{{ __('Buyer Name') }}</label>
+									<input id="buyer_name" type="text" class="form-control" name="buyer_name" value="{{ old('buyer_name') }}"  autocomplete="buyer_name" >
+								</div>
+							</div>
+							
+							<div class="col-md-3">
+								<div class="form-group">
+									<label for="buyer_phone_number" class="col-form-label text-md-right">{{ __('Buyer Phone Number') }}</label>
+									<input id="buyer_phone_number" type="text" class="form-control" name="buyer_phone_number" value="{{ old('buyer_phone_number') }}"  autocomplete="buyer_phone_number" >
 								</div>
 							</div>
 						</div>
@@ -133,8 +164,15 @@
 						<div class="row">
 							<div class="col-md-3">
 								<div class="form-group">
-									<label for="publisher" class="col-form-label text-md-right">{{ __('Publisher') }}</label>
-									<input id="publisher" type="text" class="form-control" name="publisher" value="{{ old('publisher') }}"  autocomplete="publisher" >
+									<label for="product_name" class="col-form-label text-md-right">{{ __('Product Name') }}</label>
+									<input id="product_name" type="text" class="form-control" name="product_name" value="{{ old('product_name') }}"  autocomplete="product_name" >
+								</div>
+							</div>
+							
+							<div class="col-md-3">
+								<div class="form-group">
+									<label for="sku" class="col-form-label text-md-right">{{ __('SKU') }}</label>
+									<input id="sku" type="text" class="form-control" name="sku" value="{{ old('sku') }}"  autocomplete="sku" >
 								</div>
 							</div>
 							
@@ -147,6 +185,7 @@
 									</select>
 								</div>
 							</div>
+							
 							<div class="col-md-3">
 								<div class="form-group">
 									<label class="col-form-label text-md-right" for="exporttype">{{ __('File Type*') }}</label>
@@ -174,5 +213,5 @@
 </div>
 @endsection
 @section('footer-script')
-<script src="{{ asset('js/vendorstock.js') }}" defer></script>
+<script src="{{ asset('js/customerorder.js') }}" defer></script>
 @endsection

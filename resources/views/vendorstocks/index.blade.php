@@ -34,7 +34,7 @@
 					@endif
 					<div class="row mb-1">
 						<div class="col-sm-8">
-							@can('vendor-stock-delete')
+							<!--@can('vendor-stock-delete')
 								<form method="POST" action="{{ route('deletevendorstockall') }}" style="display:inline">
 									@csrf
 									@method('DELETE')
@@ -43,7 +43,7 @@
 										{{ __('Delete All Selected') }}
 									</button>
 								</form>
-							@endcan 
+							@endcan -->
 							Showing {{($stocks->currentPage()-1)* $stocks->perPage()+($stocks->total() ? 1:0)}} to {{($stocks->currentPage()-1)*$stocks->perPage()+count($stocks)}}  of  {{$stocks->total()}}  Results
 						</div>
 						<div class="col-sm-4">
@@ -62,9 +62,9 @@
 					<div class="table-responsive">
 						<table class="table table-bordered">
 							<tr>
-								@can('vendor-stock-delete')
+								<!--@can('vendor-stock-delete')
 									<th><input type="checkbox" id="master"></th>
-								@endcan
+								@endcan-->
 								<th>No</th>
 								<th>Stock date</th>
 								<th>Vendor name</th>
@@ -82,9 +82,9 @@
 							@if($stocks->total() > 0)
 								@foreach ($stocks as $key => $stock)
 								<tr>
-									@can('vendor-stock-delete')
+									<!--@can('vendor-stock-delete')
 										<td><input type="checkbox" class="sub_chk" data-id="{{$stock->id}}"></td>
-									@endcan
+									@endcan-->
 									<td>{{ ($stocks->currentPage()-1) * $stocks->perPage() + $loop->index + 1 }}</td>
 									<td> {{ \Carbon\Carbon::parse($stock->stock_date)->format('d-m-Y')}}</td>
 									<td>{{ $stock->vendor_name }}</td>
@@ -116,11 +116,12 @@
 								@endforeach
 							@else
 								<tr>
-									@can('vendor-stock-delete')
+									<td colspan="13">No records found.</td>
+									<!--@can('vendor-stock-delete')
 										<td colspan="14">No records found.</td>
 									@else
 										<td colspan="13">No records found.</td>
-									@endcan
+									@endcan-->
 								</tr>
 							@endif
 						</table>
