@@ -200,12 +200,15 @@ class CustomerOrderController extends Controller
 					}
 					$orderdata[] = $obj;
 				}
+				
 				// add data into order table
 				if(!empty($orderdata)){
+					
 					foreach($orderdata as $key => $val){
 						// check duplicate order id exits or not
 						$customerdata = CustomerOrder::where('order_id', '=', $val['order-id'])->get();
-						if(empty($customerdata)){ // not inserted duplicated data
+						
+						if(empty(count($customerdata))){ // not inserted duplicated data
 							CustomerOrder::create([
 								'order_id' => $val['order-id'],
 								'order_item_id' => $val['order-item-id'],
@@ -254,7 +257,7 @@ class CustomerOrderController extends Controller
 				}catch(\InvalidArgumentException $ex){
 					return redirect()->route('customer-order-import-export')
                         ->with('error','Wrong date format in some column.');
-				}catch(\Error $ex){
+				}catch(\Error $ex){					
 					return redirect()->route('customer-order-import-export')
                         ->with('error','Something went wrong. check your file.');
 				}
