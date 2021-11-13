@@ -71,7 +71,6 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('customerorderexport', 'CustomerOrderController@export')->name('customerorderexport');
 	Route::post('customerorderimport', 'CustomerOrderController@import')->name('customerorderimport');
 
-	
 	// Route::get('performances-import-export', 'PerformanceController@performancesImportExport')->name('performances-import-export');
 	// Route::post('performancesexport', 'PerformanceController@export')->name('performancesexport');
 	// Route::post('performancesimport', 'PerformanceController@import')->name('performancesimport');

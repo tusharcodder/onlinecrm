@@ -42,6 +42,13 @@ class CreateCustomerOrdersTable extends Migration
 			$table->string('is_business_order')->nullable();
 			$table->string('purchase_order_number')->nullable();
 			$table->string('price_designation')->nullable();			
+			$table->string('price')->nullable();			
+			$table->string('shipper')->nullable();			
+			$table->string('tracking_id')->nullable();			
+			$table->string('box_id')->nullable();
+			$table->string('shipper_name')->nullable();
+			$table->string('shipment_date')->nullable();
+			$table->string('ncp')->nullable();		
 			$table->integer('created_by')->nullable();
 			$table->integer('updated_by')->nullable();
             $table->timestamps();

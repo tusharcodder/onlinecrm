@@ -43,7 +43,7 @@ class CustomerOrderImport implements ToModel, WithHeadingRow, WithBatchInserts, 
 		$user = Auth::user();
 		$uid = $user->id;
 		
-		$customerdata = CustomerOrder::where('order_id', '=', $row['order-id'])->get();
+		$customerdata = CustomerOrder::where('order_id', '=', $row['order-id'])->where('order_item_id', '=', $val['order-item-id'])->get();
 		if(!empty(count($customerdata))) // not inserted duplicated data
 			return '';
 		

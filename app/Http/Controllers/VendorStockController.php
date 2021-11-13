@@ -224,10 +224,7 @@ class VendorStockController extends Controller
      */
     public function destroy($id)
     {
-        //
-		// remove image file if it exists
-		$stock = VendorStock::find($id);
-		// delete row
+ 		// delete row
 		DB::table("vendor_stocks")->where('id',$id)->delete();
         return redirect()->route('vendorstocks.index')
                         ->with('success','Vendor stock deleted successfully.');

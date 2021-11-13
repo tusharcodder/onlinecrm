@@ -55,6 +55,7 @@
                                 <th>Product Name</th>
                                 <th>SKU</th>
                                 <th>Quantity</th>
+                                <th width="210px">Action</th>
 							</tr>
 							@if($customerorders->total() > 0)                          
 								@foreach ($customerorders as $key => $customerorder)
@@ -70,10 +71,22 @@
                                     <td>{{ $customerorder->product_name}}</td>
 									<td>{{ $customerorder->sku }}</td>
 									<td>{{ $customerorder->quantity_purchased }}</td>
+									<td>
+										<a class="btn btn-info btn-sm" href="{{ route('customerorders.show',$customerorder->id) }}">Show</a>
+										@can('customer-order-delete-refund')
+											<form method="POST" action="{{ route('customerorders.destroy',$customerorder->id) }}" style="display:inline">
+												@csrf
+												@method('DELETE')
+												<button type="submit" class="btn btn-danger btn-sm">
+													{{ __('Delete/Refund') }}
+												</button>
+											</form>
+										@endcan
+									</td>
 								</tr>                               
 								@endforeach
 							@else
-								<tr><td colspan="11">No records found.</td></tr>
+								<tr><td colspan="12">No records found.</td></tr>
 							@endif
 						</table>
 						{{ $customerorders->links() }}

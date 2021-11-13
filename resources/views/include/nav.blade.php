@@ -1,9 +1,11 @@
 <header class="navbar navbar-header navbar-header-fixed"> <a href="" id="mainMenuOpen" class="burger-menu"><i data-feather="menu"></i></a>
-	<div class="navbar-brand"> <a href="{{route('home')}}" class="df-logo">Online<span>CRM</span></a> </div>
+	<div class="navbar-brand"> <!--<a href="{{route('home')}}" class="df-logo">Online<span>CRM</span></a>-->
+	<a href="{{route('home')}}" class="df-logo"><img src="{{asset('assets/assets/img/logo.png')}}" width="100px"/></a></div>
 	<!-- navbar-brand -->
 	<div id="navbarMenu" class="navbar-menu-wrapper">
 		<div class="navbar-menu-header"> 
-			<a href="/" class="df-logo">Online<span>CRM</span></a> 
+			<!--<a href="{{route('home')}}" class="df-logo">Online<span>CRM</span></a>--> 
+			<a href="{{route('home')}}" class="df-logo"><img src="{{asset('assets/assets/img/logo.png')}}" width="100px"/></a>
 			<a id="mainMenuClose" href=""><i data-feather="x"></i></a> 
 		</div>
 		<!-- navbar-menu-header -->
@@ -31,7 +33,7 @@
 					</li> 
 				@endcanany 
 				@canany(['vendor-list','market-place-list','supplier-list','binding-list','currencies-list','warehouse-list','sku-list'])
-					<li class="nav-item with-sub"> <a href="" class="nav-link"><i data-feather="package"></i> Settings</a>
+					<li class="nav-item with-sub"> <a href="" class="nav-link"><i data-feather="settings"></i> Settings</a>
 						<ul class="navbar-menu-sub"> 
 							@can('vendor-list')
 								<li class="nav-sub-item"><a href="{{ route('vendorss.index') }}" class="nav-sub-link">Manage Vendors</a></li> 
@@ -57,21 +59,44 @@
 						</ul>
 					</li>
 				@endcanany
-				@canany(['vendor-stock-list'])
-					<li class="nav-item with-sub"> <a href="" class="nav-link"><i data-feather="package"></i> Stocks</a>
+				
+				@canany(['vendor-stock-list', 'tjw-stock-list'])
+					<li class="nav-item with-sub"> <a href="" class="nav-link"><i data-feather="database"></i> Stocks</a>
 						<ul class="navbar-menu-sub"> 
 							@can('vendor-stock-list')
 								<li class="nav-sub-item"><a href="{{ route('vendorstocks.index') }}" class="nav-sub-link">Manage Vendor Stock</a></li>
 							@endcan
+							@can('tjw-stock-list')
+								<li class="nav-sub-item"><a href="{{ route('vendorstocks.index') }}" class="nav-sub-link">Manage TJW Stock</a></li>
+							@endcan
 						</ul>
 					</li>
 				@endcanany
+				
 				@canany(['customer-order-list'])
-					<li class="nav-item with-sub"> <a href="" class="nav-link"><i data-feather="package"></i> Orders</a>
+					<li class="nav-item with-sub"> <a href="" class="nav-link"><i data-feather="shopping-cart"></i> Orders</a>
 						<ul class="navbar-menu-sub"> 
 							@can('customer-order-list')
 								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Manage Customer Order</a></li>
 							@endcan
+						</ul>
+					</li>
+				@endcanany
+				@canany(['purchase-report','shipment-report','stock-pull-report','multi-packaging-report'])
+					<li class="nav-item with-sub"> <a href="" class="nav-link"><i data-feather="bar-chart"></i> Reports</a>
+						<ul class="navbar-menu-sub">
+							@can('purchase-report')
+								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Pruchase report</a></li>
+							@endcan
+							@can('shipment-report')
+								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Shipment report</a></li>
+							@endcan
+							@can('stock-pull-report')
+								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Stock pull report</a></li>
+							@endcan
+							@can('multi-packaging-report')
+								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Multi packaging report</a></li>
+							@endcan						
 						</ul>
 					</li>
 				@endcanany

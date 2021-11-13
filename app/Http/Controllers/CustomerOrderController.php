@@ -27,6 +27,7 @@ class CustomerOrderController extends Controller
     function __construct()
     {
 		$this->middleware('permission:customer-order-list', ['only' => ['index']]);
+		$this->middleware('permission:customer-order-delete-refund', ['only' => ['destroy']]);
 		$this->middleware('permission:customer-order-import-export', ['only' => ['customer-order-import-export','customerorderimport','customerorderexport']]);
     }
 	
@@ -43,9 +44,9 @@ class CustomerOrderController extends Controller
         //
 		$customerorders = CustomerOrder::where(function($query) use ($search) {
 					$query->Where('order_id','LIKE','%'.$search.'%')
-					->orWhere('purchase_date','LIKE','%'.$search.'%')
-					->orWhere('payments_date','LIKE','%'.$search.'%')
-					->orWhere('reporting_date','LIKE','%'.$search.'%')
+					->orWhere(DB::raw("DATE_FORMAT(purchase_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')
+					->orWhere(DB::raw("DATE_FORMAT(payments_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')
+					->orWhere(DB::raw("DATE_FORMAT(reporting_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')
 					->orWhere('sku','LIKE','%'.$search.'%')
 					->orWhere('product_name','LIKE','%'.$search.'%')
 					->orWhere('quantity_purchased','LIKE','%'.$search.'%')
@@ -90,9 +91,10 @@ class CustomerOrderController extends Controller
      * @param  \App\CustomerOrder  $customerOrder
      * @return \Illuminate\Http\Response
      */
-    public function show(CustomerOrder $customerOrder)
+    public function show($id)
     {
-        //
+        $customerorders = CustomerOrder::find($id);
+		return view('customerorders.show',compact('customerorders'));
     }
 
     /**
@@ -124,9 +126,12 @@ class CustomerOrderController extends Controller
      * @param  \App\CustomerOrder  $customerOrder
      * @return \Illuminate\Http\Response
      */
-    public function destroy(CustomerOrder $customerOrder)
+    public function destroy($id)
     {
-        //
+		// delete row
+		DB::table("customer_orders")->where('id',$id)->delete();
+        return redirect()->route('customerorders.index')
+                        ->with('success','Customer order deleted successfully.');
     }
 	
 	/**
@@ -206,7 +211,7 @@ class CustomerOrderController extends Controller
 					
 					foreach($orderdata as $key => $val){
 						// check duplicate order id exits or not
-						$customerdata = CustomerOrder::where('order_id', '=', $val['order-id'])->get();
+						$customerdata = CustomerOrder::where('order_id', '=', $val['order-id'])->where('order_item_id', '=', $val['order-item-id'])->get();
 						
 						if(empty(count($customerdata))){ // not inserted duplicated data
 							CustomerOrder::create([
