@@ -67,7 +67,7 @@
 								<li class="nav-sub-item"><a href="{{ route('vendorstocks.index') }}" class="nav-sub-link">Manage Vendor Stock</a></li>
 							@endcan
 							@can('tjw-stock-list')
-								<li class="nav-sub-item"><a href="{{ route('vendorstocks.index') }}" class="nav-sub-link">Manage TJW Stock</a></li>
+								<li class="nav-sub-item"><a href="{{ route('stocklist') }}" class="nav-sub-link">Manage TJW Stock</a></li>
 							@endcan
 						</ul>
 					</li>

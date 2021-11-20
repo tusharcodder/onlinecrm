@@ -57,9 +57,11 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::resource('warehouse','WarehouseController');
 	Route::resource('skudetails','SkuDetailController');
 	Route::resource('customerorders','CustomerOrderController');
+	Route::resource('purchaseorders','PurchaseOrderController');
 	
-	Route::get('skucode-detail-import', 'SKUDetailController@detailImport')->name('skucode-detail-import');
+	Route::get('skucode-detail-import-export', 'SKUDetailController@detailImportexport')->name('skucode-detail-import-export');
 	Route::post('skucodedetailimport', 'SKUDetailController@import')->name('skucodedetailimport');
+	Route::post('skucodedetailexport', 'SKUDetailController@export')->name('skucodedetailexport');
 
 	Route::get('vendor-stock-import-export', 'VendorStockController@stockImportExport')->name('vendor-stock-import-export');
 	Route::post('vendorstockexport', 'VendorStockController@export')->name('vendorstockexport');
@@ -70,7 +72,10 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('customerorderexport', 'CustomerOrderController@export')->name('customerorderexport');
 	Route::post('customerorderimport', 'CustomerOrderController@import')->name('customerorderimport');
 
-	
+	Route::get('purchase-order-import-export', 'PurchaseOrderController@purchaseImportExport')->name('purchase-order-import-export');
+	Route::post('purchaseorderimport', 'PurchaseOrderController@import')->name('purchaseorderimport');
+	Route::post('purchaseorderexport', 'PurchaseOrderController@export')->name('purchaseorderexport');
+
 	// Route::get('performances-import-export', 'PerformanceController@performancesImportExport')->name('performances-import-export');
 	// Route::post('performancesexport', 'PerformanceController@export')->name('performancesexport');
 	// Route::post('performancesimport', 'PerformanceController@import')->name('performancesimport');

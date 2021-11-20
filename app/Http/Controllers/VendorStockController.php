@@ -298,6 +298,10 @@ class VendorStockController extends Controller
 					$path = $request->importfile->getRealPath();
                     Excel::import($import, $request->importfile);
 				}catch(\Exception $ex){
+					echo '<pre>';
+					print_r($ex->getMessage());
+					echo '</pre>';
+					exit;				
 					return redirect()->route('vendor-stock-import-export')
                         ->with('error','Something wrong.');
 				}catch(\InvalidArgumentException $ex){

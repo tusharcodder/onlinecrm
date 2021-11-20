@@ -2,8 +2,7 @@
 
 namespace App\Imports;
 
-use App\VendorStock;
-use Illuminate\Http\Request;
+use App\PurchaseOrder;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -13,13 +12,10 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 use Illuminate\Support\Carbon;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
-use App\Common;
 
-HeadingRowFormatter::default('none');
-class VendorStockImport implements ToModel, WithHeadingRow, WithBatchInserts, WithChunkReading
+class PurchaseOrderImport implements ToModel, WithHeadingRow, WithBatchInserts, WithChunkReading
 {
-	
-	use Importable;
+    use Importable;
 	private $rows = 0;
 	
 	// request constructor
@@ -36,33 +32,28 @@ class VendorStockImport implements ToModel, WithHeadingRow, WithBatchInserts, Wi
     */
     public function model(array $row)
     {
-		$importtype = $this->request['importtype'];
+        $importtype = $this->request['importtype'];
 		++$this->rows;
 		
 		// current login id
 		$user = Auth::user();
 		$uid = $user->id;
-		
-		
-		// insert and update product image path in product image table
-        return new VendorStock([
-            'vendor_id' => $row['vendor_name'],
-            'isbnno' => $row['isbnno'],
-            'name' => $row['name'],
-            'stock_date' => Carbon::parse($row['stock_date'])->format('Y-m-d'),
-            'author' => $row['author'],
-            'publisher' => $row['publisher'],
-            'binding_id' => $row['binding_type'],
-            'currency_id' => $row['currency'],
-            'price' => $row['price'],
-            'discount' => $row['discount'],
-            'quantity' => $row['quantity'],
-            'created_by' => $uid,
-            'updated_by' => $uid,
+        return new PurchaseOrder([
+            'bill_no'=>$row['bill_no'],
+            'isbn13'=>$row['isbn13'],           //'book_title'=>$row['book_title'], 
+            'vendor_id'=>$row['vendor'],
+            'quantity'=>$row['quantity'],
+            'mrp'=>$row['mrp'],
+            'discount'=>$row['discount'],
+            'cost_price'=>$row['cost_price'],
+            'purchase_by'=>$row['purchase_by'],
+            'purchase_date'=> Carbon::parse($row['purchase_date'])->format('Y-m-d'),
+            'create_by'=>$uid,
+            'update_by'=>$uid,
         ]);
     }
-	
-	public function headingRow(): int
+
+    public function headingRow(): int
     {
         return 1;
     }
