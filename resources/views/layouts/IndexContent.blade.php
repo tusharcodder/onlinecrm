@@ -27,7 +27,7 @@
 	<header class="navbar navbar-header navbar-header-fixed">
       <a href="" id="mainMenuOpen" class="burger-menu"><i data-feather="menu"></i></a>
       <div class="navbar-brand">
-        <a href="/" class="df-logo">Online<span>CRM</span></a>
+        <a href="{{route('home')}}" class="df-logo"><img src="{{asset('assets/assets/img/logo.png')}}" width="100px"/></a>
       </div><!-- navbar-brand -->
       <div id="navbarMenu" class="navbar-menu-wrapper">
         </div>
@@ -40,7 +40,7 @@
 	  <footer class="footer">
       <div>
         <span>&copy; 2021 </span>
-        <span>Powered by <a href="/">Online CRM</a></span>
+        <span>Powered by <a href="{{route('home')}}">Online CRM</a></span>
       </div>
       <div style="display:none">
         <nav class="nav">

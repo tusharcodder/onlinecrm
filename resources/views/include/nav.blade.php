@@ -86,16 +86,16 @@
 					<li class="nav-item with-sub"> <a href="" class="nav-link"><i data-feather="bar-chart"></i> Reports</a>
 						<ul class="navbar-menu-sub">
 							@can('purchase-report')
-								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Pruchase report</a></li>
+								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Pruchase Report</a></li>
 							@endcan
 							@can('shipment-report')
-								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Shipment report</a></li>
+								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Shipment Report</a></li>
 							@endcan
 							@can('stock-pull-report')
-								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Stock pull report</a></li>
+								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Stock Pull Report</a></li>
 							@endcan
 							@can('multi-packaging-report')
-								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Multi packaging report</a></li>
+								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Multi Packaging Report</a></li>
 							@endcan						
 						</ul>
 					</li>
