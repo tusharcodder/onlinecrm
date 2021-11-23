@@ -44,17 +44,17 @@ class ShipmentReportController extends Controller
         //
 		$shipmentreports = DB::table('customer_orders')
 			->select('customer_orders.*','market_places.name as markname','warehouses.name as warename','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher', DB::raw('sum(purchase_orders.quantity) as purqty'), DB::raw("(SELECT SUM(coshipqty.quantity_shipped) FROM customer_orders as coshipqty WHERE coshipqty.sku = customer_orders.sku GROUP BY coshipqty.sku) as shiped_qty"))
-			->join("skudetails","skudetails.sku_code","=","customer_orders.sku")
-			->join("market_places","market_places.id","=","skudetails.market_id")
-			->join("warehouses","warehouses.id","=","skudetails.warehouse_id")
-			->join("purchase_orders","purchase_orders.isbn13","=","skudetails.isbn13")
-			->join("book_details","book_details.isbnno","=","skudetails.isbn13")
+			->leftJoin("skudetails","skudetails.sku_code","=","customer_orders.sku")
+			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
+			->leftJoin("warehouses","warehouses.id","=","skudetails.warehouse_id")
+			->leftJoin("purchase_orders","purchase_orders.isbn13","=","skudetails.isbn13")
+			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
 			->where('customer_orders.quantity_to_ship', '>' ,0)
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'purchase_orders.isbn13')
 			->orderBy('customer_orders.reporting_date','ASC')
 			->paginate(10)
 			->setPath('');
-		
+
         return view('reports.shipmentreport',compact('shipmentreports', 'request'))
             ->with('i', ($request->input('page', 1) - 1) * 10);
     }

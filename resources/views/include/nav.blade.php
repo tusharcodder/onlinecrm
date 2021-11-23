@@ -89,7 +89,7 @@
 								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Pruchase Report</a></li>
 							@endcan
 							@can('shipment-report')
-								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Shipment Report</a></li>
+								<li class="nav-sub-item"><a href="{{ route('shipmentreport') }}" class="nav-sub-link">Shipment Report</a></li>
 							@endcan
 							@can('stock-pull-report')
 								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Stock Pull Report</a></li>
