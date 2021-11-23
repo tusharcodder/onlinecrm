@@ -46,33 +46,51 @@ class PurchaseReportController extends Controller
     public function index(Request $request)
     {
         //
-		$search = $request->input('search');
-		$stocks = VendorStock::select('vendor_stocks.*','bindings.name as binding_type','currenciess.name as currency','vendors.name as vendor_name')
-					->join("bindings","bindings.id","=","vendor_stocks.binding_id")
-					->join("currenciess","currenciess.id","=","vendor_stocks.currency_id")
-					->join("vendors","vendors.id","=","vendor_stocks.vendor_id")
-					->where(function($query) use ($search) {
-						$query->where('vendor_stocks.isbnno','LIKE','%'.$search.'%')	
-						->orWhere('vendors.name','LIKE','%'.$search.'%')
-						->orWhere('vendor_stocks.name','LIKE','%'.$search.'%')
-						->orWhere('vendor_stocks.author','LIKE','%'.$search.'%')
-						->orWhere('vendor_stocks.publisher','LIKE','%'.$search.'%')
-						->orWhere(DB::raw("DATE_FORMAT(vendor_stocks.stock_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')
-						->orWhere('bindings.name','LIKE','%'.$search.'%')
-						->orWhere('currenciess.name','LIKE','%'.$search.'%')
-						->orWhere('vendor_stocks.price','LIKE','%'.$search.'%')
-						->orWhere('vendor_stocks.discount','LIKE','%'.$search.'%')
-						->orWhere('vendor_stocks.quantity','LIKE','%'.$search.'%');
-				})->orderBy('vendor_stocks.vendor_id','ASC')->paginate(10)->setPath('');
-		
-		// bind value with pagination link
-		$pagination = $stocks->appends ( array (
-			'search' => $search
-		));
-		
-        return view('vendorstocks.index',compact('stocks','search'))
-            ->with('i', ($request->input('page', 1) - 1) * 10);
-    }
+		$result = DB::table('purchase_orders')
+		->join('customer_orders','order_item_id','purchase_orders.isbn13')
+		->leftjoin('book_details','book_details.isbnno','purchase_orders.isbn13')
+		->select('purchase_orders.isbn13,book_details.name,
+		(sum(purchase_orders.quantity)-sum(customer_orders.quantity_purchased)) as quantity_to_order ')
+		->groupby('purchase_order.isbn13')
+		->get();
+
+		if($result->count() > 0){
+				$data = [];
+				foreach($result as $value){
+						//check priority wise
+						$flag = 0;
+						for($i=1;$i<10;$i++){
+								$venderdetails = DB::table('vendor_stocks')
+								->join('vendors','vendors.id','vendor_stocks.vendor_id')->select('vendors.name','author','publisher')
+								->where('vendors.priority',$i)->where('vendor_stocks.isbnno',$value->isbn13)
+								->get();
+								if($venderdetails->count() > 0){
+										$flag = 1;
+										foreach($venderdetails as $detail){
+												$dataarray = array(
+														"isbn13"=>$value->isbn13,
+														'book'=>$value->isbn13,
+														'author'=>$detail->author,
+														'publisher'=>$detail->publisher,
+														'quantity'=>$value->quantity,
+														'vendor_name'=>$detail->author,
+												);
+												$data[] =$dataarray;
+												break;
+										}
+									
+								}
+								if($flag > 0)
+										break;
+
+						}
+					
+				}         
+		}
+		echo '<pre>';
+		print_r($data);
+		echo '</pre>';
+	}	
 
     /**
      * Show the form for creating a new resource.
