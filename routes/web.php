@@ -61,6 +61,10 @@ Route::group(['middleware' => ['auth']], function() {
 	
 	Route::get('stocklist', 'TJWStockController@index')->name('stocklist');
 	
+	// load shipment report 
+	Route::get('shipmentreport', 'ShipmentReportController@index')->name('shipmentreport');
+	Route::post('downloadshipmentreport', 'ShipmentReportController@export')->name('downloadshipmentreport');
+	
 	Route::get('skucode-detail-import-export', 'SKUDetailController@detailImportexport')->name('skucode-detail-import-export');
 	Route::post('skucodedetailimport', 'SKUDetailController@import')->name('skucodedetailimport');
 	Route::post('skucodedetailexport', 'SKUDetailController@export')->name('skucodedetailexport');
