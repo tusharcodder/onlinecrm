@@ -30,7 +30,7 @@ class ShipmentReportController extends Controller
      */
     function __construct()
     {
-         $this->middleware('permission:shipment-report', ['only' => ['index']]);
+         $this->middleware('permission:shipment-report', ['only' => ['index', 'search']]);
          $this->middleware('permission:download-shipment-report', ['only' => ['export']]);
     }
 	
@@ -42,31 +42,14 @@ class ShipmentReportController extends Controller
     public function index(Request $request)
     {
         //
-		$search = $request->input('search');
-		$stocks = VendorStock::select('vendor_stocks.*','bindings.name as binding_type','currenciess.name as currency','vendors.name as vendor_name')
-					->join("bindings","bindings.id","=","vendor_stocks.binding_id")
-					->join("currenciess","currenciess.id","=","vendor_stocks.currency_id")
-					->join("vendors","vendors.id","=","vendor_stocks.vendor_id")
-					->where(function($query) use ($search) {
-						$query->where('vendor_stocks.isbnno','LIKE','%'.$search.'%')	
-						->orWhere('vendors.name','LIKE','%'.$search.'%')
-						->orWhere('vendor_stocks.name','LIKE','%'.$search.'%')
-						->orWhere('vendor_stocks.author','LIKE','%'.$search.'%')
-						->orWhere('vendor_stocks.publisher','LIKE','%'.$search.'%')
-						->orWhere(DB::raw("DATE_FORMAT(vendor_stocks.stock_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')
-						->orWhere('bindings.name','LIKE','%'.$search.'%')
-						->orWhere('currenciess.name','LIKE','%'.$search.'%')
-						->orWhere('vendor_stocks.price','LIKE','%'.$search.'%')
-						->orWhere('vendor_stocks.discount','LIKE','%'.$search.'%')
-						->orWhere('vendor_stocks.quantity','LIKE','%'.$search.'%');
-				})->orderBy('vendor_stocks.vendor_id','ASC')->paginate(10)->setPath('');
+		$shipmentreports = DB::table('customer_orders')
+			->select('customer_orders.*','stocks.category','stocks.gender','stocks.colour','stocks.lotno','stocks.sku_code','stocks.hsn_code','stocks.online_mrp','stocks.offline_mrp','stocks.cost', DB::raw('sum(stocks.quantity) as quantity'),'stocks.image_url','stocks.product_code','stocks.stock_date','stocks.size','stocks.description', DB::raw("(SELECT SUM(clstock.quantity) FROM stocks as clstock WHERE clstock.product_code = stocks.product_code GROUP BY clstock.product_code) as closing_qty"), DB::raw("(SELECT SUM(sales.quantity) FROM sales WHERE sales.product_code = stocks.product_code GROUP BY sales.product_code) as sale_qty"), DB::raw("(SELECT SUM(sales.quantity) FROM sales WHERE sales.product_code = stocks.product_code AND sales.sku_code = stocks.sku_code GROUP BY sales.product_code, sales.sku_code) as net_sale_qty"))
+			->where('customer_orders.quantity_to_ship', '>' ,'0')
+			->orderBy('customer_orders.reporting_date','ASC')
+			->paginate(10)
+			->setPath('');
 		
-		// bind value with pagination link
-		$pagination = $stocks->appends ( array (
-			'search' => $search
-		));
-		
-        return view('reports.shipmentreport',compact('stocks','search'))
+        return view('reports.shipmentreport',compact('shipmentreports', 'request'))
             ->with('i', ($request->input('page', 1) - 1) * 10);
     }
 
@@ -132,6 +115,17 @@ class ShipmentReportController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
+    {
+ 		//
+    }
+	
+	/**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\VendorStock  $vendorStock
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
     {
  		//
     }
