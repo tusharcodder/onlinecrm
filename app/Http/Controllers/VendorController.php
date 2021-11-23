@@ -43,7 +43,6 @@ class VendorController extends Controller
 						->orWhere('email','LIKE','%'.$search.'%')
 						->orWhere('address','LIKE','%'.$search.'%')
 						->orWhere('priority','LIKE','%'.$search.'%');
-
 				})->orderBy('priority','ASC')->paginate(10)->setPath('');
 		
 		// bind value with pagination link

@@ -59,6 +59,8 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::resource('customerorders','CustomerOrderController');
 	Route::resource('purchaseorders','PurchaseOrderController');
 	
+	Route::get('stocklist', 'TJWStockController@index')->name('stocklist');
+	
 	Route::get('skucode-detail-import-export', 'SKUDetailController@detailImportexport')->name('skucode-detail-import-export');
 	Route::post('skucodedetailimport', 'SKUDetailController@import')->name('skucodedetailimport');
 	Route::post('skucodedetailexport', 'SKUDetailController@export')->name('skucodedetailexport');
@@ -76,15 +78,7 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('purchaseorderimport', 'PurchaseOrderController@import')->name('purchaseorderimport');
 	Route::post('purchaseorderexport', 'PurchaseOrderController@export')->name('purchaseorderexport');
 
-	// Route::get('performances-import-export', 'PerformanceController@performancesImportExport')->name('performances-import-export');
-	// Route::post('performancesexport', 'PerformanceController@export')->name('performancesexport');
-	// Route::post('performancesimport', 'PerformanceController@import')->name('performancesimport');
-	// Route::delete('deleteperformancesall', 'PerformanceController@deletePerformancesAll')->name('deleteperformancesall');
-
-	Route::get('stocklist', 'CommonController@getCurrentStock')->name('stocklist');
-
 	Route::get('loadvendor/{val}', 'CommonController@getVendor')->name('loadvendor');
-	Route::get('loadaggregatorvendor/{val}/{type}', 'CommonController@getAggregatorVendor')->name('loadaggregatorvendor');
 	
 	Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
     Route::post('register', 'Auth\RegisterController@register');

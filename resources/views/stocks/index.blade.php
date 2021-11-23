@@ -6,11 +6,14 @@
             <div class="card">
                 <div class="card-header">
 					<div class="float-left">
-						{{ __('Current Stock Status') }}
+						{{ __('Manage TJW Stock') }}
 					</div>
 					<div class="float-right">
+						@can('purchase-import-export')
+							<a class="btn btn-secondary btn-sm" href="{{ route('purchase-order-import-export') }}">Purchase Order import/export</a>
+						@endcan
 						@can('purchase-order-list')
-							<a class="btn btn-success btn-sm" href="{{ route('purchaseorders.index') }}">Purchase Order Details</a>
+							<a class="btn btn-success btn-sm" href="{{ route('purchaseorders.index') }}">View Purchase Order Details</a>
 						@endcan						
 						@if(!empty($search))
 							<a class="btn btn-primary btn-sm" href="{{ route('stocklist') }}"> Reset Search</a>
@@ -59,7 +62,7 @@
 								</tr>                               
 								@endforeach
 							@else
-								<tr><td colspan="12">No records found.</td></tr>
+								<tr><td colspan="4">No records found.</td></tr>
 							@endif
 						</table>
 						{{ $stocks->links() }}

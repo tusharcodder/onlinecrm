@@ -24,6 +24,7 @@ class PurchaseOrderController extends Controller
     {
 		$this->middleware('permission:purchase-order-list', ['only' => ['index']]);		
 		$this->middleware('permission:purchase-order-import-export', ['only' => ['purchase-order-import-export','purchaseorderimport','purchaseorderexport']]);
+		$this->middleware('permission:purchase-order-delete', ['only' => ['destroy']]);
     }
 	
     /**
@@ -41,7 +42,7 @@ class PurchaseOrderController extends Controller
                     ->leftJoin('book_details','book_details.isbnno','=','purchase_orders.isbn13')
                     ->where(function($query) use ($search) {
 					$query->Where('bill_no','LIKE','%'.$search.'%')
-					->orWhere(DB::raw("DATE_FORMAT(purchase_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')			
+					->orWhere(DB::raw("DATE_FORMAT(purchase_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')
 					->orWhere('isbn13','LIKE','%'.$search.'%')
 					->orWhere('book_title','LIKE','%'.$search.'%')
 					->orWhere('quantity','LIKE','%'.$search.'%')
@@ -92,10 +93,10 @@ class PurchaseOrderController extends Controller
     public function show($id)
     {
         $purchaseorders = PurchaseOrder::select('purchase_orders.*','book_details.name','vendors.name as vendor')
-                            ->join('vendors','vendors.id','=','purchase_orders.vendor_id')
-                            ->leftJoin('book_details','book_details.isbnno','=','purchase_orders.isbn13') 
-                            ->where('purchase_orders.id',$id)
-                            ->orderBy('purchase_date','DESC')->get();
+		->join('vendors','vendors.id','=','purchase_orders.vendor_id')
+		->leftJoin('book_details','book_details.isbnno','=','purchase_orders.isbn13') 
+		->where('purchase_orders.id',$id)
+		->orderBy('purchase_date','DESC')->get();
          return view('purchaseorders.show',compact('purchaseorders'));                   
     }
 
@@ -128,9 +129,12 @@ class PurchaseOrderController extends Controller
      * @param  \App\PurchaseOrder  $purchaseOrder
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PurchaseOrder $purchaseOrder)
+    public function destroy($id)
     {
-        //
+        // delete row
+		DB::table("purchase_orders")->where('id',$id)->delete();
+        return redirect()->route('purchaseorders.index')
+                        ->with('success','Purchase order deleted successfully.');
     }
 
    	/**

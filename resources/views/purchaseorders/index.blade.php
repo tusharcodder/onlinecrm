@@ -6,11 +6,11 @@
             <div class="card">
                 <div class="card-header">
 					<div class="float-left">
-						{{ __('Purchase Order Management') }}
+						{{ __('Purchase Order Details') }}
 					</div>
 					<div class="float-right">
-						@can('purchase-import-export')
-							<a class="btn btn-secondary btn-sm" href="{{ route('purchase-order-import-export') }}">Purchase Order import/export</a>
+						@can('tjw-stock-list')
+							<a class="btn btn-primary btn-sm" href="{{ route('stocklist') }}"> Back to list</a>
 						@endcan
 						@if(!empty($search))
 							<a class="btn btn-primary btn-sm" href="{{ route('purchaseorders.index') }}"> Reset Search</a>
@@ -61,8 +61,7 @@
 								@foreach ($purchaseorders as $key => $purchaseorder)
 								<tr>
 									<td>{{ ($purchaseorders->currentPage()-1) * $purchaseorders->perPage() + $loop->index + 1 }}</td>
-                                   
-									<td>{{ $purchaseorder->bill_no }}</td>									
+									<td>{{ $purchaseorder->bill_no }}</td>
                                     <td>{{ $purchaseorder->isbn13}}</td>
 									<td>{{ $purchaseorder->vendor }}</td>	
                                     <td>{{ $purchaseorder->name}}</td>
@@ -73,9 +72,18 @@
                                     <td>{{ $purchaseorder->purchase_by }}</td>
 									<td>{{ \Carbon\Carbon::parse($purchaseorder->purchase_date)->format('d-m-Y')}}</td>
 									<td>
-										<a class="btn btn-info btn-sm" href="{{ route('purchaseorders.show',$purchaseorder->id) }}">Show</a>									
+										@can('purchase-order-delete')
+											<form method="POST" action="{{ route('purchaseorders.destroy',$purchaseorder->id) }}" style="display:inline">
+												@csrf
+												@method('DELETE')
+												<button type="submit" class="btn btn-danger btn-sm">
+													{{ __('Delete') }}
+												</button>
+											</form>
+										@endcan
+										<a class="btn btn-info btn-sm" href="{{ route('purchaseorders.show',$purchaseorder->id) }}">Show</a>
 									</td>
-								</tr>                               
+								</tr>
 								@endforeach
 							@else
 								<tr><td colspan="12">No records found.</td></tr>

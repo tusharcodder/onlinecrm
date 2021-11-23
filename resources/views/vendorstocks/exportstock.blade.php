@@ -4,13 +4,13 @@
 		<thead>
 			<tr>
 				<th>stock_date</th>
-				<th>vendor_name</th>
+				<th>vendor_id</th>
 				<th>isbnno</th>
 				<th>name</th>
 				<th>author</th>
 				<th>publisher</th>
-				<th>binding_type</th>
-				<th>currency</th>
+				<th>binding_id</th>
+				<th>currency_id</th>
 				<th>price</th>
 				<th>discount</th>
 				<th>quantity</th>
@@ -19,7 +19,7 @@
 		@if(count($results) > 0)
 			@foreach ($results as $res)
 				<tr>
-					<td >{{ \Carbon\Carbon::parse($res->stock_date)->format('d-m-Y') }}</td>
+					<td >{{ $res->stock_date }}</td>
 					<td >{{ $res->vendor_name }}</td>
 					<td >{{ $res->isbnno }}</td>
 					<td >{{ $res->name }}</td>

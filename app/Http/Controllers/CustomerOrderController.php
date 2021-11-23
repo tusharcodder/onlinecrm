@@ -129,7 +129,12 @@ class CustomerOrderController extends Controller
     public function destroy($id)
     {
 		// delete row
+		$customerorders = CustomerOrder::find($id);
 		DB::table("customer_orders")->where('id',$id)->delete();
+		
+		// delete track details from order_tracking table
+		DB::table("order_tracking")->where('order_id',$customerorders["order_id"])->delete();
+		
         return redirect()->route('customerorders.index')
                         ->with('success','Customer order deleted successfully.');
     }
