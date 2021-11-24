@@ -58,6 +58,7 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::resource('skudetails','SkuDetailController');
 	Route::resource('customerorders','CustomerOrderController');
 	Route::resource('purchaseorders','PurchaseOrderController');
+	Route::resource('purchasereports','PurchaseReportController');
 	
 	Route::get('stocklist', 'TJWStockController@index')->name('stocklist');
 	
@@ -82,7 +83,7 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('purchaseorderimport', 'PurchaseOrderController@import')->name('purchaseorderimport');
 	Route::post('purchaseorderexport', 'PurchaseOrderController@export')->name('purchaseorderexport');
 
-	Route::get('purchase-order-report', 'PurchaseReportController@index')->name('purchase-order-report');
+	Route::post('downloadpurchasereport', 'PurchaseReportController@export')->name('downloadpurchasereport');
 
 	Route::get('loadvendor/{val}', 'CommonController@getVendor')->name('loadvendor');
 	

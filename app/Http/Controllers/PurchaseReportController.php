@@ -15,11 +15,13 @@ use DateTime;
 use App\Rules\DateRange; // date range rule validation
 use DB;
 use App\Exports\VendorStockExport;
+use App\Exports\PurchaseReportExport;
 use App\Imports\VendorStockImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Zip;
 use App\Common;
+use App\Support\Collection;
 
 class PurchaseReportController extends Controller
 {
@@ -46,17 +48,18 @@ class PurchaseReportController extends Controller
     public function index(Request $request)
     {
         //
+		
 		$result = DB::table('purchase_orders')
 		->join('customer_orders','order_item_id','purchase_orders.isbn13')
 		->leftjoin('book_details','book_details.isbnno','purchase_orders.isbn13')
 		->select('purchase_orders.isbn13','book_details.name',
-		DB::raw("(sum(purchase_orders.quantity) - sum(customer_orders.quantity_purchased)) as quantity")
+		DB::raw("(sum(customer_orders.quantity_purchased) - sum(purchase_orders.quantity)) as quantity")
 		)->groupby('purchase_orders.isbn13')->get();
 
 		if($result->count() > 0){
-				$data = [];
+				$purchaseorders = [];
 				foreach($result as $value){
-					if($value->quantity < 0){
+					if($value->quantity > 0){
 						//check priority wise
 						$flag = 0;
 						for($i=1;$i<10;$i++){
@@ -68,13 +71,13 @@ class PurchaseReportController extends Controller
 										$flag = 1;								
 										$dataarray = array(
 												"isbn13"=>$value->isbn13,
-												'book'=>$value->isbn13,
+												'book'=>$value->name,
 												'author'=>$venderdetails[0]->author,
 												'publisher'=>$venderdetails[0]->publisher,
 												'quantity'=>$value->quantity,
-												'vendor_name'=>$venderdetails[0]->author,
+												'vendor_name'=>$venderdetails[0]->name,
 										);
-										$data[] =$dataarray;
+										$purchaseorders[] =$dataarray;
 								}
 								if($flag > 0)
 										break;
@@ -86,10 +89,17 @@ class PurchaseReportController extends Controller
 					
 				}         
 		}
-		echo '<pre>';
-		print_r($data);
-		echo '</pre>';
+		$purchaseorders = (new Collection($purchaseorders))->sortBy('book')->paginate(10)->setPath('');
+		return view('reports.purchasereport',compact('purchaseorders'))
+		->with('i', ($request->input('page', 1) - 1) * 10);
+
 	}	
+
+	//download excel
+	public function export(Request $request) 
+    {				
+		return Excel::download(new PurchaseReportExport($request), "PurchaseReport.".$request['exporttype']);	
+    }  
 
     /**
      * Show the form for creating a new resource.
@@ -271,16 +281,7 @@ class PurchaseReportController extends Controller
 		return view('vendorstocks.import-export',compact('vendor','currency','binding'));
     }
    
-    /**
-    * @return \Illuminate\Support\Collection
-    */
-    public function export(Request $request) 
-    {	
-			
-		return Excel::download(new VendorStockExport($request), "vendorstocks.".$request['exporttype']);
-			
-        //return Excel::download(new StockExport($request), "stocks.".$request['exporttype']);
-    }
+    
    
     /**
     * @return \Illuminate\Support\Collection
