@@ -30,6 +30,7 @@ class CreateCustomerOrdersTable extends Migration
 			$table->string('quantity_purchased')->nullable();
 			$table->string('quantity_shipped')->nullable();
 			$table->string('quantity_to_ship')->nullable();
+			$table->string('quantity_to_be_shipped')->nullable();
 			$table->string('ship_service_level')->nullable();
 			$table->string('recipient_name')->nullable();
 			$table->longText('ship_address_1')->nullable();

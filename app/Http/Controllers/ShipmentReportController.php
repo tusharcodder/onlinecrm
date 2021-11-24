@@ -30,8 +30,8 @@ class ShipmentReportController extends Controller
      */
     function __construct()
     {
-         $this->middleware('permission:shipment-report', ['only' => ['index']]);
-         $this->middleware('permission:download-shipment-report', ['only' => ['export']]);
+		$this->middleware('permission:shipment-report', ['only' => ['index']]);
+		$this->middleware('permission:download-shipment-report', ['only' => ['export']]);
     }
 	
     /**
@@ -43,7 +43,7 @@ class ShipmentReportController extends Controller
     {
         //
 		$shipmentreports = DB::table('customer_orders')
-			->select('customer_orders.*','market_places.name as markname','warehouses.name as warename','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher', DB::raw('sum(purchase_orders.quantity) as purqty'), DB::raw("(SELECT SUM(coshipqty.quantity_shipped) FROM customer_orders as coshipqty WHERE coshipqty.sku = customer_orders.sku GROUP BY coshipqty.sku) as shiped_qty"))
+			->select('customer_orders.*','market_places.name as markname','warehouses.name as warename','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher', DB::raw('sum(purchase_orders.quantity) as purqty'), DB::raw('sum(customer_orders.quantity_to_be_shipped) as shipingqty'), DB::raw("(SELECT SUM(coshipqty.quantity_shipped) FROM order_tracking as coshipqty WHERE coshipqty.isbnno = skudetails.isbn13 GROUP BY coshipqty.isbnno) as shiped_qty"))
 			->leftJoin("skudetails","skudetails.sku_code","=","customer_orders.sku")
 			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
 			->leftJoin("warehouses","warehouses.id","=","skudetails.warehouse_id")

@@ -92,10 +92,10 @@
 								<li class="nav-sub-item"><a href="{{ route('shipmentreport') }}" class="nav-sub-link">Shipment Report</a></li>
 							@endcan
 							@can('stock-pull-report')
-								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Stock Pull Report</a></li>
+								<li class="nav-sub-item"><a href="{{ route('stockpullreport') }}" class="nav-sub-link">Stock Pull Report</a></li>
 							@endcan
 							@can('multi-packaging-report')
-								<li class="nav-sub-item"><a href="{{ route('customerorders.index') }}" class="nav-sub-link">Multi Packaging Report</a></li>
+								<li class="nav-sub-item"><a href="{{ route('multipackagingreport') }}" class="nav-sub-link">Multi Packaging Report</a></li>
 							@endcan						
 						</ul>
 					</li>

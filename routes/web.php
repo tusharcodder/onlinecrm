@@ -66,6 +66,14 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::get('shipmentreport', 'ShipmentReportController@index')->name('shipmentreport');
 	Route::post('downloadshipmentreport', 'ShipmentReportController@export')->name('downloadshipmentreport');
 	
+	// load stock pull report 
+	Route::get('stockpullreport', 'StockPullReportController@index')->name('stockpullreport');
+	Route::post('downloadstockpullreport', 'StockPullReportController@export')->name('downloadstockpullreport');
+	
+	// load multipackaging report 
+	Route::get('multipackagingreport', 'MultiPackagingReportController@index')->name('multipackagingreport');
+	Route::post('downloadmultipackagingreport', 'MultiPackagingReportController@export')->name('downloadmultipackagingreport');
+	
 	Route::get('skucode-detail-import-export', 'SKUDetailController@detailImportexport')->name('skucode-detail-import-export');
 	Route::post('skucodedetailimport', 'SKUDetailController@import')->name('skucodedetailimport');
 	Route::post('skucodedetailexport', 'SKUDetailController@export')->name('skucodedetailexport');
