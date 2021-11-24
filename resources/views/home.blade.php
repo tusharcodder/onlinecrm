@@ -197,7 +197,7 @@
 				</div>
 				<div class="media-body">
 					<h6 class="tx-sans tx-uppercase tx-10 tx-spacing-1 tx-color-03 tx-semibold tx-nowrap mg-b-5 mg-md-b-8">Reports</h6>
-					<h4 class="tx-20 tx-sm-18 tx-md-24 tx-normal tx-rubik mg-b-0"><a href="{{ route('customerorders.index') }}">Pruchase report</a></h4>
+					<h4 class="tx-20 tx-sm-18 tx-md-24 tx-normal tx-rubik mg-b-0"><a href="{{ route('purchasereports.index') }}">Pruchase report</a></h4>
 				</div>
 			</div>
 		</div>
@@ -213,7 +213,7 @@
 				</div>
 				<div class="media-body">
 					<h6 class="tx-sans tx-uppercase tx-10 tx-spacing-1 tx-color-03 tx-semibold tx-nowrap mg-b-5 mg-md-b-8">Reports</h6>
-					<h4 class="tx-20 tx-sm-18 tx-md-24 tx-normal tx-rubik mg-b-0"><a href="{{ route('customerorders.index') }}">Shipment report</a></h4>
+					<h4 class="tx-20 tx-sm-18 tx-md-24 tx-normal tx-rubik mg-b-0"><a href="{{ route('shipmentreport') }}">Shipment report</a></h4>
 				</div>
 			</div>
 		</div>
@@ -229,7 +229,7 @@
 				</div>
 				<div class="media-body">
 					<h6 class="tx-sans tx-uppercase tx-10 tx-spacing-1 tx-color-03 tx-semibold tx-nowrap mg-b-5 mg-md-b-8">Reports</h6>
-					<h4 class="tx-20 tx-sm-18 tx-md-24 tx-normal tx-rubik mg-b-0"><a href="{{ route('customerorders.index') }}">Stock Pull Report</a></h4>
+					<h4 class="tx-20 tx-sm-18 tx-md-24 tx-normal tx-rubik mg-b-0"><a href="{{ route('stockpullreport') }}">Stock Pull Report</a></h4>
 				</div>
 			</div>
 		</div>
@@ -245,7 +245,7 @@
 				</div>
 				<div class="media-body">
 					<h6 class="tx-sans tx-uppercase tx-10 tx-spacing-1 tx-color-03 tx-semibold tx-nowrap mg-b-5 mg-md-b-8">Reports</h6>
-					<h4 class="tx-20 tx-sm-18 tx-md-24 tx-normal tx-rubik mg-b-0"><a href="{{ route('customerorders.index') }}">Multi Packaging Report</a></h4>
+					<h4 class="tx-20 tx-sm-18 tx-md-24 tx-normal tx-rubik mg-b-0"><a href="{{ route('multipackagingreport') }}">Multi Packaging Report</a></h4>
 				</div>
 			</div>
 		</div>
