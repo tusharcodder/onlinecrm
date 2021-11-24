@@ -82,7 +82,7 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('purchaseorderimport', 'PurchaseOrderController@import')->name('purchaseorderimport');
 	Route::post('purchaseorderexport', 'PurchaseOrderController@export')->name('purchaseorderexport');
 
-	Route::post('purchase-order-report', 'PurchaseReportController@index')->name('purchase-order-report');
+	Route::get('purchase-order-report', 'PurchaseReportController@index')->name('purchase-order-report');
 
 	Route::get('loadvendor/{val}', 'CommonController@getVendor')->name('loadvendor');
 	

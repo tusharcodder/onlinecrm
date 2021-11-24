@@ -49,14 +49,14 @@ class PurchaseReportController extends Controller
 		$result = DB::table('purchase_orders')
 		->join('customer_orders','order_item_id','purchase_orders.isbn13')
 		->leftjoin('book_details','book_details.isbnno','purchase_orders.isbn13')
-		->select('purchase_orders.isbn13,book_details.name,
-		(sum(purchase_orders.quantity)-sum(customer_orders.quantity_purchased)) as quantity_to_order ')
-		->groupby('purchase_order.isbn13')
-		->get();
+		->select('purchase_orders.isbn13','book_details.name',
+		DB::raw("(sum(purchase_orders.quantity) - sum(customer_orders.quantity_purchased)) as quantity")
+		)->groupby('purchase_orders.isbn13')->get();
 
 		if($result->count() > 0){
 				$data = [];
 				foreach($result as $value){
+					if($value->quantity < 0){
 						//check priority wise
 						$flag = 0;
 						for($i=1;$i<10;$i++){
@@ -65,25 +65,24 @@ class PurchaseReportController extends Controller
 								->where('vendors.priority',$i)->where('vendor_stocks.isbnno',$value->isbn13)
 								->get();
 								if($venderdetails->count() > 0){
-										$flag = 1;
-										foreach($venderdetails as $detail){
-												$dataarray = array(
-														"isbn13"=>$value->isbn13,
-														'book'=>$value->isbn13,
-														'author'=>$detail->author,
-														'publisher'=>$detail->publisher,
-														'quantity'=>$value->quantity,
-														'vendor_name'=>$detail->author,
-												);
-												$data[] =$dataarray;
-												break;
-										}
-									
+										$flag = 1;								
+										$dataarray = array(
+												"isbn13"=>$value->isbn13,
+												'book'=>$value->isbn13,
+												'author'=>$venderdetails[0]->author,
+												'publisher'=>$venderdetails[0]->publisher,
+												'quantity'=>$value->quantity,
+												'vendor_name'=>$venderdetails[0]->author,
+										);
+										$data[] =$dataarray;
 								}
 								if($flag > 0)
 										break;
 
 						}
+
+					}
+						
 					
 				}         
 		}
