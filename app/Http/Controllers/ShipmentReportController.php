@@ -20,6 +20,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Zip;
 use App\Common;
+use Illuminate\Support\Collection;
 
 class ShipmentReportController extends Controller
 {
@@ -42,7 +43,7 @@ class ShipmentReportController extends Controller
     public function index(Request $request)
     {
         //
-		$shipmentreports = DB::table('customer_orders')
+		$shipmentres = DB::table('customer_orders')
 			->select('customer_orders.*','market_places.name as markname','warehouses.name as warename','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher', DB::raw('sum(purchase_orders.quantity) as purqty'), DB::raw('sum(customer_orders.quantity_to_be_shipped) as shipingqty'), DB::raw("(SELECT SUM(coshipqty.quantity_shipped) FROM order_tracking as coshipqty WHERE coshipqty.isbnno = skudetails.isbn13 GROUP BY coshipqty.isbnno) as shiped_qty"))
 			->leftJoin("skudetails","skudetails.sku_code","=","customer_orders.sku")
 			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
@@ -50,11 +51,55 @@ class ShipmentReportController extends Controller
 			->leftJoin("purchase_orders","purchase_orders.isbn13","=","skudetails.isbn13")
 			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
 			->where('customer_orders.quantity_to_ship', '>' ,0)
-			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'purchase_orders.isbn13')
-			->orderBy('customer_orders.reporting_date','ASC')
-			->paginate(10)
-			->setPath('');
-
+			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'skudetails.isbn13')
+			->orderBy('customer_orders.reporting_date','ASC')->get();
+		
+		$finalarray = array();
+		if(!empty($shipmentres)){
+			foreach($shipmentres as $key => $val){
+				$val->purqty = empty($val->purqty) ? 0 : $val->purqty;
+				$val->shiped_qty = empty($val->shiped_qty) ? 0 : $val->shiped_qty;
+				$quantity_to_ship = empty($val->quantity_to_ship) ? 0 : $val->quantity_to_ship;
+				$stkqty = $val->purqty - $val->shiped_qty;
+				if(!empty($stkqty) && $stkqty > 0){
+					$shipedqty = ($stkqty >= $quantity_to_ship) ? $quantity_to_ship : $stkqty;
+					
+					//update shipqty into the quantity_to_be_shipped column
+					DB::table('customer_orders')
+						->where('order_id', $val->order_id)
+						->where('order_item_id', $val->order_item_id)
+						->where('sku', $val->sku)
+						->update(['quantity_to_be_shipped' => $shipedqty]);
+									
+					$finalarray[] = (object)([
+						'isbnno' => $val->isbnno, 
+						'sku' => $val->sku,
+						'proname' => $val->proname,
+						'author' => $val->author,
+						'publisher' => $val->publisher,
+						'order_id' => $val->order_id,
+						'order_item_id' => $val->order_item_id,
+						'purchase_date' => $val->purchase_date,
+						'shipedqty' => $shipedqty,
+						'warename' => $val->warename,
+						'buyer_name' => $val->buyer_name,
+						'recipient_name' => $val->recipient_name,
+						'buyer_phone_number' => $val->buyer_phone_number,
+						'ship_address_1' => $val->ship_address_1,
+						'ship_address_2' => $val->ship_address_2,
+						'ship_address_3' => $val->ship_address_3,
+						'ship_city' => $val->ship_city,
+						'ship_state' => $val->ship_state,
+						'ship_postal_code' => $val->ship_postal_code,
+						'ship_country' => $val->ship_country,
+						'markname' => $val->markname,
+						'ship_service_level' => $val->ship_service_level,
+						'pkg_wght' => $val->pkg_wght
+					]);
+				}
+			}
+		}
+		$shipmentreports = collect($finalarray)->paginate(10)->setPath('');
         return view('reports.shipmentreport',compact('shipmentreports', 'request'))
             ->with('i', ($request->input('page', 1) - 1) * 10);
     }

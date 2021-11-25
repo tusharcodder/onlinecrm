@@ -71,15 +71,6 @@
 							</tr>
 							@if($shipmentreports->total() > 0)
 								@foreach ($shipmentreports as $key => $shipment)
-								@php
-									$shipment->purqty = empty($shipment->purqty) ? 0 : $shipment->purqty;
-									$shipment->shiped_qty = empty($shipment->shiped_qty) ? 0 : $shipment->shiped_qty;
-									$quantity_to_ship = empty($shipment->quantity_to_ship) ? 0 : $shipment->quantity_to_ship;
-									$stkqty = $shipment->purqty - $shipment->shiped_qty;
-									
-									$shipedqty = ($stkqty >= $quantity_to_ship) ? $quantity_to_ship : $stkqty;
-								@endphp
-								
 								<tr>
 									<td>{{ ($shipmentreports->currentPage()-1) * $shipmentreports->perPage() + $loop->index + 1 }}</td>
 									<td>{{ $shipment->isbnno}}</td>
@@ -90,7 +81,7 @@
 									<td>{{ $shipment->order_id}}</td>
 									<td>{{ $shipment->order_item_id}}</td>
 									<td> {{ \Carbon\Carbon::parse($shipment->purchase_date)->format('d-m-Y')}}</td>
-									<td>{{ $shipedqty }}</td>
+									<td>{{ $shipment->shipedqty }}</td>
 									<td>{{ $shipment->warename}}</td>
 									<td>{{ $shipment->buyer_name}}</td>
 									<td>{{ $shipment->recipient_name }}</td>
