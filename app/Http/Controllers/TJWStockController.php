@@ -41,9 +41,10 @@ class TJWStockController extends Controller
 		
         $stocks = DB::table('purchase_orders')
 		->select('purchase_orders.isbn13','book_details.name as book_title',
-		DB::raw("(sum(case when purchase_orders.quantity is not null THEN purchase_orders.quantity else 0 END)-sum(case when customer_orders.quantity_shipped is not null then customer_orders.quantity_shipped else 0 END)) as stock"))
+		DB::raw("(sum(case when purchase_orders.quantity is not null THEN purchase_orders.quantity else 0 END)-(sum(case when customer_orders.quantity_to_be_shipped is not null then customer_orders.quantity_to_be_shipped else 0 END)+sum(case when order_tracking.quantity_shipped is not null then order_tracking.quantity_shipped else 0 END))) as stock"))
 		->leftJoin('customer_orders','customer_orders.order_item_id','=','purchase_orders.isbn13')
 		->leftJoin('book_details','book_details.isbnno','=','purchase_orders.isbn13')
+        ->leftJoin('order_tracking','order_tracking.isbnno','=','purchase_orders.isbn13')
 		->where(function($query) use ($search) {
 			$query->where('purchase_orders.isbn13','LIKE','%'.$search.'%')						
 			->orWhere('purchase_orders.book_title','LIKE','%'.$search.'%');
