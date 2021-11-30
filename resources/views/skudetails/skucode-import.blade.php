@@ -46,7 +46,6 @@
 					<span class="help-block mb-3">
 						<small>	<i class="fa fa-upload"></i> File extension allow to import: (xls, xlsx, csv)</small><br>
 						<small>	<i class="fa fa-save"></i> Max upload size: 500MB</small><br>
-						<!-- <small>	<i class="fa fa-image"></i> Product image name in excel sheet should be same in zip folder</small> -->
 					</span>
 					<form action="{{ route('skucodedetailimport') }}" method="POST" enctype="multipart/form-data">
 						@csrf

@@ -281,7 +281,7 @@ class CustomerOrderController extends Controller
                         ->with('success','Your Data has successfully imported.');
 			}else{
 				return redirect()->route('customer-order-import-export')
-                        ->with('error','File is a '.$extension.' file.!! Please upload a valid xls/xlsx/csv file..!!');
+                        ->with('error','File is a '.$extension.' file.!! Please upload a valid xls/xlsx/csv/txt file..!!');
 			} 
 		}
     }

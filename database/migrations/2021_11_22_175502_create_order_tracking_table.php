@@ -17,6 +17,7 @@ class CreateOrderTrackingTable extends Migration
             $table->bigIncrements('id');
 			$table->string('order_id')->nullable();
 			$table->string('order_item_id')->nullable();
+			$table->string('price')->default(0)->nullable();
 			$table->string('sku')->nullable();
 			$table->string('isbnno')->nullable();
 			$table->string('shipper')->nullable();	

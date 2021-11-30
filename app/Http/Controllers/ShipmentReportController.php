@@ -33,6 +33,7 @@ class ShipmentReportController extends Controller
     {
 		$this->middleware('permission:shipment-report', ['only' => ['index']]);
 		$this->middleware('permission:download-shipment-report', ['only' => ['export']]);
+		$this->middleware('permission:shipment-track-import', ['only' => ['shipment-track-import']]);
     }
 	
     /**
@@ -173,12 +174,9 @@ class ShipmentReportController extends Controller
 	/**
     * @return \Illuminate\Support\Collection
     */
-    public function stockImportExport()
+    public function shipmentTrackImport()
     {
-		$vendor = Vendor::get();
-		$currency = Currencies::get();
-		$binding = Binding::get();
-		return view('vendorstocks.import-export',compact('vendor','currency','binding'));
+		return view('reports.track-import');
     }
    
     /**
@@ -194,18 +192,16 @@ class ShipmentReportController extends Controller
     */
 	public function import(Request $request) 
     {
-		if($request->input('importtype') == "newimport"){ // for new import
-			//validate required
-			$this->validate($request,
-				[
-					'importfile' => 'required|max:512000',
-				],
-				[
-					'importfile.required' => 'Please select file to import.',
-					'importfile.max' => 'Please upload upto 500MB file.'
-				]
-			);
-		}
+		//validate required
+		$this->validate($request,
+			[
+				'importfile' => 'required|max:512000',
+			],
+			[
+				'importfile.required' => 'Please select file to import.',
+				'importfile.max' => 'Please upload upto 500MB file.'
+			]
+		);
 		
 		if($request->hasFile('importfile')){
 			$extension = File::extension($request->importfile->getClientOriginalName());
@@ -214,33 +210,30 @@ class ShipmentReportController extends Controller
 						
 			if ($extension == "xlsx" || $extension == "xls" || $extension == "csv") {				
 				try{
-					// truncate table
-					DB::table("vendor_stocks")->truncate();
-					
 					// import data into the database
-					$import = new VendorStockImport($request);
+					$import = new ShipmentReportImport($request);
 					$path = $request->importfile->getRealPath();
                     Excel::import($import, $request->importfile);
 				}catch(\Exception $ex){
-					return redirect()->route('vendor-stock-import-export')
+					return redirect()->route('shipment-track-import')
                         ->with('error','Something wrong.');
 				}catch(\InvalidArgumentException $ex){
-					return redirect()->route('vendor-stock-import-export')
+					return redirect()->route('shipment-track-import')
                         ->with('error','Wrong date format in some column.');
 				}catch(\Error $ex){
-					return redirect()->route('vendor-stock-import-export')
+					return redirect()->route('shipment-track-import')
                         ->with('error','Something went wrong. check your file.');
 				}
 
 				if(empty($import->getRowCount())){
-					return redirect()->route('vendor-stock-import-export')
+					return redirect()->route('shipment-track-import')
                         ->with('error','No data found to imported.');
 				}
                
-				return redirect()->route('vendorstocks.index')
+				return redirect()->route('shipmentreport')
                         ->with('success','Your Data has successfully imported.');
 			}else{
-				return redirect()->route('vendor-stock-import-export')
+				return redirect()->route('shipment-track-import')
                         ->with('error','File is a '.$extension.' file.!! Please upload a valid xls/xlsx/csv file..!!');
 			} 
 		}

@@ -9,6 +9,9 @@
 						{{ __('Shipment Report') }}
 					</div>
 					<div class="float-right">
+						@can('shipment-track-import')
+							<a class="btn btn-secondary btn-sm" href="{{ route('shipment-track-import') }}">Shipment Track import</a>
+						@endcan
 					</div>
 					<div class="clearfix"></div>
 				</div>
