@@ -60,27 +60,45 @@ class PurchaseReportController extends Controller
 				$purchaseorders = [];
 				foreach($result as $value){
 					if($value->quantity > 0){
-						//check priority wise
 						$flag = 0;
-						for($i=1;$i<10;$i++){
-								$venderdetails = DB::table('vendor_stocks')
-								->join('vendors','vendors.id','vendor_stocks.vendor_id')->select('vendors.name','author','publisher')
-								->where('vendors.priority',$i)->where('vendor_stocks.isbnno',$value->isbn13)
-								->get();
-								if($venderdetails->count() > 0){
-										$flag = 1;								
-										$dataarray = array(
-												"isbn13"=>$value->isbn13,
-												'book'=>$value->name,
-												'author'=>$venderdetails[0]->author,
-												'publisher'=>$venderdetails[0]->publisher,
-												'quantity'=>$value->quantity,
-												'vendor_name'=>$venderdetails[0]->name,
-										);
-										$purchaseorders[] =$dataarray;
+						$remainquantity = $value->quantity;
+						//check priority wise						
+						for($i=1; $i<10; $i++){
+							$venderdetails = DB::table('vendor_stocks')
+							->join('vendors','vendors.id','vendor_stocks.vendor_id')->select('vendors.name','author','publisher','quantity')
+							->where('vendors.priority',$i)->where('vendor_stocks.isbnno',$value->isbn13)
+							->get();
+							if($venderdetails->count() > 0){
+								//check vendor have quantity more then need
+								if($venderdetails[0]->quantity >= $remainquantity){
+									$flag = 1;
+									$dataarray = array(
+										"isbn13"=>$value->isbn13,
+										'book'=>$value->name,
+										'author'=>$venderdetails[0]->author,
+										'publisher'=>$venderdetails[0]->publisher,
+										'quantity'=>$remainquantity,
+										'vendor_name'=>$venderdetails[0]->name,
+									);
+									$purchaseorders[] =$dataarray;
 								}
-								if($flag > 0)
-										break;
+								else {
+									// get remain quantity and check in other vendor stock
+									$remainquantity = ($value->quantity - $venderdetails[0]->quantity); 
+									$dataarray = array(
+										"isbn13"=>$value->isbn13,
+										'book'=>$value->name,
+										'author'=>$venderdetails[0]->author,
+										'publisher'=>$venderdetails[0]->publisher,
+										'quantity'=> $venderdetails[0]->quantity,
+										'vendor_name'=>$venderdetails[0]->name,
+									);
+									$purchaseorders[] =$dataarray;
+								}
+									
+							}
+							if($flag > 0)
+									break;
 
 						}
 
