@@ -11,11 +11,22 @@ use Illuminate\Support\Facades\DB;
 
 class WarehouseController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+    function __construct()
+    {
+         $this->middleware('permission:warehouse-list|warehouse-create|warehouse-edit|warehouse-delete', ['only' => ['index','store']]);
+         $this->middleware('permission:warehouse-list', ['only' => ['index']]);
+         $this->middleware('permission:warehouse-create', ['only' => ['create','store']]);
+         $this->middleware('permission:warehouse-edit', ['only' => ['edit','update']]);
+         $this->middleware('permission:warehouse-delete', ['only' => ['destroy']]);         
+    }
+	
+   
     public function index(Request $request)
     {
         //

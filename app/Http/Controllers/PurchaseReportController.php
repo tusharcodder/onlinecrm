@@ -32,12 +32,8 @@ class PurchaseReportController extends Controller
      */
     function __construct()
     {
-         $this->middleware('permission:vendor-stock-list|vendor-stock-create|vendor-stock-edit|vendor-stock-delete|vendor-stock-import-export', ['only' => ['index','store']]);
-         $this->middleware('permission:vendor-stock-list', ['only' => ['index']]);
-         $this->middleware('permission:vendor-stock-create', ['only' => ['create','store']]);
-         $this->middleware('permission:vendor-stock-edit', ['only' => ['edit','update']]);
-         $this->middleware('permission:vendor-stock-delete', ['only' => ['destroy', 'deletestockall']]);
-         $this->middleware('permission:vendor-stock-import-export', ['only' => ['stock-import-export','stockimport','stockexport']]);
+        $this->middleware('permission:purchase-report', ['only' => ['index']]);
+		$this->middleware('permission:download-purchase-report', ['only' => ['export']]);
     }
 	
     /**
@@ -50,7 +46,8 @@ class PurchaseReportController extends Controller
         //
 		$purchaseorders = [];
 		$result = DB::table('purchase_orders')
-		->join('customer_orders','order_item_id','purchase_orders.isbn13')
+        ->join('skudetails','skudetails.isbn13','=','purchase_orders.isbn13')
+        ->join('customer_orders','customer_orders.sku','=','skudetails.sku_code')
 		->leftjoin('book_details','book_details.isbnno','purchase_orders.isbn13')
 		->select('purchase_orders.isbn13','book_details.name',
 		DB::raw("(sum(customer_orders.quantity_purchased) - sum(purchase_orders.quantity)) as quantity")

@@ -9,8 +9,8 @@
 						{{ __('Warehouse Management') }}
 					</div>
 					<div class="float-right">
-						@can('market-place-create')
-							<a class="btn btn-success btn-sm" href="{{ route('warehouse.create') }}"> Create New Market Place</a>
+						@can('warehouse-create')
+							<a class="btn btn-success btn-sm" href="{{ route('warehouse.create') }}"> Create New Warehouse</a>
 						@endcan
 						@if(!empty($search))
 							<a class="btn btn-primary btn-sm" href="{{ route('warehouse.index') }}"> Reset Search</a>
@@ -56,10 +56,10 @@
 									<td>{{ $warehouse->name }}</td>								
 									<td>
 										<a class="btn btn-info btn-sm" href="{{ route('warehouse.show',$warehouse->id) }}">Show</a>
-										@can('market-place-edit')
+										@can('warehouse-edit')
 											<a class="btn btn-primary btn-sm" href="{{ route('warehouse.edit',$warehouse->id) }}">Edit</a>
 										@endcan
-										@can('market-place-delete')
+										@can('warehouse-delete')
 											<form method="POST" action="{{ route('warehouse.destroy',$warehouse->id) }}" style="display:inline">
 												@csrf
 												@method('DELETE')

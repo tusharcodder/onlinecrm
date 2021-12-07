@@ -9,10 +9,10 @@
 						{{ __('Sku Code Management') }}
 					</div>
 					<div class="float-right">
-						@can('market-place-create')
+						@can('sku-create')
 							<a class="btn btn-success btn-sm" href="{{ route('skudetails.create') }}"> Create New Sku Code</a>
 						@endcan
-						@can('skucode-import')
+						@can('sku-import-export')
 							<a class="btn btn-secondary btn-sm" href="{{ route('skucode-detail-import-export') }}"> Sku Import/Export</a>
 						@endcan
 						@if(!empty($search))
@@ -75,10 +75,10 @@
 									<td>{{ $skudetail->pkg_wght }}</td>
 									<td>
 										<a class="btn btn-info btn-sm" href="{{ route('skudetails.show',$skudetail->id) }}">Show</a>
-										@can('market-place-edit')
+										@can('sku-edit')
 											<a class="btn btn-primary btn-sm" href="{{ route('skudetails.edit',$skudetail->id) }}">Edit</a>
 										@endcan
-										@can('market-place-delete')
+										@can('sku-delete')
 											<form method="POST" action="{{ route('skudetails.destroy',$skudetail->id) }}" style="display:inline">
 												@csrf
 												@method('DELETE')

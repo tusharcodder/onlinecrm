@@ -33,9 +33,9 @@ class VendorStockController extends Controller
          $this->middleware('permission:vendor-stock-list|vendor-stock-create|vendor-stock-edit|vendor-stock-delete|vendor-stock-import-export', ['only' => ['index','store']]);
          $this->middleware('permission:vendor-stock-list', ['only' => ['index']]);
          $this->middleware('permission:vendor-stock-create', ['only' => ['create','store']]);
-         $this->middleware('permission:vendor-stock-edit', ['only' => ['edit','update']]);
-         $this->middleware('permission:vendor-stock-delete', ['only' => ['destroy', 'deletestockall']]);
-         $this->middleware('permission:vendor-stock-import-export', ['only' => ['stock-import-export','stockimport','stockexport']]);
+		 $this->middleware('permission:vendor-stock-edit', ['only' => ['edit','update']]);
+         $this->middleware('permission:vendor-stock-delete', ['only' => ['destroy', 'deleteVendorStockAll']]);
+         $this->middleware('permission:vendor-stock-import-export', ['only' => ['stockImportExport','import','export']]);
     }
 	
     /**
