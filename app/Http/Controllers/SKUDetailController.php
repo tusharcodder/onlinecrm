@@ -15,17 +15,20 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class SKUDetailController extends Controller
 {
-
+	/**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     function __construct()
     {
-         $this->middleware('permission:sku-list|sku-create|sku-edit|sku-delete|sku-import-export', ['only' => ['index','store']]);
-         $this->middleware('permission:sku-list', ['only' => ['index']]);
-         $this->middleware('permission:sku-create', ['only' => ['create','store']]);
-         $this->middleware('permission:sku-edit', ['only' => ['edit','update']]);
-         $this->middleware('permission:sku-delete', ['only' => ['destroy']]);
-         $this->middleware('permission:sku-import-export', ['only' => ['detailImportexport','import','export']]);
+		$this->middleware('permission:sku-list|sku-create|sku-edit|sku-delete', ['only' => ['index','store']]);
+		$this->middleware('permission:sku-list', ['only' => ['index']]);
+		$this->middleware('permission:sku-create', ['only' => ['create','store']]);
+		$this->middleware('permission:sku-edit', ['only' => ['edit','update']]);
+		$this->middleware('permission:sku-delete', ['only' => ['destroy']]);
     }
-    
+	
     /**
      * Display a listing of the resource.
      *
@@ -249,25 +252,25 @@ class SKUDetailController extends Controller
 					$path = $request->importfile->getRealPath();
                     Excel::import($import, $request->importfile);
 				}catch(\Exception $ex){
-					return redirect()->route('skucode-detail-import-export')
+					return redirect()->route('skucode-detail-import')
                         ->with('error',$ex->getMessage());
 				}catch(\InvalidArgumentException $ex){
-					return redirect()->route('skucode-detail-import-export')
+					return redirect()->route('skucode-detail-import')
                         ->with('error','Wrong date format in some column.');
 				}catch(\Error $ex){
-					return redirect()->route('skucode-detail-import-export')
+					return redirect()->route('skucode-detail-import')
                         ->with('error','Something went wrong. check your file.');
 				}
 
 				if(empty($import->getRowCount())){
-					return redirect()->route('skucode-detail-import-export')
+					return redirect()->route('skucode-detail-import')
                         ->with('error','No data found to imported.');
 				}
                
 				return redirect()->route('skudetails.index')
                         ->with('success','Your Data has successfully imported.');
 			}else{
-				return redirect()->route('skucode-detail-import-export')
+				return redirect()->route('skucode-detail-import')
                         ->with('error','File is a '.$extension.' file.!! Please upload a valid xls/xlsx/csv file..!!');
 			} 
 		}

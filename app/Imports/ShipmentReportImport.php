@@ -43,22 +43,22 @@ class ShipmentReportImport implements ToModel, WithHeadingRow, WithBatchInserts,
 		$user = Auth::user();
 		$uid = $user->id;
 		
-		$row['Quantity'] = empty($row['Quantity']) ? 0 : $row['Quantity'];
+		$row['quantity'] = empty($row['quantity']) ? 0 : $row['quantity'];
 		
 		// check duplicate track exists or not
-		$trackdata = OrderTrack::where('order_id', '=', $row['Order_id'])->where('order_item_id', '=', $val['Order_item_id'])->where('tracking_id', '=', $val['tracking_id'])->get();
+		$trackdata = OrderTrack::where('order_id', '=', $row['order_id'])->where('order_item_id', '=', $row['order_item_id'])->where('tracking_id', '=', $row['tracking_id'])->get();
 		if(!empty(count($trackdata))) // not inserted duplicated data
 			return '';
 			
-		$customerdata = CustomerOrder::where('order_id', '=', $row['Order_id'])->where('order_item_id', '=', $val['Order_item_id'])->where('sku', '=', $val['Sku'])->get();
+		$customerdata = CustomerOrder::where('order_id', '=', $row['order_id'])->where('order_item_id', '=', $row['order_item_id'])->where('sku', '=', $row['sku'])->get();
 		if(!empty(count($customerdata))){
 			foreach($customerdata as $key=>$val){
 				$val->quantity_shipped = empty($val->quantity_shipped) ? 0 : $val->quantity_shipped;
 				
 				$val->quantity_to_ship = empty($val->quantity_to_ship) ? 0 : $val->quantity_to_ship;
 				
-				$shippedqty = $val->quantity_shipped + $row['Quantity'];
-				$qtytoship = $val->quantity_to_ship - $row['Quantity'];
+				$shippedqty = $val->quantity_shipped + $row['quantity'];
+				$qtytoship = $val->quantity_to_ship - $row['quantity'];
 				
 				//update shipqty into the quantity_to_be_shipped column
 				DB::table('customer_orders')
@@ -76,16 +76,16 @@ class ShipmentReportImport implements ToModel, WithHeadingRow, WithBatchInserts,
 		// insert and update product image path in product image table
         return new OrderTrack([
             'price' => $row['price'],
-            'order_id' => $row['Order_id'],
-			'order_item_id' => $row['Order_item_id'],
-			'sku' => $row['Sku'],
-			'isbnno' => $row['Isbn13'],
+            'order_id' => $row['order_id'],
+			'order_item_id' => $row['order_item_id'],
+			'sku' => $row['sku'],
+			'isbnno' => $row['isbn13'],
 			'shipper' => $row['shipper'],
 			'tracking_id' => $row['tracking_id'],
 			'box_id' => $row['box_id'],
 			'shipper_id' => $row['shipper_id'],
 			'shipment_date' => $row['shipment_date'],
-			'quantity_shipped' => $row['Quantity'],
+			'quantity_shipped' => $row['quantity'],
 			'ncp' => $row['ncp'],
 			'created_by' => $uid,
 			'updated_by' => $uid

@@ -4,29 +4,29 @@
 		<thead>
 			<tr>
 				<th>No</th>
-				<th>Isbn13</th>
-				<th>Sku</th>
-				<th>Product_name</th>
-				<th>Author</th>
-				<th>Publisher</th>
-				<th>Order_id</th>
-				<th>Order_item_id</th>
-				<th>Order_date</th>
-				<th>Quantity</th>
-				<th>Warehouse</th>
-				<th>Name</th>
-				<th>Recipent_name</th>
-				<th>Phone_number</th>
-				<th>Add1</th>
-				<th>Add2</th>
-				<th>Add3</th>
-				<th>City</th>
-				<th>State</th>
-				<th>Postal_code</th>
-				<th>Country</th>
-				<th>MarPla_acc</th>
-				<th>Ship_type</th>
-				<th>Listing_wgt</th>
+				<th>isbn13</th>
+				<th>sku</th>
+				<th>product_name</th>
+				<th>author</th>
+				<th>publisher</th>
+				<th>order_id</th>
+				<th>order_item_id</th>
+				<th>order_date</th>
+				<th>quantity</th>
+				<th>warehouse</th>
+				<th>name</th>
+				<th>recipent_name</th>
+				<th>phone_number</th>
+				<th>add1</th>
+				<th>add2</th>
+				<th>add3</th>
+				<th>city</th>
+				<th>state</th>
+				<th>postal_code</th>
+				<th>country</th>
+				<th>marPla_acc</th>
+				<th>ship_type</th>
+				<th>listing_wgt</th>
 				<th>price</th>
 				<th>shipper</th>
 				<th>tracking_id</th>
