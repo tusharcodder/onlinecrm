@@ -22,11 +22,12 @@ class SKUDetailController extends Controller
      */
     function __construct()
     {
-		$this->middleware('permission:sku-list|sku-create|sku-edit|sku-delete', ['only' => ['index','store']]);
+		$this->middleware('permission:sku-list|sku-create|sku-edit|sku-delete|sku-import-export', ['only' => ['index','store']]);
 		$this->middleware('permission:sku-list', ['only' => ['index']]);
 		$this->middleware('permission:sku-create', ['only' => ['create','store']]);
 		$this->middleware('permission:sku-edit', ['only' => ['edit','update']]);
 		$this->middleware('permission:sku-delete', ['only' => ['destroy']]);
+		$this->middleware('permission:sku-import-export', ['only' => ['detailImportexport','import','export']]);
     }
 	
     /**
