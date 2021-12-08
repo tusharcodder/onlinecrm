@@ -46,8 +46,8 @@ class PurchaseReportController extends Controller
         //
 		$purchaseorders = [];
 		$result = DB::table('purchase_orders')
-        ->join('skudetails','skudetails.isbn13','=','purchase_orders.isbn13')
-        ->join('customer_orders','customer_orders.sku','=','skudetails.sku_code')
+        ->leftJoin('skudetails','skudetails.isbn13','=','purchase_orders.isbn13')
+        ->leftJoin('customer_orders','customer_orders.sku','=','skudetails.sku_code')
 		->leftjoin('book_details','book_details.isbnno','purchase_orders.isbn13')
 		->select('purchase_orders.isbn13','book_details.name',
 		DB::raw("(sum(customer_orders.quantity_purchased) - sum(purchase_orders.quantity)) as quantity")

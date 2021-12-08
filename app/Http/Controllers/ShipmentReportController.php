@@ -216,7 +216,7 @@ class ShipmentReportController extends Controller
                     Excel::import($import, $request->importfile);
 				}catch(\Exception $ex){
 					return redirect()->route('shipment-track-import')
-                        ->with('error','Something wrong.');
+                        ->with('error',$ex->getMessage());
 				}catch(\InvalidArgumentException $ex){
 					return redirect()->route('shipment-track-import')
                         ->with('error','Wrong date format in some column.');

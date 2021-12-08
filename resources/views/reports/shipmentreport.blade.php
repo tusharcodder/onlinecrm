@@ -48,15 +48,15 @@
 						<table class="table table-bordered">
 							<tr>
 								<th>No</th>
-								<th>Isbn13</th>
-								<th>Sku</th>
+								<th>isbn13</th>
+								<th>sku</th>
 								<th>Product_name</th>
 								<th>Author</th>
 								<th>Publisher</th>
-								<th>Order_id</th>
-								<th>Order_item_id</th>
-								<th>Order_date</th>
-								<th>Quantity</th>
+								<th>order_id</th>
+								<th>order_item_id</th>
+								<th>order_date</th>
+								<th>quantity</th>
 								<th>Warehouse</th>
 								<th>Name</th>
 								<th>Recipent_name</th>

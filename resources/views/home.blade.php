@@ -165,7 +165,7 @@
 				</div>
 				<div class="media-body">
 					<h6 class="tx-sans tx-uppercase tx-10 tx-spacing-1 tx-color-03 tx-semibold tx-nowrap mg-b-5 mg-md-b-8">Stocks</h6>
-					<h4 class="tx-20 tx-sm-18 tx-md-24 tx-normal tx-rubik mg-b-0"><a href="{{ route('vendorstocks.index') }}">Manage TJW Stock</a></h4>
+					<h4 class="tx-20 tx-sm-18 tx-md-24 tx-normal tx-rubik mg-b-0"><a href="{{ route('stocklist') }}">Manage TJW Stock</a></h4>
 				</div>
 			</div>
 		</div>
