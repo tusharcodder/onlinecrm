@@ -15,6 +15,7 @@ use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 use Illuminate\Support\Carbon;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use App\Common;
+use DB;
 
 HeadingRowFormatter::default('none');
 class ShipmentReportImport implements ToModel, WithHeadingRow, WithBatchInserts, WithChunkReading
@@ -46,13 +47,21 @@ class ShipmentReportImport implements ToModel, WithHeadingRow, WithBatchInserts,
 		$row['quantity'] = empty($row['quantity']) ? 0 : $row['quantity'];
 		
 		// check duplicate track exists or not
-		$trackdata = OrderTrack::where('order_id', '=', $row['order_id'])->where('order_item_id', '=', $row['order_item_id'])->where('tracking_id', '=', $row['tracking_id'])->get();
+		$trackdata = OrderTrack::where('order_id', '=', $row['order_id'])
+			->where('order_item_id', '=', $row['order_item_id'])
+			->where('tracking_id', '=', $row['tracking_id'])
+			->get();
 		if(!empty(count($trackdata))) // not inserted duplicated data
 			return '';
 			
-		$customerdata = CustomerOrder::where('order_id', '=', $row['order_id'])->where('order_item_id', '=', $row['order_item_id'])->where('sku', '=', $row['sku'])->get();
+		$customerdata = CustomerOrder::where('order_id', '=', $row['order_id'])
+			->where('order_item_id', '=', $row['order_item_id'])
+			->where('sku', '=', $row['sku'])
+			->get();
+		
 		if(!empty(count($customerdata))){
 			foreach($customerdata as $key=>$val){
+				
 				$val->quantity_shipped = empty($val->quantity_shipped) ? 0 : $val->quantity_shipped;
 				
 				$val->quantity_to_ship = empty($val->quantity_to_ship) ? 0 : $val->quantity_to_ship;
@@ -60,7 +69,7 @@ class ShipmentReportImport implements ToModel, WithHeadingRow, WithBatchInserts,
 				$shippedqty = $val->quantity_shipped + $row['quantity'];
 				$qtytoship = $val->quantity_to_ship - $row['quantity'];
 				
-				//update shipqty into the quantity_to_be_shipped column
+				//update shipqty into the quantity_to_be_shipped column and price
 				DB::table('customer_orders')
 				->where('order_id', $val->order_id)
 				->where('order_item_id', $val->order_item_id)
@@ -68,11 +77,12 @@ class ShipmentReportImport implements ToModel, WithHeadingRow, WithBatchInserts,
 				->update([
 					'quantity_to_be_shipped' => 0,
 					'quantity_to_ship' => $qtytoship,
-					'quantity_shipped' => $shippedqty
+					'quantity_shipped' => $shippedqty,
+					'price' => $row['price'],
 				]);
 			}
 		}
-		
+
 		// insert and update product image path in product image table
         return new OrderTrack([
             'price' => $row['price'],

@@ -44,26 +44,39 @@ class ShipmentReportController extends Controller
     public function index(Request $request)
     {
         //
+		$isbnstkqty = array();
+		$finalarray = array();
+		
 		$shipmentres = DB::table('customer_orders')
-			->select('customer_orders.*','market_places.name as markname','warehouses.name as warename','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher', DB::raw('sum(purchase_orders.quantity) as purqty'), DB::raw('sum(customer_orders.quantity_to_be_shipped) as shipingqty'), DB::raw("(SELECT SUM(coshipqty.quantity_shipped) FROM order_tracking as coshipqty WHERE coshipqty.isbnno = skudetails.isbn13 GROUP BY coshipqty.isbnno) as shiped_qty"))
+			->select('customer_orders.*','market_places.name as markname','warehouses.name as warename','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher', DB::raw("(SELECT SUM(purchase_orders.quantity) FROM purchase_orders WHERE purchase_orders.isbn13 = skudetails.isbn13 GROUP BY purchase_orders.isbn13) as purqty"), DB::raw('sum(customer_orders.quantity_to_be_shipped) as shipingqty'), DB::raw("(SELECT SUM(coshipqty.quantity_shipped) FROM order_tracking as coshipqty WHERE coshipqty.isbnno = skudetails.isbn13 GROUP BY coshipqty.isbnno) as shiped_qty"))
 			->leftJoin("skudetails","skudetails.sku_code","=","customer_orders.sku")
 			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
 			->leftJoin("warehouses","warehouses.id","=","skudetails.warehouse_id")
-			->leftJoin("purchase_orders","purchase_orders.isbn13","=","skudetails.isbn13")
 			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
-			->where('customer_orders.quantity_to_ship', '>' ,0)->where('skudetails.isbn13','9780140000000')
+			->where('customer_orders.quantity_to_ship', '>' ,0)
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'skudetails.isbn13')
 			->orderBy('customer_orders.reporting_date','ASC')->get();
 		
-		$finalarray = array();
+		
 		if(!empty($shipmentres)){
+			
+			// get stock value based on isbn no
+			foreach($shipmentres as $key => $val){
+				$val->purqty = empty($val->purqty) ? 0 : $val->purqty;
+				$val->shiped_qty = empty($val->shiped_qty) ? 0 : $val->shiped_qty;
+				$stkqty = $val->purqty - $val->shiped_qty;
+				$isbnstkqty[$val->isbnno] = $stkqty;
+			}
 			foreach($shipmentres as $key => $val){
 				$val->purqty = empty($val->purqty) ? 0 : $val->purqty;
 				$val->shiped_qty = empty($val->shiped_qty) ? 0 : $val->shiped_qty;
 				$quantity_to_ship = empty($val->quantity_to_ship) ? 0 : $val->quantity_to_ship;
-				$stkqty = $val->purqty - $val->shiped_qty;
-				if(!empty($stkqty) && $stkqty > 0){
+				//$stkqty = $val->purqty - $val->shiped_qty;
+				$stkqty = $isbnstkqty[$val->isbnno];
+				if(!empty($stkqty) && $stkqty > 0 && !empty($val->isbnno)){
+					
 					$shipedqty = ($stkqty >= $quantity_to_ship) ? $quantity_to_ship : $stkqty;
+					$isbnstkqty[$val->isbnno] = $stkqty - $quantity_to_ship;
 					
 					//update shipqty into the quantity_to_be_shipped column
 					DB::table('customer_orders')
