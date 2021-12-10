@@ -51,7 +51,7 @@ class ShipmentReportController extends Controller
 			->leftJoin("warehouses","warehouses.id","=","skudetails.warehouse_id")
 			->leftJoin("purchase_orders","purchase_orders.isbn13","=","skudetails.isbn13")
 			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
-			->where('customer_orders.quantity_to_ship', '>' ,0)
+			->where('customer_orders.quantity_to_ship', '>' ,0)->where('skudetails.isbn13','9780140000000')
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'skudetails.isbn13')
 			->orderBy('customer_orders.reporting_date','ASC')->get();
 		

@@ -45,12 +45,10 @@ class PurchaseReportController extends Controller
     {
         //
 		$purchaseorders = [];
-		$result = DB::table('purchase_orders')
-        ->leftJoin('skudetails','skudetails.isbn13','=','purchase_orders.isbn13')
-        ->leftJoin('customer_orders','customer_orders.sku','=','skudetails.sku_code')
+		$result = DB::table('purchase_orders')        
 		->leftjoin('book_details','book_details.isbnno','purchase_orders.isbn13')
 		->select('purchase_orders.isbn13','book_details.name',
-		DB::raw("(sum(customer_orders.quantity_purchased) - sum(purchase_orders.quantity)) as quantity")
+		DB::raw("(IFNULL( ( SELECT sum(customer_orders.quantity_to_be_shipped) from customer_orders INNER join skudetails on skudetails.sku_code = customer_orders.sku where skudetails.isbn13 = purchase_orders.isbn13 GROUP by skudetails.isbn13 ), 0) - sum(purchase_orders.quantity)) as quantity")
 		)->groupby('purchase_orders.isbn13')->get();
 
 		if($result->count() > 0){
@@ -80,7 +78,7 @@ class PurchaseReportController extends Controller
 							}
 							else {
 								// get remain quantity and check in other vendor stock
-								$remainquantity = ($value->quantity - $venderdetails[0]->quantity); 
+								$remainquantity = ($remainquantity - $venderdetails[0]->quantity); 
 								$dataarray = array(
 									"isbn13"=>$value->isbn13,
 									'book'=>$value->name,
