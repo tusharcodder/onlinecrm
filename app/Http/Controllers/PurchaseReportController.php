@@ -44,6 +44,7 @@ class PurchaseReportController extends Controller
     public function index(Request $request)
     {
         //
+        $maxpriority = Vendor::max('priority');        
 		$purchaseorders = [];
 		$result = DB::table('purchase_orders')        
 		->leftjoin('book_details','book_details.isbnno','purchase_orders.isbn13')
@@ -57,7 +58,7 @@ class PurchaseReportController extends Controller
 					$flag = 0;
 					$remainquantity = $value->quantity;
 					//check priority wise						
-					for($i=1; $i<=30; $i++){
+					for($i=1; $i<=$maxpriority; $i++){
 						$venderdetails = DB::table('vendor_stocks')
 						->join('vendors','vendors.id','vendor_stocks.vendor_id')->select('vendors.name','author','publisher','quantity')
 						->where('vendors.priority',$i)->where('vendor_stocks.isbnno',$value->isbn13)

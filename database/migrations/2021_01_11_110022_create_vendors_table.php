@@ -19,7 +19,7 @@ class CreateVendorsTable extends Migration
             $table->string('number')->nullable();
             $table->string('email')->nullable();
 			$table->longText('address')->nullable();		
-			$table->string('priority',20)->nullable();		
+			$table->integer('priority')->nullable();		
 			$table->integer('created_by');
 			$table->integer('updated_by');
             $table->timestamps();
