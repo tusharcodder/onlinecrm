@@ -21,12 +21,12 @@
 								{{ $skudetail[0]->mplace }}
 							</div>
 						</div>
-						<div class="col-xs-12 col-sm-4 col-md-4">
+						<!--<div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
 								<strong>Warehouse:</strong><br/>
 								{{ $skudetail[0]->warehouse }}
 							</div>
-						</div>
+						</div>-->
 						<div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
 								<strong>ISBN13:</strong><br/>

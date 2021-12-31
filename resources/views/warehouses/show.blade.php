@@ -20,7 +20,13 @@
 								<strong>Name:</strong><br/>
 								{{ $warehouse->name }}
 							</div>
-						</div>					
+						</div>
+						<div class="col-xs-12 col-sm-4 col-md-4">
+							<div class="form-group">
+								<strong>Country code:</strong><br/>
+								{{ $warehouse->country_code }}
+							</div>
+						</div>
 					</div>			
 				</div>
 			</div>

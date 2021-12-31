@@ -112,7 +112,7 @@
 								</div>
 							</div>
 							
-							<div class="col-md-3">
+							<!--<div class="col-md-3">
 								<div class="form-group">
 								<label for="warehouse" class="col-form-label text-md-right">{{ __('Warehouse') }}</label>
 									<select class="form-control" id="warehouse" name="warehouse">
@@ -122,7 +122,7 @@
 										@endforeach
 									</select>
 								</div>
-							</div>
+							</div>-->
 							
 							<div class="col-md-3">
 								<div class="form-group">

@@ -41,7 +41,7 @@ class SkuDetailimport implements ToModel, WithHeadingRow, WithBatchInserts, With
 
         return new SkuDetail([
             'market_id' => $row['Market_Place'],
-            'warehouse_id' =>$row['Warehouse'],
+            //'warehouse_id' =>$row['Warehouse'],
             'isbn13' =>$row['isbn13'],
             'isbn10' =>$row['isbn10'],
             'sku_code' =>$row['sku_code'],

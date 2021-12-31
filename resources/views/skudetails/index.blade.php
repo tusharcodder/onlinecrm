@@ -49,7 +49,7 @@
 							<tr>
 								<th>#</th>
 								<th>Market Place</th>
-								<th>Warehouse</th>
+								<!--<th>Warehouse</th>-->
 								<th>ISBN13</th>
 								<th>ISBN10</th>
                                 <th>Sku Code</th>
@@ -65,7 +65,7 @@
 									<!--<<td>{{ ($skudetails->currentPage()-1) * $skudetails->perPage() + $loop->index + 1 }}</td>-->
 									<td>{{ ($skudetails->currentPage()-1) * $skudetails->perPage() + $loop->index + 1 }}</td>
 									<td>{{ $skudetail->mplace }}</td>
-									<td>{{ $skudetail->warehouse }}</td>
+									<!--<td>{{ $skudetail->warehouse }}</td>-->
 									<td>{{ $skudetail->isbn13}}</td>
                                     <td>{{ $skudetail->isbn10}}</td>
 									<td>{{ $skudetail->sku_code}}</td>
@@ -91,7 +91,7 @@
 								</tr>                               
 								@endforeach
 							@else
-								<tr><td colspan="11">No records found.</td></tr>
+								<tr><td colspan="10">No records found.</td></tr>
 							@endif
 						</table>
 						{{ $skudetails->links() }}

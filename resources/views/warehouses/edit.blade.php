@@ -33,7 +33,13 @@
 							<div class="col-md-4">
 								<div class="form-group">
 									<label for="name" class="col-form-label text-md-right">{{ __('Name*') }}</label>
-									<input id="name" type="text" class="form-control" name="name" value="{{ old('name',$Warehouse->name) }}"  autocomplete="name" required>
+									<input id="name" type="text" class="form-control" name="name" value="{{ old('name',$Warehouse->name) }}"  {{ $Warehouse->id == 1 ? 'readonly' : '' }} autocomplete="name" required>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label for="country_code" class="col-form-label text-md-right">{{ __('Country Code*') }}</label>
+									<input id="country_code" type="text" class="form-control" name="country_code" value="{{ old('country_code',$Warehouse->country_code) }}"  autocomplete="country_code" {{ $Warehouse->id == 1 ? 'readonly' : '' }} required>
 								</div>
 							</div>
                         </div>							

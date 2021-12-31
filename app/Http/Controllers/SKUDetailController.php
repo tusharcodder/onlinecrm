@@ -39,12 +39,11 @@ class SKUDetailController extends Controller
     {
         $search = $request->input('search');
         
-		$skudetails = SkuDetail::select('skudetails.*','market_places.name as mplace','warehouses.name as warehouse')
+		$skudetails = SkuDetail::select('skudetails.*','market_places.name as mplace')
         ->join('market_places','market_places.id','=','skudetails.market_id')
-        ->join('warehouses','warehouses.id','=','skudetails.warehouse_id')
+        //->join('warehouses','warehouses.id','=','skudetails.warehouse_id')
         ->where(function($query) use ($search) {
-					$query->where('market_places.name','LIKE','%'.$search.'%')						
-						->orWhere('warehouses.name','LIKE','%'.$search.'%')
+					$query->where('market_places.name','LIKE','%'.$search.'%')
 						->orWhere('isbn13','LIKE','%'.$search.'%')
 						->orWhere('isbn10','LIKE','%'.$search.'%');
 				})->orderBy('skudetails.id','desc')->paginate(10)->setPath('');
@@ -85,8 +84,7 @@ class SKUDetailController extends Controller
 		
         //check validation
 		$request->validate([
-			'mplace' => 'required',			
-			'warehouse' => 'required',	
+			'mplace' => 'required',
             'sku' => 'required|unique:skudetails,sku_code',	
             'isbn13' => 'required',	
             'isbn10' => 'required',		
@@ -96,7 +94,6 @@ class SKUDetailController extends Controller
 		// save value in db
 		$skudetails = SkuDetail::create([
 								'market_id' => $request->input('mplace'),
-								'warehouse_id' => $request->input('warehouse'),
 								'isbn13' => $request->input('isbn13'),
 								'isbn10' => $request->input('isbn10'),
 								'mrp' => $request->input('mrp'),
@@ -121,10 +118,10 @@ class SKUDetailController extends Controller
     public function show($id)
     {
         //
-      $skudetail =  SkuDetail::select('skudetails.*','market_places.name as mplace','warehouses.name as warehouse')
-                                ->join('market_places','market_places.id','=','skudetails.market_id')
-                                ->join('warehouses','warehouses.id','=','skudetails.warehouse_id')
-                                ->where('skudetails.id',$id)->get();
+      $skudetail =  SkuDetail::select('skudetails.*','market_places.name as mplace')
+			->join('market_places','market_places.id','=','skudetails.market_id')
+			//->join('warehouses','warehouses.id','=','skudetails.warehouse_id')
+			->where('skudetails.id',$id)->get();
 
         return view('skudetails.show',compact('skudetail'));
         
@@ -141,10 +138,6 @@ class SKUDetailController extends Controller
         $marketplaces=MarketPlace::get();       
         $warehouses=Warehouse::get();
         $skudetails = SkuDetail::find($id);
-        // echo '<pre>';
-        // print_r($skudetails)       ;
-        // echo '</pre>';
-        // exit;
         return view('skudetails.edit',compact('skudetails','warehouses','marketplaces'));
     }
 
@@ -163,8 +156,7 @@ class SKUDetailController extends Controller
 		
         //check validation
 		$request->validate([
-			'mplace' => 'required',			
-			'warehouse' => 'required',	
+			'mplace' => 'required',				
             'sku' => 'required|unique:skudetails,sku_code,'.$id,	
             'isbn13' => 'required',	
             'isbn10' => 'required',		
@@ -174,7 +166,7 @@ class SKUDetailController extends Controller
 		// update value in db
 		$skudetail = SkuDetail::find($id);       
         $skudetail->market_id  = $request->input('mplace');      
-        $skudetail->warehouse_id  = $request->input('warehouse');
+        //$skudetail->warehouse_id  = $request->input('warehouse');
         $skudetail->isbn13 = $request->input('isbn13');  
 		$skudetail->isbn10 = $request->input('isbn10');        
 		$skudetail->sku_code = $request->input('sku');  

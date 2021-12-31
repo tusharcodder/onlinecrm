@@ -4,7 +4,7 @@
 		<thead>
 			<tr>
 				<th>Market_Place</th>
-				<th>Warehouse</th>
+				<!--<th>Warehouse</th>-->
 				<th>isbn13</th>
 				<th>isbn10</th>
 				<th>sku_code</th>
@@ -18,7 +18,7 @@
 			@foreach ($results as $res)
 				<tr>					
 					<td >{{ $res->Market_Place }}</td>
-					<td >{{ $res->Warehouse }}</td>
+					<!--<td >{{ $res->Warehouse }}</td>-->
 					<td >{{ $res->isbn13 }}</td>
 					<td >{{ $res->isbn10 }}</td>
 					<td >{{ $res->sku_code }}</td>

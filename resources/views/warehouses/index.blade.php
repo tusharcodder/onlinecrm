@@ -46,6 +46,7 @@
 							<tr>
 								<th>#ID</th>
 								<th>Name</th>							
+								<th>Country Code</th>							
 								<th width="227px">Action</th>
 							</tr>
 							@if($warehouses->total() > 0)
@@ -53,26 +54,29 @@
 								<tr>
 									<!--<<td>{{ ($warehouses->currentPage()-1) * $warehouses->perPage() + $loop->index + 1 }}</td>-->
 									<td>{{ $warehouse->id }}</td>
-									<td>{{ $warehouse->name }}</td>								
+									<td>{{ $warehouse->name }}</td>
+									<td>{{ $warehouse->country_code }}</td>
 									<td>
 										<a class="btn btn-info btn-sm" href="{{ route('warehouse.show',$warehouse->id) }}">Show</a>
 										@can('warehouse-edit')
 											<a class="btn btn-primary btn-sm" href="{{ route('warehouse.edit',$warehouse->id) }}">Edit</a>
 										@endcan
 										@can('warehouse-delete')
-											<form method="POST" action="{{ route('warehouse.destroy',$warehouse->id) }}" style="display:inline">
-												@csrf
-												@method('DELETE')
-												<button type="submit" class="btn btn-danger btn-sm">
-													{{ __('Delete') }}
-												</button>
-											</form>
+											@if($warehouse->id != 1)
+												<form method="POST" action="{{ route('warehouse.destroy',$warehouse->id) }}" style="display:inline">
+													@csrf
+													@method('DELETE')
+													<button type="submit" class="btn btn-danger btn-sm">
+														{{ __('Delete') }}
+													</button>
+												</form>
+											@endif
 										@endcan
 									</td>
 								</tr>
 								@endforeach
 							@else
-								<tr><td colspan="6">No records found.</td></tr>
+								<tr><td colspan="4">No records found.</td></tr>
 							@endif
 						</table>
 						{{ $warehouses->links() }}

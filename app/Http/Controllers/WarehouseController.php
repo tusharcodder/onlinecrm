@@ -32,7 +32,8 @@ class WarehouseController extends Controller
         //
 		$search = $request->input('search');
 		$warehouses = Warehouse::where(function($query) use ($search) {
-					$query->where('name','LIKE','%'.$search.'%');						
+					$query->where('name','LIKE','%'.$search.'%')					
+					->orWhere('country_code','LIKE','%'.$search.'%');
 				})->orderBy('name','ASC')->paginate(10)->setPath('');
 		
 		// bind value with pagination link
@@ -67,12 +68,14 @@ class WarehouseController extends Controller
 		
 		// validation
         $request->validate([
-			'name' => ['required',Rule::unique('warehouses','name')]			
+			'name' => ['required',Rule::unique('warehouses','name')],			
+			'country_code' => ['required']			
 		]);
 		
 		// save value in db
 		Warehouse::create([			
 			'name' => $request->input('name'),			
+			'country_code' => $request->input('country_code'),			
 			'created_by' => $uid,
 			'updated_by' => $uid
 		]);
@@ -121,11 +124,13 @@ class WarehouseController extends Controller
 		// validation
         $request->validate([			
 			'name' => ['required',Rule::unique('warehouses','name')->ignore($id)],		
+			'country_code' => ['required'],		
 		]);
 		
 		// update value in db
 		$Warehouse = Warehouse::find($id);	    
         $Warehouse->name = $request->input('name');       
+        $Warehouse->country_code = $request->input('country_code');       
         $Warehouse->updated_by = $uid;
         $Warehouse->save();
 		

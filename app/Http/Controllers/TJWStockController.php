@@ -44,7 +44,7 @@ class TJWStockController extends Controller
 		DB::raw("(sum(case when purchase_orders.quantity is not null THEN purchase_orders.quantity else 0 END)-(IFNULL( ( SELECT sum(order_tracking.quantity_shipped) from order_tracking where order_tracking.isbnno = purchase_orders.isbn13 GROUP by order_tracking.isbnno ), 0)+IFNULL( ( SELECT sum(customer_orders.quantity_to_be_shipped) from customer_orders INNER join skudetails on skudetails.sku_code = customer_orders.sku where skudetails.isbn13 = purchase_orders.isbn13 GROUP by skudetails.isbn13 ), 0))) as stock "))
 		->leftJoin('book_details','book_details.isbnno','=','purchase_orders.isbn13')       
 		->where(function($query) use ($search) {
-			$query->where('purchase_orders.isbn13','LIKE','%'.$search.'%')						
+			$query->where('purchase_orders.isbn13','LIKE','%'.$search.'%')
 			->orWhere('book_details.name','LIKE','%'.$search.'%');
 		})
 		->groupby('purchase_orders.isbn13')  

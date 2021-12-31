@@ -43,10 +43,9 @@
 								</div>
 							</div>
 							
-							<div class="col-md-4">
+							<!--<div class="col-md-4">
 								<div class="form-group">
 									<label for="warehouse" class="col-form-label text-md-right">{{ __('Warehouse*') }}</label>
-									<!-- <input id="warehouse" type="number" class="form-control" name="warehouse" value="{{ old('warehouse') }}"  autocomplete="warehouse" required> -->
                                     <select class="form-control" id="warehouse" name="warehouse" autofocus>
 										<option value="">-- Select --</option>
 										@foreach ($warehouses as $key => $val)
@@ -54,7 +53,7 @@
 										@endforeach
 									</select>
 								</div>
-							</div>
+							</div>-->
 							
 							<div class="col-md-4">
 								<div class="form-group">
