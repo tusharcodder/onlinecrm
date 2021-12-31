@@ -66,21 +66,25 @@
 									<td>{{ \Carbon\Carbon::parse($customerorder->purchase_date)->format('d-m-Y')}}</td>
                                     <td>{{ \Carbon\Carbon::parse($customerorder->payments_date)->format('d-m-Y')}}</td>
 									<td>{{ \Carbon\Carbon::parse($customerorder->reporting_date)->format('d-m-Y')}}</td>
-                                    <td>{{ $customerorder->buyer_name}}</td>
-                                    <td>{{ $customerorder->buyer_phone_number}}</td>
-                                    <td>{{ $customerorder->product_name}}</td>
+                                    <td>{{ $customerorder->buyer_name }}</td>
+                                    <td>{{ $customerorder->buyer_phone_number }}</td>
+                                    <td>{{ $customerorder->product_name }}</td>
 									<td>{{ $customerorder->sku }}</td>
 									<td>{{ $customerorder->quantity_purchased }}</td>
 									<td>
 										<a class="btn btn-info btn-sm" href="{{ route('customerorders.show',$customerorder->id) }}">Show</a>
 										@can('customer-order-delete-refund')
-											<form method="POST" action="{{ route('customerorders.destroy',$customerorder->id) }}" style="display:inline">
-												@csrf
-												@method('DELETE')
-												<button type="submit" class="btn btn-danger btn-sm">
-													{{ __('Delete/Refund') }}
-												</button>
-											</form>
+											@if($customerorder->status == 1)
+												<form method="POST" action="{{ route('customerorders.destroy',$customerorder->id) }}" style="display:inline">
+													@csrf
+													@method('DELETE')
+													<button type="submit" class="btn btn-danger btn-sm">
+														{{ __('Delete/Refund') }}
+													</button>
+												</form>
+											@else
+												<b>{{ __('Deleted/Refund') }}</b>
+											@endif
 										@endcan
 									</td>
 								</tr>                               

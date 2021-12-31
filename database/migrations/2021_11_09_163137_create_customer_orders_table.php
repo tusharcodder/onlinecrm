@@ -44,6 +44,7 @@ class CreateCustomerOrdersTable extends Migration
 			$table->string('purchase_order_number')->nullable();
 			$table->string('price_designation')->nullable();			
 			$table->string('price')->nullable();
+			$table->tinyInteger('status')->default(1);
 			$table->integer('created_by')->nullable();
 			$table->integer('updated_by')->nullable();
             $table->timestamps();

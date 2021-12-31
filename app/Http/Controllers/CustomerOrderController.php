@@ -129,12 +129,25 @@ class CustomerOrderController extends Controller
     public function destroy($id)
     {
 		// delete row
+		//DB::table("customer_orders")->where('id',$id)->delete();
+		
+		// update quantity 0
 		$customerorders = CustomerOrder::find($id);
-		DB::table("customer_orders")->where('id',$id)->delete();
-		
+        $customerorders->quantity_shipped = 0;
+        $customerorders->quantity_to_ship = 0;
+        $customerorders->quantity_to_be_shipped = 0;
+        $customerorders->status = 0;
+        $customerorders->updated_by = $uid;
+        $customerorders->save();
+
 		// delete track details from order_tracking table
-		DB::table("order_tracking")->where('order_id',$customerorders["order_id"])->delete();
+		//DB::table("order_tracking")->where('order_id',$customerorders["order_id"])->delete();
 		
+		// update quantity 0
+		DB::table('order_tracking')
+              ->where('order_id', $customerorders["order_id"])
+              ->update(['quantity_shipped' => 0]);
+			  
         return redirect()->route('customerorders.index')
                         ->with('success','Customer order deleted successfully.');
     }
