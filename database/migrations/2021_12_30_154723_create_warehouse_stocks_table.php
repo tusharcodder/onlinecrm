@@ -15,7 +15,7 @@ class WarehouseStocksTable extends Migration
     {
         Schema::create('warehouse_stocks', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('warehouse_id')->nullable();
+            $table->unsignedBigInteger('warehouse_id')->default(1)->nullable();
             $table->string('isbn13',50)->nullable();
             $table->float('quantity')->default(0)->nullable();
             $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('cascade');
