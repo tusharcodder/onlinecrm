@@ -62,6 +62,9 @@ Route::group(['middleware' => ['auth']], function() {
 	
 	Route::get('stocklist', 'TJWStockController@index')->name('stocklist');
 	
+	//stock transfer
+	Route::get('stock-transfer','TJWStockController@view')->name('stock-transfer');
+	Route::post('stock-transfer-import','TJWStockController@import')->name('stock-transfer-import');
 	// load shipment report 
 	Route::get('shipmentreport', 'ShipmentReportController@index')->name('shipmentreport');
 	Route::post('downloadshipmentreport', 'ShipmentReportController@export')->name('downloadshipmentreport');

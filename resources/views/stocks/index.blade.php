@@ -9,6 +9,9 @@
 						{{ __('Manage TJW Stock') }}
 					</div>
 					<div class="float-right">
+						@can('stock-transfer')
+							<a class="btn btn-secondary btn-sm" href="{{ route('stock-transfer') }}">Stock Transfer</a>
+						@endcan
 						@can('purchase-import-export')
 							<a class="btn btn-secondary btn-sm" href="{{ route('purchase-order-import-export') }}">Purchase Order import/export</a>
 						@endcan

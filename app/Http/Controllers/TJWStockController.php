@@ -7,6 +7,7 @@ use Session;
 use App\Vendor;
 use App\Binding;
 use App\Currencies;
+use App\Imports\StockTransfer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
@@ -123,5 +124,65 @@ class TJWStockController extends Controller
     public function destroy($id)
     {
  		//
+    }
+    public function view()
+    {
+        return view('stocks.stocktransfer');
+    }
+       /**
+    * @return \Illuminate\Support\Collection
+    */
+    public function import(Request $request) 
+    {
+		if($request->input('importtype') == "newimport"){ // for new import
+			//validate required
+			$this->validate($request,
+				[
+					'importfile' => 'required|max:512000',
+				],
+				[
+					'importfile.required' => 'Please select file to import.',
+					'importfile.max' => 'Please upload upto 500MB file.'
+				]
+			);
+		}
+		
+		if($request->hasFile('importfile')){
+			$extension = File::extension($request->importfile->getClientOriginalName());
+			$filesize = File::size($request->importfile->getRealPath());
+			$filetype = File::mimeType($request->importfile->getRealPath());
+						
+			if ($extension == "xlsx" || $extension == "xls" || $extension == "csv") {				
+				try{
+					// truncate table
+				//	DB::table("vendor_stocks")->truncate();
+					
+					// import data into the database
+					$import = new StockTransfer($request);
+					$path = $request->importfile->getRealPath();
+                    Excel::import($import, $request->importfile);
+				}catch(\Exception $ex){
+					return redirect()->route('stock-transfer')
+                        ->with('error',$ex->getMessage());
+				}catch(\InvalidArgumentException $ex){
+					return redirect()->route('stock-transfer')
+                        ->with('error','Wrong date format in some column.');
+				}catch(\Error $ex){
+					return redirect()->route('stock-transfer-import')
+                        ->with('error','Something went wrong. check your file.');
+				}
+
+				if(empty($import->getRowCount())){
+					return redirect()->route('stock-transfer')
+                        ->with('error','No data found to imported.');
+				}
+               
+				return redirect()->route('stock-transfer')
+                        ->with('success','Your Data has successfully imported.','notsaveisbns');
+			}else{
+				return redirect()->route('stock-transfer-import')
+                        ->with('error','File is a '.$extension.' file.!! Please upload a valid xls/xlsx/csv file..!!');
+			} 
+		}
     }
 }
