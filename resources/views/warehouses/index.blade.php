@@ -24,6 +24,11 @@
 							<p>{{ $message }}</p>
 						</div>
 					@endif
+					@if ($message = Session::get('error'))
+						<div class="alert alert-danger">
+							<p>{{ $message }}</p>
+						</div>
+					@endif
 					<div class="row mb-1">
 						<div class="col-sm-8">	
 							Showing {{($warehouses->currentPage()-1)* $warehouses->perPage()+($warehouses->total() ? 1:0)}} to {{($warehouses->currentPage()-1)*$warehouses->perPage()+count($warehouses)}}  of  {{$warehouses->total()}}  Results

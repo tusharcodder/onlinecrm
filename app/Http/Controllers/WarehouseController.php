@@ -66,12 +66,16 @@ class WarehouseController extends Controller
         $user = Auth::user();
 		$uid = $user->id;
 		
-		// validation
+		// validation 
         $request->validate([
 			'name' => ['required',Rule::unique('warehouses','name')],			
-			'country_code' => ['required']			
+			'country_code' => 'required'		
 		]);
 		
+        if( strtoupper($request->input('country_code'))=='IN'){
+            return redirect()->route('warehouse.index')
+                        ->with('error','You can not create warehouse in India.');
+        }
 		// save value in db
 		Warehouse::create([			
 			'name' => $request->input('name'),			
@@ -124,9 +128,13 @@ class WarehouseController extends Controller
 		// validation
         $request->validate([			
 			'name' => ['required',Rule::unique('warehouses','name')->ignore($id)],		
-			'country_code' => ['required'],		
+			'country_code' => 'required'			
 		]);
 		
+        if( strtoupper($request->input('country_code'))=='IN'&& $id!=1){
+            return redirect()->route('warehouse.index')
+                        ->with('error','You can not create warehouse in India.');
+        }
 		// update value in db
 		$Warehouse = Warehouse::find($id);	    
         $Warehouse->name = $request->input('name');       
