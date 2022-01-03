@@ -27,10 +27,10 @@ class CreateCustomerOrdersTable extends Migration
 			$table->string('buyer_phone_number')->nullable();
 			$table->string('sku')->nullable();
 			$table->longText('product_name')->nullable();
-			$table->string('quantity_purchased')->nullable();
-			$table->string('quantity_shipped')->nullable();
-			$table->string('quantity_to_ship')->nullable();
-			$table->string('quantity_to_be_shipped')->default(0)->nullable();
+			$table->float('quantity_purchased')->default(0)->nullable();
+			$table->float('quantity_shipped')->default(0)->nullable();
+			$table->float('quantity_to_ship')->default(0)->nullable();
+			$table->float('quantity_to_be_shipped')->default(0)->nullable();
 			$table->string('ship_service_level')->nullable();
 			$table->string('recipient_name')->nullable();
 			$table->longText('ship_address_1')->nullable();
@@ -44,6 +44,11 @@ class CreateCustomerOrdersTable extends Migration
 			$table->string('purchase_order_number')->nullable();
 			$table->string('price_designation')->nullable();			
 			$table->string('price')->nullable();
+			$table->foreignId('warehouse_id')
+                ->references('id')
+                ->on('warehouses')
+                ->onUpdate('cascade');
+			$table->string('warehouse_name')->nullable();
 			$table->tinyInteger('status')->default(1);
 			$table->integer('created_by')->nullable();
 			$table->integer('updated_by')->nullable();

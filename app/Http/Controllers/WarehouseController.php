@@ -72,14 +72,14 @@ class WarehouseController extends Controller
 			'country_code' => 'required'		
 		]);
 		
-        if( strtoupper($request->input('country_code'))=='IN'){
+        if(strtoupper($request->input('country_code'))=='IN'){
             return redirect()->route('warehouse.index')
                         ->with('error','You can not create warehouse in India.');
         }
 		// save value in db
 		Warehouse::create([			
 			'name' => $request->input('name'),			
-			'country_code' => $request->input('country_code'),			
+			'country_code' => strtoupper($request->input('country_code')),			
 			'created_by' => $uid,
 			'updated_by' => $uid
 		]);
@@ -138,7 +138,7 @@ class WarehouseController extends Controller
 		// update value in db
 		$Warehouse = Warehouse::find($id);	    
         $Warehouse->name = $request->input('name');       
-        $Warehouse->country_code = $request->input('country_code');       
+        $Warehouse->country_code = strtoupper($request->input('country_code'));       
         $Warehouse->updated_by = $uid;
         $Warehouse->save();
 		

@@ -39,7 +39,7 @@
 							<div class="col-md-4">
 								<div class="form-group">
 									<label for="country_code" class="col-form-label text-md-right">{{ __('Country Code*') }}</label>
-									<input id="country_code" type="text" class="form-control" name="country_code" value="{{ old('country_code',$Warehouse->country_code) }}"  autocomplete="country_code" {{ $Warehouse->id == 1 ? 'readonly' : '' }} required>
+									<input id="country_code" type="text" class="form-control" name="country_code" minlength="2" maxlength="2" value="{{ old('country_code',$Warehouse->country_code) }}"  autocomplete="country_code" {{ $Warehouse->id == 1 ? 'readonly' : '' }} required>
 								</div>
 							</div>
                         </div>							

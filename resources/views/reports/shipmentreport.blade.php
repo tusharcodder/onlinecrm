@@ -57,6 +57,7 @@
 								<th>order_item_id</th>
 								<th>order_date</th>
 								<th>quantity</th>
+								<th>Warehouse_id</th>
 								<th>Warehouse</th>
 								<th>Name</th>
 								<th>Recipent_name</th>
@@ -85,6 +86,7 @@
 									<td>{{ $shipment->order_item_id}}</td>
 									<td> {{ \Carbon\Carbon::parse($shipment->purchase_date)->format('d-m-Y')}}</td>
 									<td>{{ $shipment->shipedqty }}</td>
+									<td>{{ $shipment->warename}}</td>
 									<td>{{ $shipment->warename}}</td>
 									<td>{{ $shipment->buyer_name}}</td>
 									<td>{{ $shipment->recipient_name }}</td>

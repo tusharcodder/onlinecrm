@@ -43,7 +43,7 @@
 							<div class="col-md-4">
 								<div class="form-group">
 									<label for="country_code" class="col-form-label text-md-right">{{ __('Country Code*') }}</label>
-									<input id="country_code" type="text" class="form-control" name="country_code" value="{{ old('country_code') }}" maxlength="2" autocomplete="country_code" required>
+									<input id="country_code" type="text" class="form-control" name="country_code" value="{{ old('country_code') }}" autocomplete="country_code" minlength="2" maxlength="2" required>
 								</div>
 							</div>
 						</div>
