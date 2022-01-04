@@ -13,6 +13,7 @@
 				<th>order_item_id</th>
 				<th>order_date</th>
 				<th>quantity</th>
+				<th>warehouse_id</th>
 				<th>warehouse</th>
 				<th>name</th>
 				<th>recipent_name</th>
@@ -24,14 +25,16 @@
 				<th>state</th>
 				<th>postal_code</th>
 				<th>country</th>
-				<th>marPla_acc</th>
+				<th>market_place_acc</th>
 				<th>ship_type</th>
 				<th>listing_wgt</th>
 				<th>price</th>
-				<th>shipper</th>
-				<th>tracking_id</th>
-				<th>box_id</th>
+				<th>selling_price</th>
+				<th>shipping_price</th>
 				<th>shipper_id</th>
+				<th>shipper_tracking_id</th>
+				<th>box_id</th>
+				<th>box_shipper_id</th>
 				<th>shipment_date</th>
 				<th>ncp</th>
 			</tr>
@@ -52,7 +55,8 @@
 					<td>{{ $shipment->order_item_id}}</td>
 					<td> {{ \Carbon\Carbon::parse($shipment->purchase_date)->format('d-m-Y')}}</td>
 					<td>{{ $shipment->shipingqty }}</td>
-					<td>{{ $shipment->warename}}</td>
+					<td>{{ $shipment->warehouse_id}}</td>
+					<td>{{ $shipment->warehouse_name}}</td>
 					<td>{{ $shipment->buyer_name}}</td>
 					<td>{{ $shipment->recipient_name }}</td>
 					<td>{{ $shipment->buyer_phone_number }}</td>
@@ -66,6 +70,8 @@
 					<td>{{ $shipment->markname }}</td>
 					<td>{{ $shipment->ship_service_level }}</td>
 					<td>{{ $shipment->pkg_wght }}</td>
+					<td></td>
+					<td></td>
 					<td></td>
 					<td></td>
 					<td></td>

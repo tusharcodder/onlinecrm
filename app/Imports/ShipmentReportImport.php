@@ -49,7 +49,7 @@ class ShipmentReportImport implements ToModel, WithHeadingRow, WithBatchInserts,
 		// check duplicate track exists or not
 		$trackdata = OrderTrack::where('order_id', '=', $row['order_id'])
 			->where('order_item_id', '=', $row['order_item_id'])
-			->where('tracking_id', '=', $row['tracking_id'])
+			->where('shipper_tracking_id', '=', $row['shipper_tracking_id'])
 			->get();
 		if(!empty(count($trackdata))) // not inserted duplicated data
 			return '';
@@ -68,6 +68,8 @@ class ShipmentReportImport implements ToModel, WithHeadingRow, WithBatchInserts,
 				
 				$shippedqty = $val->quantity_shipped + $row['quantity'];
 				$qtytoship = $val->quantity_to_ship - $row['quantity'];
+				$qtytobeship = $val->quantity_to_be_shipped - $row['quantity'];
+				$qtytobeship = empty($qtytobeship) ? 0 : $qtytobeship;
 				
 				//update shipqty into the quantity_to_be_shipped column and price
 				DB::table('customer_orders')
@@ -75,10 +77,11 @@ class ShipmentReportImport implements ToModel, WithHeadingRow, WithBatchInserts,
 				->where('order_item_id', $val->order_item_id)
 				->where('sku', $val->sku)
 				->update([
-					'quantity_to_be_shipped' => 0,
+					'quantity_to_be_shipped' => $qtytobeship,
 					'quantity_to_ship' => $qtytoship,
 					'quantity_shipped' => $shippedqty,
 					'price' => $row['price'],
+					'shipping_price' => $row['shipping_price'],
 				]);
 			}
 		}
@@ -86,12 +89,16 @@ class ShipmentReportImport implements ToModel, WithHeadingRow, WithBatchInserts,
 		// insert and update product image path in product image table
         return new OrderTrack([
             'price' => $row['price'],
+            'selling_price' => $row['selling_price'],
+            'shipping_price' => $row['shipping_price'],
             'order_id' => $row['order_id'],
 			'order_item_id' => $row['order_item_id'],
 			'sku' => $row['sku'],
 			'isbnno' => $row['isbn13'],
-			'shipper' => $row['shipper'],
-			'tracking_id' => $row['tracking_id'],
+			'warehouse_id' => $row['warehouse_id'],
+			'warehouse_name' => $row['warehouse'],
+			'box_shipper_id' => $row['box_shipper_id'],
+			'shipper_tracking_id' => $row['shipper_tracking_id'],
 			'box_id' => $row['box_id'],
 			'shipper_id' => $row['shipper_id'],
 			'shipment_date' => $row['shipment_date'],

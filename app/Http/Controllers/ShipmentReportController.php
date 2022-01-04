@@ -48,12 +48,12 @@ class ShipmentReportController extends Controller
 		$finalarray = array();
 		// generate report 
 		$shipmentres = DB::table('customer_orders')
-			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher',DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = customer_orders.ship_country GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13 having warehouse_stocks.quantity <= customer_orders.quantity_to_ship LIMIT 1) as ostkqty"),DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = 'IN' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13) as indstkqty"))
+			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher',DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = customer_orders.ship_country GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13 having sum(warehouse_stocks.quantity) <= customer_orders.quantity_to_ship LIMIT 1) as ostkqty"),DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = 'IN' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13) as indstkqty"))
 			->leftJoin("skudetails","skudetails.sku_code","=","customer_orders.sku")
 			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
 			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
 			->where('customer_orders.quantity_to_ship', '>' ,0)
-			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'customer_orders.country_code', 'skudetails.isbn13')
+			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'customer_orders.ship_country', 'skudetails.isbn13')
 			->orderBy('customer_orders.reporting_date','ASC')->get();		
 		
 		if(!empty($shipmentres)){

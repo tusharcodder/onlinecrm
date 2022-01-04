@@ -85,9 +85,6 @@
 				@canany(['purchase-report','shipment-report','stock-pull-report','multi-packaging-report'])
 					<li class="nav-item with-sub"> <a href="" class="nav-link"><i data-feather="bar-chart"></i> Reports</a>
 						<ul class="navbar-menu-sub">
-							@can('purchase-report')
-								<li class="nav-sub-item"><a href="{{ route('purchasereports.index') }}" class="nav-sub-link">Pruchase Report</a></li>
-							@endcan
 							@can('shipment-report')
 								<li class="nav-sub-item"><a href="{{ route('shipmentreport') }}" class="nav-sub-link">Shipment Report</a></li>
 							@endcan
@@ -96,7 +93,10 @@
 							@endcan
 							@can('multi-packaging-report')
 								<li class="nav-sub-item"><a href="{{ route('multipackagingreport') }}" class="nav-sub-link">Multi Packaging Report</a></li>
-							@endcan						
+							@endcan
+							@can('purchase-report')
+								<li class="nav-sub-item"><a href="{{ route('purchasereports.index') }}" class="nav-sub-link">Pruchase Report</a></li>
+							@endcan
 						</ul>
 					</li>
 				@endcanany

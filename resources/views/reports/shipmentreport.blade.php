@@ -86,7 +86,7 @@
 									<td>{{ $shipment->order_item_id}}</td>
 									<td> {{ \Carbon\Carbon::parse($shipment->purchase_date)->format('d-m-Y')}}</td>
 									<td>{{ $shipment->shipedqty }}</td>
-									<td>{{ $shipment->warename}}</td>
+									<td>{{ $shipment->ware_id}}</td>
 									<td>{{ $shipment->warename}}</td>
 									<td>{{ $shipment->buyer_name}}</td>
 									<td>{{ $shipment->recipient_name }}</td>
@@ -104,7 +104,7 @@
 								</tr>
 								@endforeach
 							@else
-								<tr><td colspan="24">No records found.</td></tr>
+								<tr><td colspan="25">No records found.</td></tr>
 							@endif
 						</table>
 						{{ $shipmentreports->links() }}

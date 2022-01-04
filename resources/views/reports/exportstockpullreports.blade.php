@@ -14,9 +14,8 @@
 			@foreach ($results as $key => $stockpull)
 				@php
 					$stockpull->purqty = empty($stockpull->purqty) ? 0 : $stockpull->purqty;
-					$stockpull->shiped_qty = empty($stockpull->shiped_qty) ? 0 : $stockpull->shiped_qty;
 					$stockpull->shipingqty = empty($stockpull->shipingqty) ? 0 : $stockpull->shipingqty;
-					$actualstock = $stockpull->purqty - $stockpull->shiped_qty;
+					$actualstock = $stockpull->purqty;
 					$actualstock = empty($actualstock) ? 0 : $actualstock;
 				@endphp
 								

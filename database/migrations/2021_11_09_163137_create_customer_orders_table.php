@@ -44,6 +44,7 @@ class CreateCustomerOrdersTable extends Migration
 			$table->string('purchase_order_number')->nullable();
 			$table->string('price_designation')->nullable();			
 			$table->string('price')->nullable();
+			$table->float('selling_price')->default(0)->nullable();
 			$table->foreignId('warehouse_id')
                 ->references('id')
                 ->on('warehouses')
