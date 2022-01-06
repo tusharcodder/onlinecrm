@@ -1,26 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use File;
-use Session;
 use App\Vendor;
-use App\Binding;
-use App\Currencies;
-use App\VendorStock;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Carbon;
-use DateTime;
-use App\Rules\DateRange; // date range rule validation
 use DB;
-use App\Exports\VendorStockExport;
 use App\Exports\PurchaseReportExport;
-use App\Imports\VendorStockImport;
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Storage;
-use Zip;
-use App\Common;
 use App\Support\Collection;
 
 class PurchaseReportController extends Controller
@@ -46,11 +31,11 @@ class PurchaseReportController extends Controller
         //
         $maxpriority = Vendor::max('priority');        
 		$purchaseorders = [];
-		$result = DB::table('purchase_orders')        
-		->leftjoin('book_details','book_details.isbnno','purchase_orders.isbn13')
-		->select('purchase_orders.isbn13','book_details.name',
-		DB::raw("(IFNULL( ( SELECT sum(customer_orders.quantity_to_be_shipped) from customer_orders INNER join skudetails on skudetails.sku_code = customer_orders.sku where skudetails.isbn13 = purchase_orders.isbn13 GROUP by skudetails.isbn13 ), 0) - sum(purchase_orders.quantity)) as quantity")
-		)->groupby('purchase_orders.isbn13')->get();
+		$result = DB::table('warehouse_stocks')        
+		->leftjoin('book_details','book_details.isbnno','warehouse_stocks.isbn13')
+		->select('warehouse_stocks.isbn13','book_details.name',
+		DB::raw("(IFNULL( ( SELECT sum(customer_orders.quantity_to_be_shipped) from customer_orders INNER join skudetails on skudetails.sku_code = customer_orders.sku where skudetails.isbn13 = warehouse_stocks.isbn13 GROUP by skudetails.isbn13 ), 0) - sum(warehouse_stocks.quantity)) as quantity")
+		)->groupby('warehouse_stocks.isbn13')->get();
 
 		if($result->count() > 0){
 			foreach($result as $value){

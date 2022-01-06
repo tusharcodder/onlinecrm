@@ -291,7 +291,7 @@ class VendorStockController extends Controller
 			if ($extension == "xlsx" || $extension == "xls" || $extension == "csv") {				
 				try{
 					// truncate table
-					DB::table("vendor_stocks")->truncate();
+					//DB::table("vendor_stocks")->truncate();
 					
 					// import data into the database
 					$import = new VendorStockImport($request);
@@ -309,7 +309,7 @@ class VendorStockController extends Controller
                         ->with('error','Wrong date format in some column.');
 				}catch(\Error $ex){
 					return redirect()->route('vendor-stock-import-export')
-                        ->with('error','Something went wrong. check your file.');
+                        ->with('error',$ex->getMessage());
 				}
 
 				if(empty($import->getRowCount())){

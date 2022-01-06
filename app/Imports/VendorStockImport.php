@@ -14,7 +14,7 @@ use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 use Illuminate\Support\Carbon;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use App\Common;
-
+use DB;
 HeadingRowFormatter::default('none');
 class VendorStockImport implements ToModel, WithHeadingRow, WithBatchInserts, WithChunkReading
 {
@@ -43,6 +43,12 @@ class VendorStockImport implements ToModel, WithHeadingRow, WithBatchInserts, Wi
 		$user = Auth::user();
 		$uid = $user->id;
 		
+        //vendor stock delete before current date
+        $current_date=Carbon::parse($row['stock_date'])->format('Y-m-d');
+        DB::table('vendor_stocks')
+            ->where('vendor_id',$row['vendor_id'])
+            ->where('stock_date','<',$current_date)
+            ->delete();
 		
 		// insert and update product image path in product image table
         return new VendorStock([

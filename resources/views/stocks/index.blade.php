@@ -50,22 +50,24 @@
 					 <div class="table-responsive">
 						<table class="table table-bordered">
 							<tr>
-								<th>#</th>  
-								<th>ISBN13</th>								
+								<th  style="width:5%;">#</th>  
+								<th style="width:15%;">Warehouse</th>
+								<th  style="width:15%;"> ISBN13</th>								
 								<th>Book Title</th>								
-                                <th>Stock</th>                            
+                                <th  style="width:10%;">Stock</th>                            
 							</tr>
 							@if($stocks->total() > 0)                          
 								@foreach ($stocks as $key => $stock)
 								<tr>
 									<td>{{ ($stocks->currentPage()-1) * $stocks->perPage() + $loop->index + 1 }}</td>
-                                   	<td>{{ $stock->isbn13}}</td>									
+                                   	<td>{{ $stock->name}}</td>									
+									<td>{{ $stock->isbn13}}</td>   
                                     <td>{{ $stock->book_title}}</td>
                                     <td>{{ $stock->stock}}</td>
 								</tr>                               
 								@endforeach
 							@else
-								<tr><td colspan="4">No records found.</td></tr>
+								<tr><td colspan="5">No records found.</td></tr>
 							@endif
 						</table>
 						{{ $stocks->links() }}
