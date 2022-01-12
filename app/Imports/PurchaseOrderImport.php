@@ -38,6 +38,7 @@ class PurchaseOrderImport implements ToModel, WithHeadingRow, WithBatchInserts, 
 		// current login id
 		$user = Auth::user();
 		$uid = $user->id;
+        $afterdiscountamt = ((float)($row['mrp'])-((float)($row['mrp'])*(float)($row['discount']))/100)*(int)$row['quantity'];
         return new PurchaseOrder([
             'bill_no'=>$row['bill_no'],
             'isbn13'=>$row['isbn13'],           //'book_title'=>$row['book_title'], 
@@ -45,7 +46,7 @@ class PurchaseOrderImport implements ToModel, WithHeadingRow, WithBatchInserts, 
             'quantity'=>$row['quantity'],
             'mrp'=>$row['mrp'],
             'discount'=>$row['discount'],
-            'cost_price'=>$row['cost_price'],
+            'cost_price'=>$afterdiscountamt,
             'purchase_by'=>$row['purchase_by'],
             'purchase_date'=> Carbon::parse($row['purchase_date'])->format('Y-m-d'),
             'create_by'=>$uid,

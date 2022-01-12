@@ -48,14 +48,14 @@ class ShipmentReportController extends Controller
 		$finalarray = array();
 		// generate report 
 		$shipmentres = DB::table('customer_orders')
-			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher',DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = customer_orders.ship_country GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13 having sum(warehouse_stocks.quantity) <= customer_orders.quantity_to_ship LIMIT 1) as ostkqty"),DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = 'IN' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13) as indstkqty"))
+			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher',DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = customer_orders.ship_country GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13 having sum(warehouse_stocks.quantity) >= customer_orders.quantity_to_ship LIMIT 1) as ostkqty"),DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = 'IN' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13) as indstkqty"))
 			->leftJoin("skudetails","skudetails.sku_code","=","customer_orders.sku")
 			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
 			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
 			->where('customer_orders.quantity_to_ship', '>' ,0)
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'customer_orders.ship_country', 'skudetails.isbn13')
 			->orderBy('customer_orders.reporting_date','ASC')->get();		
-		
+			
 		if(!empty($shipmentres)){
 			
 			// get stock value based on isbn no
@@ -91,20 +91,23 @@ class ShipmentReportController extends Controller
 			foreach($shipmentres as $key => $val){
 				$shipcountry = $val->ship_country;
 				$quantity_to_ship = empty($val->quantity_to_ship) ? 0 : $val->quantity_to_ship;
-				$stkqty = $isbnstkqty[$shipcountry][$val->isbnno]['wsqty'];
-				$instkqty = $isbnstkqty['IN'][$val->isbnno]['wsqty'];
+				$stkqty = isset($isbnstkqty[$shipcountry][$val->isbnno]['wsqty']) ? $isbnstkqty[$shipcountry][$val->isbnno]['wsqty'] : 0;
+				$instkqty =  isset($isbnstkqty['IN'][$val->isbnno]['wsqty']) ? $isbnstkqty['IN'][$val->isbnno]['wsqty'] : 0 ;
 				
 				$shipedqty = 0;
 				$wid = '';
 				$wname = '';
-				if($quantity_to_ship <= $stkqty && $shipcountry != "IN"){ // for order country code
-					$shipedqty = $stkqty;
+				
+				if($quantity_to_ship <= $stkqty && $shipcountry != "IN" && !empty($stkqty)){ // for order country code
+				//	echo $shipedqty;
+					$shipedqty = $quantity_to_ship;
 					$wid = $isbnstkqty[$shipcountry][$val->isbnno]['wid'];
 					$wname = $isbnstkqty[$shipcountry][$val->isbnno]['wname'];
 					
 					$isbnstkqty[$shipcountry][$val->isbnno]['wsqty'] = $stkqty - $quantity_to_ship;
-				}elseif($quantity_to_ship <= $instkqty){ // for India
-					$shipedqty = $instkqty;
+				}elseif($quantity_to_ship <= $instkqty && !empty($instkqty)){ // for India
+				//	echo 'hey';
+					$shipedqty = $quantity_to_ship;
 					$wid = $isbnstkqty['IN'][$val->isbnno]['wid'];
 					$wname = $isbnstkqty['IN'][$val->isbnno]['wname'];
 					
@@ -115,6 +118,7 @@ class ShipmentReportController extends Controller
 				
 				// not empty shipped qty
 				if(!empty($shipedqty)){
+				
 					//update shipqty into the quantity_to_be_shipped column
 					DB::table('customer_orders')
 					->where('order_id', $val->order_id)
@@ -154,6 +158,7 @@ class ShipmentReportController extends Controller
 					]);
 				}
 			}
+			//exit;
 		}
 		$shipmentreports = collect($finalarray)->paginate(10)->setPath('');
         return view('reports.shipmentreport',compact('shipmentreports', 'request'))

@@ -34,6 +34,9 @@
 						{{ __('Purchase Order Import') }}
 					</div>
 					<div class="float-right">
+					@can('purchase-order-list')
+							<a class="btn btn-success btn-sm" href="{{ route('purchaseorders.index') }}">View Purchase Order Details</a>
+						@endcan	
 						@can('tjw-stock-list')
 							<a class="btn btn-primary btn-sm" href="{{ route('stocklist') }}"> Back to list</a>
 						@endcan
