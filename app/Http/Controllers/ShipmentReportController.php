@@ -69,9 +69,10 @@ class ShipmentReportController extends Controller
 					$costkqty = empty($ostkqty[1]) ? 0 : $ostkqty[1];
 					$cowname = empty($ostkqty[2]) ? '' : $ostkqty[2];
 					
-					$isbnstkqty[$shipcountry][$val->isbnno]['wid'] = $cowid;
-					$isbnstkqty[$shipcountry][$val->isbnno]['wname'] = $cowname;
-					$isbnstkqty[$shipcountry][$val->isbnno]['wsqty'] = (float)$costkqty;
+					
+					$isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wid'] = $cowid;
+					$isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wname'] = $cowname;
+					$isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wsqty'] = (float)$costkqty;
 				}
 				
 				if(!empty($val->indstkqty)){// for India
@@ -82,17 +83,18 @@ class ShipmentReportController extends Controller
 					$instkqty = empty($ostkqty[1]) ? 0 : $ostkqty[1];
 					$inwname = empty($ostkqty[2]) ? '' : $ostkqty[2];
 					
-					$isbnstkqty['IN'][$val->isbnno]['wid'] = $inwid;
-					$isbnstkqty['IN'][$val->isbnno]['wname'] = $inwname;
-					$isbnstkqty['IN'][$val->isbnno]['wsqty'] = (float)$instkqty;
+					$isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wid'] = $inwid;
+					$isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wname'] = $inwname;
+					$isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wsqty'] = (float)$instkqty;
 				}
 			}
 			
 			foreach($shipmentres as $key => $val){
 				$shipcountry = $val->ship_country;
 				$quantity_to_ship = empty($val->quantity_to_ship) ? 0 : $val->quantity_to_ship;
-				$stkqty = isset($isbnstkqty[$shipcountry][$val->isbnno]['wsqty']) ? $isbnstkqty[$shipcountry][$val->isbnno]['wsqty'] : 0;
-				$instkqty =  isset($isbnstkqty['IN'][$val->isbnno]['wsqty']) ? $isbnstkqty['IN'][$val->isbnno]['wsqty'] : 0 ;
+				
+				$stkqty = isset($isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wsqty']) ? $isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wsqty'] : 0;
+				$instkqty =  isset($isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wsqty']) ? $isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wsqty'] : 0 ;
 				
 				$shipedqty = 0;
 				$wid = '';
@@ -101,17 +103,17 @@ class ShipmentReportController extends Controller
 				if($quantity_to_ship <= $stkqty && $shipcountry != "IN" && !empty($stkqty)){ // for order country code
 				//	echo $shipedqty;
 					$shipedqty = $quantity_to_ship;
-					$wid = $isbnstkqty[$shipcountry][$val->isbnno]['wid'];
-					$wname = $isbnstkqty[$shipcountry][$val->isbnno]['wname'];
+					$wid = $isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wid'];
+					$wname = $isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wname'];
 					
-					$isbnstkqty[$shipcountry][$val->isbnno]['wsqty'] = $stkqty - $quantity_to_ship;
+					$isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wsqty'] = $stkqty - $quantity_to_ship;
 				}elseif($quantity_to_ship <= $instkqty && !empty($instkqty)){ // for India
 				//	echo 'hey';
 					$shipedqty = $quantity_to_ship;
-					$wid = $isbnstkqty['IN'][$val->isbnno]['wid'];
-					$wname = $isbnstkqty['IN'][$val->isbnno]['wname'];
+					$wid = $isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wid'];
+					$wname = $isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wname'];
 					
-					$isbnstkqty['IN'][$val->isbnno]['wsqty'] = $instkqty - $quantity_to_ship;
+					$isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wsqty'] = $instkqty - $quantity_to_ship;
 				}else{
 					$shipedqty = 0;
 				}
