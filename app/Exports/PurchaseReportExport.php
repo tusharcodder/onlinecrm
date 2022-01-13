@@ -24,13 +24,16 @@ class PurchaseReportExport implements FromView
 	public function view(): View
     {	
 		$exporttype = $this->request['exporttype'];	    
-     
+		$maxpriority = Vendor::max('priority');  
 		$purchaseorders = [];
-		$result = DB::table('purchase_orders')        
-		->leftjoin('book_details','book_details.isbnno','purchase_orders.isbn13')
-		->select('purchase_orders.isbn13','book_details.name',
-		DB::raw("(IFNULL( ( SELECT sum(customer_orders.quantity_to_be_shipped) from customer_orders INNER join skudetails on skudetails.sku_code = customer_orders.sku where skudetails.isbn13 = purchase_orders.isbn13 GROUP by skudetails.isbn13 ), 0) - sum(purchase_orders.quantity)) as quantity")
-		)->groupby('purchase_orders.isbn13')->get();
+		$result = DB::table('warehouse_stocks')        
+		->leftjoin('book_details','book_details.isbnno','warehouse_stocks.isbn13')
+        ->leftjoin('warehouses','warehouses.id','warehouse_stocks.warehouse_id')
+		->select('warehouse_stocks.isbn13','book_details.name',
+		DB::raw("((IFNULL( ( SELECT sum(customer_orders.quantity_to_ship) from customer_orders INNER join skudetails on skudetails.sku_code = customer_orders.sku where skudetails.isbn13 = warehouse_stocks.isbn13 GROUP by skudetails.isbn13 ), 0)-(IFNULL( ( SELECT sum(customer_orders.quantity_to_be_shipped) from customer_orders INNER join skudetails on skudetails.sku_code = customer_orders.sku where skudetails.isbn13 = warehouse_stocks.isbn13 GROUP by skudetails.isbn13 ), 0)) -(IFNULL( ( SELECT sum(customer_orders.quantity_to_be_shipped) from customer_orders INNER join skudetails on skudetails.sku_code = customer_orders.sku where skudetails.isbn13 = warehouse_stocks.isbn13 and customer_orders.warehouse_country_code='IN' GROUP by skudetails.isbn13 ), 0)- sum(warehouse_stocks.quantity)))) as quantity")
+		)->where('warehouses.id',1)
+        ->groupby('warehouse_stocks.isbn13')->get();
+
 
 		if($result->count() > 0){
 			foreach($result as $value){
@@ -38,7 +41,7 @@ class PurchaseReportExport implements FromView
 					$flag = 0;
 					$remainquantity = $value->quantity;
 					//check priority wise						
-					for($i=1; $i<=30; $i++){
+					for($i=1; $i<=$maxpriority; $i++){
 						$venderdetails = DB::table('vendor_stocks')
 						->join('vendors','vendors.id','vendor_stocks.vendor_id')->select('vendors.name','author','publisher','quantity')
 						->where('vendors.priority',$i)->where('vendor_stocks.isbnno',$value->isbn13)

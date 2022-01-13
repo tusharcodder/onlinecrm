@@ -53,7 +53,7 @@ class VendorStockImport implements ToModel, WithHeadingRow, WithBatchInserts, Wi
 		// insert and update product image path in product image table
         return new VendorStock([
             'vendor_id' => $row['vendor_id'],
-            'isbnno' => $row['isbnno'],
+            'isbnno' => strval($row['isbnno']),
             'name' => $row['name'],
             'stock_date' => Carbon::parse($row['stock_date'])->format('Y-m-d'),
             'author' => $row['author'],

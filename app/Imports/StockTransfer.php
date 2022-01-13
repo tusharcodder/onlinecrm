@@ -43,7 +43,7 @@ class StockTransfer implements ToModel, WithHeadingRow, WithBatchInserts, WithCh
         //check the quantity 
         $stockqty = DB::table('warehouse_stocks')->select('quantity')
                     ->where('warehouse_id', $row['warehouse_from'])
-                    ->where('isbn13', $row['isbn13'])->get();
+                    ->where('isbn13', strval($row['isbn13']))->get();
 
         if($row['quantity'] <=$stockqty[0]->quantity ){
 
@@ -52,7 +52,7 @@ class StockTransfer implements ToModel, WithHeadingRow, WithBatchInserts, WithCh
             //update quantity into TJW stock
             DB::table('warehouse_stocks')
             ->where('warehouse_id', $row['warehouse_from'])
-            ->where('isbn13', $row['isbn13'])
+            ->where('isbn13', strval($row['isbn13']))
             ->update(array('quantity'=>$updatedqty));
 
             return new WarehouseStock([

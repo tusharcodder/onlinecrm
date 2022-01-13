@@ -41,7 +41,7 @@ class PurchaseOrderImport implements ToModel, WithHeadingRow, WithBatchInserts, 
         $afterdiscountamt = ((float)($row['mrp'])-((float)($row['mrp'])*(float)($row['discount']))/100)*(int)$row['quantity'];
         return new PurchaseOrder([
             'bill_no'=>$row['bill_no'],
-            'isbn13'=>$row['isbn13'],           //'book_title'=>$row['book_title'], 
+            'isbn13'=>strval($row['isbn13']),           //'book_title'=>$row['book_title'], 
             'vendor_id'=>$row['vendor'],
             'quantity'=>$row['quantity'],
             'mrp'=>$row['mrp'],

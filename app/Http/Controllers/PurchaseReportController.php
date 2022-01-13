@@ -35,7 +35,7 @@ class PurchaseReportController extends Controller
 		->leftjoin('book_details','book_details.isbnno','warehouse_stocks.isbn13')
         ->leftjoin('warehouses','warehouses.id','warehouse_stocks.warehouse_id')
 		->select('warehouse_stocks.isbn13','book_details.name',
-		DB::raw("(IFNULL( ( SELECT sum(customer_orders.quantity_to_ship) from customer_orders INNER join skudetails on skudetails.sku_code = customer_orders.sku where skudetails.isbn13 = warehouse_stocks.isbn13 GROUP by skudetails.isbn13 ), 0) - sum(warehouse_stocks.quantity)) as quantity")
+		DB::raw("((IFNULL( ( SELECT sum(customer_orders.quantity_to_ship) from customer_orders INNER join skudetails on skudetails.sku_code = customer_orders.sku where skudetails.isbn13 = warehouse_stocks.isbn13 GROUP by skudetails.isbn13 ), 0)-(IFNULL( ( SELECT sum(customer_orders.quantity_to_be_shipped) from customer_orders INNER join skudetails on skudetails.sku_code = customer_orders.sku where skudetails.isbn13 = warehouse_stocks.isbn13 GROUP by skudetails.isbn13 ), 0)) -(IFNULL( ( SELECT sum(customer_orders.quantity_to_be_shipped) from customer_orders INNER join skudetails on skudetails.sku_code = customer_orders.sku where skudetails.isbn13 = warehouse_stocks.isbn13 and customer_orders.warehouse_country_code='IN' GROUP by skudetails.isbn13 ), 0)- sum(warehouse_stocks.quantity)))) as quantity")
 		)->where('warehouses.id',1)
         ->groupby('warehouse_stocks.isbn13')->get();
 
