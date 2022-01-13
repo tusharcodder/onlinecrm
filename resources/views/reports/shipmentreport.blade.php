@@ -9,9 +9,9 @@
 						{{ __('Shipment Report') }}
 					</div>
 					<div class="float-right">
-						@can('shipment-track-import')
+					{{-- @can('shipment-track-import')
 							<a class="btn btn-secondary btn-sm" href="{{ route('shipment-track-import') }}">Shipment Track import</a>
-						@endcan
+						@endcan --}}
 					</div>
 					<div class="clearfix"></div>
 				</div>
@@ -59,6 +59,7 @@
 								<th>quantity</th>
 								<th>Warehouse_id</th>
 								<th>Warehouse</th>
+								<th>Warehouse_country</th>
 								<th>Name</th>
 								<th>Recipent_name</th>
 								<th>Phone_number</th>
@@ -88,6 +89,7 @@
 									<td>{{ $shipment->shipedqty }}</td>
 									<td>{{ $shipment->ware_id}}</td>
 									<td>{{ $shipment->warename}}</td>
+									<td>{{ $shipment->wccode}}</td>
 									<td>{{ $shipment->buyer_name}}</td>
 									<td>{{ $shipment->recipient_name }}</td>
 									<td>{{ $shipment->buyer_phone_number }}</td>
@@ -104,7 +106,7 @@
 								</tr>
 								@endforeach
 							@else
-								<tr><td colspan="25">No records found.</td></tr>
+								<tr><td colspan="26">No records found.</td></tr>
 							@endif
 						</table>
 						{{ $shipmentreports->links() }}

@@ -46,6 +46,16 @@ class ShipmentReportController extends Controller
         //
 		$isbnstkqty = array();
 		$finalarray = array();
+		
+		// before generate all quantity_to_be_shipped value should be zero
+		DB::table('customer_orders')
+		->update([
+			'warehouse_id' => null,
+			'warehouse_name' => null,
+			'warehouse_country_code' => null,
+			'quantity_to_be_shipped' => 0,
+		]);
+					
 		// generate report 
 		$shipmentres = DB::table('customer_orders')
 			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher',DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = customer_orders.ship_country GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13 having sum(warehouse_stocks.quantity) >= customer_orders.quantity_to_ship LIMIT 1) as ostkqty"),DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = 'IN' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13) as indstkqty"))
@@ -54,8 +64,8 @@ class ShipmentReportController extends Controller
 			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
 			->where('customer_orders.quantity_to_ship', '>' ,0)
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'customer_orders.ship_country', 'skudetails.isbn13')
-			->orderBy('customer_orders.reporting_date','ASC')->get();		
-			
+			->orderBy('customer_orders.reporting_date','ASC')->get();
+
 		if(!empty($shipmentres)){
 			
 			// get stock value based on isbn no
@@ -79,15 +89,16 @@ class ShipmentReportController extends Controller
 					$indstkqty = $val->indstkqty;
 					$indstkqty = explode("-",$indstkqty);
 					
-					$inwid = empty($ostkqty[0]) ? '' : $ostkqty[0];
-					$instkqty = empty($ostkqty[1]) ? 0 : $ostkqty[1];
-					$inwname = empty($ostkqty[2]) ? '' : $ostkqty[2];
+					$inwid = empty($indstkqty[0]) ? '' : $indstkqty[0];
+					$instkqty = empty($indstkqty[1]) ? 0 : $indstkqty[1];
+					$inwname = empty($indstkqty[2]) ? '' : $indstkqty[2];
 					
 					$isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wid'] = $inwid;
 					$isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wname'] = $inwname;
 					$isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wsqty'] = (float)$instkqty;
 				}
 			}
+			
 			
 			foreach($shipmentres as $key => $val){
 				$shipcountry = $val->ship_country;
@@ -99,20 +110,21 @@ class ShipmentReportController extends Controller
 				$shipedqty = 0;
 				$wid = '';
 				$wname = '';
+				$wccode = '';
 				
 				if($quantity_to_ship <= $stkqty && $shipcountry != "IN" && !empty($stkqty)){ // for order country code
 				//	echo $shipedqty;
 					$shipedqty = $quantity_to_ship;
 					$wid = $isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wid'];
 					$wname = $isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wname'];
-					
+					$wccode = $shipcountry;
 					$isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wsqty'] = $stkqty - $quantity_to_ship;
 				}elseif($quantity_to_ship <= $instkqty && !empty($instkqty)){ // for India
 				//	echo 'hey';
 					$shipedqty = $quantity_to_ship;
 					$wid = $isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wid'];
 					$wname = $isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wname'];
-					
+					$wccode = "IN";
 					$isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wsqty'] = $instkqty - $quantity_to_ship;
 				}else{
 					$shipedqty = 0;
@@ -120,7 +132,7 @@ class ShipmentReportController extends Controller
 				
 				// not empty shipped qty
 				if(!empty($shipedqty)){
-				
+					
 					//update shipqty into the quantity_to_be_shipped column
 					DB::table('customer_orders')
 					->where('order_id', $val->order_id)
@@ -129,6 +141,7 @@ class ShipmentReportController extends Controller
 					->update([
 						'warehouse_id' => $wid,
 						'warehouse_name' => $wname,
+						'warehouse_country_code' => $wccode,
 						'quantity_to_be_shipped' => $shipedqty,
 					]);
 									
@@ -144,6 +157,7 @@ class ShipmentReportController extends Controller
 						'shipedqty' => $shipedqty,
 						'ware_id' => $wid,
 						'warename' => $wname,
+						'wccode' => $wccode,
 						'buyer_name' => $val->buyer_name,
 						'recipient_name' => $val->recipient_name,
 						'buyer_phone_number' => $val->buyer_phone_number,

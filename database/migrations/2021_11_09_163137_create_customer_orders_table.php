@@ -50,6 +50,7 @@ class CreateCustomerOrdersTable extends Migration
                 ->on('warehouses')
                 ->onUpdate('cascade');
 			$table->string('warehouse_name')->nullable();
+			$table->string('warehouse_country_code')->nullable();
 			$table->tinyInteger('status')->default(1);
 			$table->integer('created_by')->nullable();
 			$table->integer('updated_by')->nullable();

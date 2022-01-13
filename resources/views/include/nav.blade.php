@@ -82,11 +82,14 @@
 						</ul>
 					</li>
 				@endcanany
-				@canany(['purchase-report','shipment-report','stock-pull-report','multi-packaging-report'])
+				@canany(['purchase-report','shipment-report','stock-pull-report','multi-packaging-report','shipment-track-import'])
 					<li class="nav-item with-sub"> <a href="" class="nav-link"><i data-feather="bar-chart"></i> Reports</a>
 						<ul class="navbar-menu-sub">
 							@can('shipment-report')
 								<li class="nav-sub-item"><a href="{{ route('shipmentreport') }}" class="nav-sub-link">Shipment Report</a></li>
+							@endcan
+							@can('shipment-track-import')
+								<li class="nav-sub-item"><a href="{{ route('shipment-track-import') }}" class="nav-sub-link">Shipment Track Import</a></li>
 							@endcan
 							@can('stock-pull-report')
 								<li class="nav-sub-item"><a href="{{ route('stockpullreport') }}" class="nav-sub-link">Stock Pull Report</a></li>
