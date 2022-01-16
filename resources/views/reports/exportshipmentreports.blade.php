@@ -49,7 +49,7 @@
 					<td>{{ ++$key }}</td>
 					<td>{{ $shipment->isbnno}}</td>
 					<td>{{ $shipment->sku}}</td>
-					<td>{{ $shipment->proname}}</td>
+					<td>{{ $shipment->product_name}}</td>
 					<td>{{ $shipment->author}}</td>
 					<td>{{ $shipment->publisher}}</td>
 					<td>{{ $shipment->order_id}}</td>

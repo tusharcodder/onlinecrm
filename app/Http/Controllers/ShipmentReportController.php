@@ -148,7 +148,8 @@ class ShipmentReportController extends Controller
 					$finalarray[] = (object)([
 						'isbnno' => $val->isbnno, 
 						'sku' => $val->sku,
-						'proname' => $val->proname,
+						//'proname' => $val->proname,
+						'proname' => $val->product_name,
 						'author' => $val->author,
 						'publisher' => $val->publisher,
 						'order_id' => $val->order_id,
