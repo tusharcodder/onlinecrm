@@ -149,7 +149,7 @@ class ShipmentReportController extends Controller
 						'isbnno' => $val->isbnno, 
 						'sku' => $val->sku,
 						//'proname' => $val->proname,
-						'proname' => $val->product_name,
+						'proname' => (!empty($val->proname)) ? $val->proname : $val->product_name,
 						'author' => $val->author,
 						'publisher' => $val->publisher,
 						'order_id' => $val->order_id,

@@ -49,7 +49,7 @@
 					<td>{{ ++$key }}</td>
 					<td>{{ $shipment->isbnno}}</td>
 					<td>{{ $shipment->sku}}</td>
-					<td>{{ $shipment->product_name}}</td>
+					<td> {{ (!empty($shipment->proname)) ? $shipment->proname  :  $shipment->product_name}}</td>
 					<td>{{ $shipment->author}}</td>
 					<td>{{ $shipment->publisher}}</td>
 					<td>{{ $shipment->order_id}}</td>
