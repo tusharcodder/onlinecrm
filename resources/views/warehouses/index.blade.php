@@ -51,7 +51,8 @@
 							<tr>
 								<th>#ID</th>
 								<th>Name</th>							
-								<th>Country Code</th>							
+								<th>Country Code</th>
+								<th>Is Shipped</th>								
 								<th width="227px">Action</th>
 							</tr>
 							@if($warehouses->total() > 0)
@@ -61,6 +62,11 @@
 									<td>{{ $warehouse->id }}</td>
 									<td>{{ $warehouse->name }}</td>
 									<td>{{ $warehouse->country_code }}</td>
+									@if($warehouse->is_shipped == 1)
+										<td>{{__('True')}}</td>
+									@else
+										<td>{{__('False')}}</td>
+									@endif
 									<td>
 										<a class="btn btn-info btn-sm" href="{{ route('warehouse.show',$warehouse->id) }}">Show</a>
 										@can('warehouse-edit')

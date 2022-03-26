@@ -55,8 +55,8 @@
                                 <th>Sku Code</th>
                                 <th>MRP</th>
                                 <th>Disc</th>
-                                <th>Weight(kg)</th>
-                                <th>Pkg-weight(kg)</th>
+                                <th>Weight(kg)</th>                              
+								<th>Ounces wt</th>
 								<th width="227px">Action</th>
 							</tr>
 							@if($skudetails->total() > 0)                          
@@ -71,8 +71,8 @@
 									<td>{{ $skudetail->sku_code}}</td>
                                     <td>{{ $skudetail->mrp}}</td>
                                     <td>{{ $skudetail->disc}}</td>
-                                    <td>{{ $skudetail->wght}}</td>
-									<td>{{ $skudetail->pkg_wght }}</td>
+                                    <td>{{ $skudetail->wght}}</td>									
+									<td>{{ $skudetail->oz_wt }}</td>
 									<td>
 										<a class="btn btn-info btn-sm" href="{{ route('skudetails.show',$skudetail->id) }}">Show</a>
 										@can('sku-edit')
@@ -91,7 +91,7 @@
 								</tr>                               
 								@endforeach
 							@else
-								<tr><td colspan="10">No records found.</td></tr>
+								<tr><td colspan="9">No records found.</td></tr>
 							@endif
 						</table>
 						{{ $skudetails->links() }}

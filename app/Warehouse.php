@@ -14,6 +14,6 @@ class Warehouse extends Model
      * @var array
      */
     protected $fillable = [
-		'name', 'country_code', 'created_by', 'updated_by'
+		'name', 'country_code','is_shipped', 'created_by', 'updated_by'
     ];
 }

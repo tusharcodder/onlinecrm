@@ -174,7 +174,15 @@
 									<input id="sku" type="text" class="form-control" name="sku" value="{{ old('sku') }}"  autocomplete="sku" >
 								</div>
 							</div>
-							
+							<div class="col-md-3">
+								<div class="form-group">
+									<label for="sku" class="col-form-label text-md-right">{{ __('Status') }}</label>
+									<select id="status" name="status" class="form-control">
+									<option value="Pending">Pending</option>
+									<option value="Pending">Shipped</option>
+									</select>
+								</div>
+							</div>
 							<div class="col-md-3">
 								<div class="form-group">
 									<label class="col-form-label text-md-right" for="format">{{ __('Format*') }}</label>

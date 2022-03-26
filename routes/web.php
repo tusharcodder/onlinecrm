@@ -55,10 +55,20 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::resource('currencies','CurrenciesController');
 	Route::resource('vendorstocks','VendorStockController');
 	Route::resource('warehouse','WarehouseController');
-	Route::resource('skudetails','SkuDetailController');
+	Route::resource('skudetails','SKUDetailController');
 	Route::resource('customerorders','CustomerOrderController');
 	Route::resource('purchaseorders','PurchaseOrderController');
 	Route::resource('purchasereports','PurchaseReportController');
+	
+	Route::get('download-label', 'ShipmentReportController@downloadLabel')->name('download-label');
+
+	//customer order reshipped
+	Route::post('order-reshipped/{id}','CustomerOrderController@orderReshipped')->name('order-reshipped');
+	//export track order
+	Route::post('shippedorderexport','ShipmentReportController@shipmentTrackExport')->name('shippedorderexport');
+	
+	//export current stock
+	Route::post('export-stock','TJWStockController@export')->name('export-stock');
 	
 	Route::get('stocklist', 'TJWStockController@index')->name('stocklist');
 	

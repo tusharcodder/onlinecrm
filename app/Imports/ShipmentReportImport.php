@@ -44,66 +44,71 @@ class ShipmentReportImport implements ToModel, WithHeadingRow, WithBatchInserts,
 		$user = Auth::user();
 		$uid = $user->id;
 		
-		$row['quantity'] = empty($row['quantity']) ? 0 : $row['quantity'];
+		$row['order_item_id'] = str_replace('"', "", strval($row['order_item_id']));
+		$row['isbn13'] = str_replace('"', "", strval($row['isbn13']));
 		
+		if(empty(strval($row['shipper_tracking_id'])) || is_null(strval($row['shipper_tracking_id'])) || strval($row['shipper_tracking_id']) == "#VALUE!" || strval($row['shipper_tracking_id']) == "#N/A") // not insert blank track id data
+			return '';
+		
+		$row['quantity'] = empty($row['quantity']) ? 0 : strval($row['quantity']);
 		// check duplicate track exists or not
-		$trackdata = OrderTrack::where('order_id', '=', $row['order_id'])
-			->where('order_item_id', '=', $row['order_item_id'])
-			->where('shipper_tracking_id', '=', $row['shipper_tracking_id'])
+		$trackdata = OrderTrack::where('order_id', '=', strval($row['order_id']))
+			->where('order_item_id', '=', strval($row['order_item_id']))
+			->where('shipper_tracking_id', '=', strval($row['shipper_tracking_id']))
 			->get();
 		if(!empty(count($trackdata))) // not inserted duplicated data
 			return '';
 			
-		$customerdata = CustomerOrder::where('order_id', '=', $row['order_id'])
-			->where('order_item_id', '=', $row['order_item_id'])
-			->where('sku', '=', $row['sku'])
+		$customerdata = CustomerOrder::where('order_id', '=', strval($row['order_id']))
+			->where('order_item_id', '=', strval($row['order_item_id']))
+			->where('sku', '=', strval($row['sku']))
 			->get();
 		
 		if(!empty(count($customerdata))){
 			foreach($customerdata as $key=>$val){
 				
 				$val->quantity_shipped = empty($val->quantity_shipped) ? 0 : $val->quantity_shipped;
-				
 				$val->quantity_to_ship = empty($val->quantity_to_ship) ? 0 : $val->quantity_to_ship;
 				
-				$shippedqty = $val->quantity_shipped + $row['quantity'];
-				$qtytoship = $val->quantity_to_ship - $row['quantity'];
-				$qtytobeship = $val->quantity_to_be_shipped - $row['quantity'];
+				$shippedqty = $val->quantity_shipped + strval($row['quantity']);
+				$qtytoship = $val->quantity_to_ship - strval($row['quantity']);
+				$qtytobeship = $val->quantity_to_be_shipped - strval($row['quantity']);
 				$qtytobeship = empty($qtytobeship) ? 0 : $qtytobeship;
 				
 				//update shipqty into the quantity_to_be_shipped column and price
 				DB::table('customer_orders')
-				->where('order_id', $val->order_id)
-				->where('order_item_id', $val->order_item_id)
-				->where('sku', $val->sku)
+				->where('order_id', strval($val->order_id))
+				->where('order_item_id', strval($val->order_item_id))
+				->where('sku', strval($val->sku))
 				->update([
 					'quantity_to_be_shipped' => $qtytobeship,
 					'quantity_to_ship' => $qtytoship,
 					'quantity_shipped' => $shippedqty,
-					'price' => $row['price'],
-					'shipping_price' => $row['shipping_price'],
+					'price' => strval($row['price']),
+					'shipping_price' => strval($row['shipping_price']),
+					'selling_price' => strval($row['selling_price']),
 				]);
 			}
 		}
 
 		// insert and update product image path in product image table
         return new OrderTrack([
-            'price' => $row['price'],
-            'selling_price' => $row['selling_price'],
-            'shipping_price' => $row['shipping_price'],
-            'order_id' => $row['order_id'],
-			'order_item_id' => $row['order_item_id'],
-			'sku' => $row['sku'],
+            'price' => strval($row['price']),
+            'selling_price' => strval($row['selling_price']),
+            'shipping_price' => strval($row['shipping_price']),
+            'order_id' => strval($row['order_id']),
+			'order_item_id' => strval($row['order_item_id']),
+			'sku' => strval($row['sku']),
 			'isbnno' => strval($row['isbn13']),
-			'warehouse_id' => $row['warehouse_id'],
-			'warehouse_name' => $row['warehouse'],
-			'box_shipper_id' => $row['box_shipper_id'],
-			'shipper_tracking_id' => $row['shipper_tracking_id'],
-			'box_id' => $row['box_id'],
-			'shipper_id' => $row['shipper_id'],
-			'shipment_date' => $row['shipment_date'],
-			'quantity_shipped' => $row['quantity'],
-			'ncp' => $row['ncp'],
+			'warehouse_id' => strval($row['warehouse_id']),
+			'warehouse_name' => strval($row['warehouse']),
+			'box_shipper_id' => strval($row['box_shipper_id']),
+			'shipper_tracking_id' => strval($row['shipper_tracking_id']),
+			'box_id' => strval($row['box_id']),
+			'shipper_id' => strval($row['shipper_id']),
+			'shipment_date' => strval($row['shipment_date']),
+			'quantity_shipped' => strval($row['quantity']),
+			'ncp' => strval($row['ncp']),
 			'created_by' => $uid,
 			'updated_by' => $uid
         ]);

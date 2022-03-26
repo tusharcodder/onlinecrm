@@ -30,6 +30,17 @@
 						</div>
 						<div class="col-sm-4">
 							<form method="GET" action="{{ route('customerorders.index') }}" role="search">
+								
+								<!--<div class="col-md-3">
+								<div class="form-group">
+									<label for="sku" class="col-form-label text-md-right">{{ __('Status') }}</label>
+									<select id="status" name="status" class="form-control">
+									<option value="Pending">Pending</option>
+									<option value="Pending">Shipped</option>
+									</select>
+								</div>
+							</div>-->
+								
 								<div class="input-group">
 									<input type="text" class="form-control" name="search"
 										placeholder="Search" value="{{ $search }}"> <span class="input-group-btn">
@@ -38,7 +49,7 @@
 										</button>
 									</span>
 								</div>
-							</form>
+															</form>
 						</div>
 					</div>
 					 <div class="table-responsive">
@@ -86,6 +97,17 @@
 												<b>{{ __('Deleted/Refund') }}</b>
 											@endif
 										@endcan
+										@if($customerorder->quantity_to_ship==0)
+											@can('customer-order-reshipped')
+												<form method="POST" action="{{ route('order-reshipped',$customerorder->id) }}" style="display:inline">
+														@csrf
+														@method('POST')
+														<button type="submit" onclick="return confirm('Are you sure?')" class="btn btn-success btn-sm">
+															{{ __('Re-Shipped') }}
+														</button>
+													</form>
+											@endcan
+										@endif
 									</td>
 								</tr>                               
 								@endforeach

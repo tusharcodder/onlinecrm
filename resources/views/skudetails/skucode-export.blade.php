@@ -11,7 +11,7 @@
 				<th>mrp</th>
 				<th>disc</th>
 				<th>weight(kg)</th>
-				<th>pkg_weight(kg)</th>				
+				<th>ounces_wt</th>				
 			</tr>
 		</thead>
 		@if(count($results) > 0)
@@ -25,7 +25,7 @@
 					<td >{{ $res->mrp }}</td>
 					<td >{{ $res->disc }}</td>
 					<td >{{ $res->wght }}</td>
-					<td >{{ $res->pkg_wght }}</td>					
+					<td >{{ $res->oz_wt }}</td>					
 				</tr>
 			@endforeach
 		@endif

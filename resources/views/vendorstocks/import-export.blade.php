@@ -62,6 +62,7 @@
 									<label class="control-label mb-10 text-left" for="importtype">Import Type*</label>
 									<select class="form-control" id="importtype" name="importtype" required>
 										<option value="newimport">New import</option>
+										<option value="importwithupdate">Import with update</option>
 									</select>
 								</div>
 							</div>

@@ -136,11 +136,6 @@
 									<input id="author" type="text" class="form-control" name="author" value="{{ old('isbn10') }}"  autocomplete="isbn10" >
 								</div>
 							</div>
-							
-						</div>
-						
-						<div class="row">							
-							
 							<div class="col-md-3">
 								<div class="form-group">
 									<label for="skucode" class="col-form-label text-md-right">{{ __('Sku Code') }}</label>
@@ -148,6 +143,11 @@
 								</div>
 							</div>
 							
+						</div>
+						
+						<div class="row">							
+							
+						
 							<div class="col-md-3">
 								<div class="form-group">
 									<label for="mrp" class="col-form-label text-md-right">{{ __('MRP') }}</label>
@@ -167,15 +167,16 @@
 									<input id="weight" type="text" class="form-control" name="weight" value="{{ old('weight') }}"  autocomplete="weight" >
 								</div>
 							</div>
-						</div>
-						
-						<div class="row">
-						<div class="col-md-3">
+							<!-- <div class="col-md-3">
 								<div class="form-group">
 									<label for="pkg_weight" class="col-form-label text-md-right">{{ __('pkg_weight(kg)') }}</label>
 									<input id="pkg_weight" type="text" class="form-control" name="pkg_weight" value="{{ old('pkg_weight') }}"  autocomplete="pkg_weight" >
 								</div>
-							</div>
+							</div> -->
+						</div>
+						
+						<div class="row">
+						
 							<div class="col-md-3">
 								<div class="form-group">
 									<label class="col-form-label text-md-right" for="format">{{ __('Format*') }}</label>

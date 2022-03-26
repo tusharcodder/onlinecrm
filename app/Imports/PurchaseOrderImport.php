@@ -35,20 +35,22 @@ class PurchaseOrderImport implements ToModel, WithHeadingRow, WithBatchInserts, 
         $importtype = $this->request['importtype'];
 		++$this->rows;
 		
+		$row['isbn13'] = str_replace('"', "", strval($row['isbn13']));
 		// current login id
 		$user = Auth::user();
 		$uid = $user->id;
         $afterdiscountamt = ((float)($row['mrp'])-((float)($row['mrp'])*(float)($row['discount']))/100)*(int)$row['quantity'];
         return new PurchaseOrder([
-            'bill_no'=>$row['bill_no'],
-            'isbn13'=>strval($row['isbn13']),           //'book_title'=>$row['book_title'], 
-            'vendor_id'=>$row['vendor'],
-            'quantity'=>$row['quantity'],
-            'mrp'=>$row['mrp'],
-            'discount'=>$row['discount'],
+            'bill_no'=>strval($row['bill_no']),
+            'isbn13'=>strval($row['isbn13']),
+			//'book_title'=>$row['book_title'], 
+            'vendor_id'=>strval($row['vendor']),
+            'quantity'=>strval($row['quantity']),
+            'mrp'=>strval($row['mrp']),
+            'discount'=>strval($row['discount']),
             'cost_price'=>$afterdiscountamt,
-            'purchase_by'=>$row['purchase_by'],
-            'purchase_date'=> Carbon::parse($row['purchase_date'])->format('Y-m-d'),
+            'purchase_by'=>strval($row['purchase_by']),
+            'purchase_date'=> Carbon::parse(strval($row['purchase_date']))->format('Y-m-d'),
             'create_by'=>$uid,
             'update_by'=>$uid,
         ]);

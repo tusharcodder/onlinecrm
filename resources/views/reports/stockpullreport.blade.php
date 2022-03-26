@@ -45,6 +45,7 @@
 						<table class="table table-bordered">
 							<tr>
 								<th>No</th>
+								<th>Warehouse</th>
 								<th>Isbn 13</th>
 								<th>Title</th>
 								<th>Stock</th>
@@ -60,6 +61,7 @@
 								@endphp
 								<tr>
 									<td>{{ ($stockpullreports->currentPage()-1) * $stockpullreports->perPage() + $loop->index + 1 }}</td>
+									<td>{{ $stockpull->warehouse_name }}</td>
 									<td>{{ $stockpull->isbnno }}</td>
 									<td>{{ $stockpull->bookname }}</td>
 									<td>{{ $actualstock }}</td>

@@ -69,8 +69,8 @@
 						</div>
                         <div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
-								<strong>Pkg-weight(kg):</strong><br/>
-								{{ $skudetail[0]->pkg_wght }}
+								<strong>Ounces Wgt:</strong><br/>
+								{{ $skudetail[0]->oz_wt }}
 							</div>
 						</div>
 					</div>					

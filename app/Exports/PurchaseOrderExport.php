@@ -26,11 +26,12 @@ class PurchaseOrderExport implements FromView
     {	
 		$bill_no = $this->request['bill_no'];
 		$isbn13 = $this->request['isbn13'];
-		$vendor = $this->request['vendor'];
+		$vendor = $this->request['vendor_name'];
 		$purchase_date_from = $this->request['purchase_date_from'];
 		$purchase_date_to = $this->request['purchase_date_to'];		
 		$quantity = $this->request['quantity'];
 		$mrp = $this->request['mrp'];
+		$bookname = $this->request['bookname'];
 		$discount = $this->request['discount'];
 		$purchase_by = $this->request['purchase_by'];	
 		$format = $this->request['format'];
@@ -58,7 +59,9 @@ class PurchaseOrderExport implements FromView
 			if(!empty($purchase_date_to))
 				$query->where('purchase_date', '<=', $purchase_date_to);
             if(!empty($purchase_by))
-				$query->where('purchase_by', '=', $purchase_by);    	
+				$query->where('purchase_by', '=', $purchase_by); 
+			 if(!empty($bookname))
+				$query->where('book_details.name', '=', $bookname); 
 				
 			$results = $query->orderBy('id', 'ASC')->get();
 		}else // only data heading for format
