@@ -46,6 +46,14 @@
 									<input id="country_code" type="text" class="form-control" name="country_code" value="{{ old('country_code') }}" autocomplete="country_code" minlength="2" maxlength="2" required>
 								</div>
 							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<br/> <label for="country_code" class="col-form-label text-md-right">{{ __('Is Shipped') }}</label>
+									
+									&nbsp;	&nbsp;  <input id="is_shipped" type="checkbox" name="is_shipped"/> 
+									
+								</div>
+							</div>
 						</div>
 						<div class="form-group row mb-0">
                             <div class="col-md-12">

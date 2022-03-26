@@ -45,6 +45,7 @@ class SKUDetailController extends Controller
         ->where(function($query) use ($search) {
 					$query->where('market_places.name','LIKE','%'.$search.'%')
 						->orWhere('isbn13','LIKE','%'.$search.'%')
+						->orWhere('sku_code','LIKE','%'.$search.'%')
 						->orWhere('isbn10','LIKE','%'.$search.'%');
 				})->orderBy('skudetails.id','desc')->paginate(10)->setPath('');
 		
@@ -91,6 +92,7 @@ class SKUDetailController extends Controller
             'mrp' => 'required',		
 		]);
 		
+        $oz_wt = round(( (float)$request->input('wght') * 35.2739),2 );//calc ounces wgt
 		// save value in db
 		$skudetails = SkuDetail::create([
 								'market_id' => $request->input('mplace'),
@@ -100,7 +102,7 @@ class SKUDetailController extends Controller
                                 'sku_code' => $request->input('sku'),
                                 'disc' => $request->input('disc'),
                                 'wght' => $request->input('wght'),
-                                'pkg_wght' => $request->input('pgkwght'),
+                                'oz_wt' => $oz_wt,
 								'created_by' => $uid,
 								'updated_by' => $uid
 							]);
@@ -161,8 +163,9 @@ class SKUDetailController extends Controller
             'isbn13' => 'required',	
             'isbn10' => 'required',		
             'mrp' => 'required',		
-		]);		
-			
+		]);
+
+        $oz_wt = round(( (float)$request->input('wght') * 35.2739),2 );//calc ounces wgt
 		// update value in db
 		$skudetail = SkuDetail::find($id);       
         $skudetail->market_id  = $request->input('mplace');      
@@ -173,7 +176,7 @@ class SKUDetailController extends Controller
         $skudetail->mrp  = $request->input('mrp');
         $skudetail->disc = $request->input('disc');  
 		$skudetail->wght = $request->input('wght');        
-		$skudetail->pkg_wght = $request->input('pgkwght');       
+		$skudetail->oz_wt = $oz_wt;       
         $skudetail->updated_by = $uid;
         $skudetail->save();
 		return redirect()->route('skudetails.index')
@@ -237,9 +240,6 @@ class SKUDetailController extends Controller
 						
 			if ($extension == "xlsx" || $extension == "xls" || $extension == "csv") {				
 				try{
-					// truncate table
-				//	DB::table("vendor_stocks")->truncate();
-					
 					// import data into the database
 					$import = new SkuDetailimport($request);
 					$path = $request->importfile->getRealPath();
@@ -259,7 +259,9 @@ class SKUDetailController extends Controller
 					return redirect()->route('skucode-detail-import')
                         ->with('error','No data found to imported.');
 				}
-               
+				
+				// remove duplicate sku details
+				
 				return redirect()->route('skudetails.index')
                         ->with('success','Your Data has successfully imported.');
 			}else{

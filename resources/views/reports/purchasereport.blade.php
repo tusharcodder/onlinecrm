@@ -45,30 +45,37 @@
 						<table class="table table-bordered">
 							<tr>
 								<th>No</th>
+								<th>Sku</th>
 								<th>Isbn 13</th>
 								<th>Book Name</th>
+								<th>Mrp</th>
 								<th>Author</th>
 								<th>Publisher</th>
-								<th>Quantity</th>
-								<th>Vendor Name</th>								
+								<th>Require quantity</th>
+								<th>Vendor quantity</th>
+								<th>Vendor Name</th>
+								<th>Vendor Data</th>								
 							</tr>
 							@if($purchaseorders->total() > 0)
 								@foreach ($purchaseorders as $key => $purchaseorder)
 								<tr>
 									<td>{{ ($purchaseorders->currentPage()-1) * $purchaseorders->perPage() + $loop->index + 1 }}</td>
+									<td>{{ $purchaseorder['Sku']}}</td>
 									<td>{{ $purchaseorder['isbn13']}}</td>
 									<td>{{ $purchaseorder['book']}}</td>
+									<td >{{ $purchaseorder['mrp'] }}</td>
 									<td>{{ $purchaseorder['author']}}</td>
 									<td>{{ $purchaseorder['publisher']}}</td>
+									<td>{{ $purchaseorder['New']}}</td>
 									<td>{{ $purchaseorder['quantity']}}</td>
-									<td>{{ $purchaseorder['vendor_name']}}</td>								
+									<td>{{ $purchaseorder['vendor_name']}}</td>	<td>{{ $purchaseorder['vendordata']}}</td>							
 								</tr>
 								@endforeach
 							@else
-								<tr><td colspan="7">No records found.</td></tr>
+								<tr><td colspan="11">No records found.</td></tr>
 							@endif
 						</table>
-						{{ $purchaseorders->links() }}
+						
 					</div>
 				</div>
 			</div>

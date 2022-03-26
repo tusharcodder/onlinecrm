@@ -42,27 +42,40 @@ class StockTransfer implements ToModel, WithHeadingRow, WithBatchInserts, WithCh
         $row['quantity'] = empty($row['quantity']) ? 0 : $row['quantity'];
         //check the quantity 
         $stockqty = DB::table('warehouse_stocks')->select('quantity')
-                    ->where('warehouse_id', $row['warehouse_from'])
+                    ->where('warehouse_id', strval($row['warehouse_from']))
                     ->where('isbn13', strval($row['isbn13']))->get();
 
-        if($row['quantity'] <=$stockqty[0]->quantity ){
+        if($row['quantity'] <=$stockqty[0]->quantity){
 
             $updatedqty = ($stockqty[0]->quantity- $row['quantity']);
 
             //update quantity into TJW stock
             DB::table('warehouse_stocks')
-            ->where('warehouse_id', $row['warehouse_from'])
+            ->where('warehouse_id', strval($row['warehouse_from']))
             ->where('isbn13', strval($row['isbn13']))
             ->update(array('quantity'=>$updatedqty));
+            
+            $isExist = DB::table('warehouse_stocks')
+                        ->select('*')->where('warehouse_id', strval($row['warehouse_to']))
+                        ->where('isbn13',strval($row['isbn13']))->get();
 
-            return new WarehouseStock([
-                'warehouse_id' => $row['warehouse_to'],           
-                'isbn13' =>$row['isbn13'],           
-                'quantity' =>$row['quantity']       
-               
-            ]);
+            //update when isbn already in warehouse to            
+            if($isExist->count() > 0){
+                $updatenewqty = ($isExist[0]->quantity + $row['quantity']);
+                DB::table('warehouse_stocks')
+                ->where('warehouse_id', strval($row['warehouse_to']))
+                ->where('isbn13', strval($row['isbn13']))
+                ->update(array('quantity'=> $updatenewqty));           
+            }else{
+                return new WarehouseStock([
+                    'warehouse_id' => strval($row['warehouse_to']),           
+                    'isbn13' =>strval($row['isbn13']),           
+                    'quantity' =>strval($row['quantity'])
+                ]);
+            }
+           
         }else{
-            $notsaveisbns=array("isbn"=>$row['isbn13']);
+            $notsaveisbns=array("isbn"=>strval($row['isbn13']));
         }
     }
 

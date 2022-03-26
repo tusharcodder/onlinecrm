@@ -43,26 +43,50 @@ class VendorStockImport implements ToModel, WithHeadingRow, WithBatchInserts, Wi
 		$user = Auth::user();
 		$uid = $user->id;
 		
-        //vendor stock delete before current date
-        $current_date=Carbon::parse($row['stock_date'])->format('Y-m-d');
-        DB::table('vendor_stocks')
-            ->where('vendor_id',$row['vendor_id'])
-            ->where('stock_date','<',$current_date)
-            ->delete();
+		if($importtype == "newimport" && $this->rows == 1){ // for new import
+			VendorStock::where('vendor_id', strval($row['vendor_id']))
+                ->update(['quantity' => 0]);	
+		}elseif($importtype == "importwithupdate"){// import with update
+			//
+		}
+		
+		// check duplicate stock exists or not
+		$stkdata = VendorStock::where('vendor_id', '=', strval($row['vendor_id']))
+			->where('isbnno', '=', strval($row['isbnno']))
+			->get();
+		if(!empty(count($stkdata))){
+			VendorStock::where('vendor_id', strval($row['vendor_id']))
+			->where('isbnno', '=', strval($row['isbnno']))
+			->update([
+				'vendor_id' => strval($row['vendor_id']),
+				'isbnno' => strval($row['isbnno']),
+				'name' => strval($row['name']),
+				'stock_date' => Carbon::parse(strval($row['stock_date']))->format('Y-m-d'),
+				'author' => strval($row['author']),
+				'publisher' => strval($row['publisher']),
+				'binding_id' => strval($row['binding_id']),
+				'currency_id' => strval($row['currency_id']),
+				'price' => strval($row['price']),
+				'discount' => strval($row['discount']),
+				'quantity' => strval($row['quantity']),
+				'updated_by' => $uid,
+			]);				
+			return null;
+		}
 		
 		// insert and update product image path in product image table
         return new VendorStock([
-            'vendor_id' => $row['vendor_id'],
+            'vendor_id' => strval($row['vendor_id']),
             'isbnno' => strval($row['isbnno']),
-            'name' => $row['name'],
-            'stock_date' => Carbon::parse($row['stock_date'])->format('Y-m-d'),
-            'author' => $row['author'],
-            'publisher' => $row['publisher'],
-            'binding_id' => $row['binding_id'],
-            'currency_id' => $row['currency_id'],
-            'price' => $row['price'],
-            'discount' => $row['discount'],
-            'quantity' => $row['quantity'],
+            'name' => strval($row['name']),
+            'stock_date' => Carbon::parse(strval($row['stock_date']))->format('Y-m-d'),
+            'author' => strval($row['author']),
+            'publisher' => strval($row['publisher']),
+            'binding_id' => strval($row['binding_id']),
+            'currency_id' => strval($row['currency_id']),
+            'price' => strval($row['price']),
+            'discount' => strval($row['discount']),
+            'quantity' => strval($row['quantity']),
             'created_by' => $uid,
             'updated_by' => $uid,
         ]);

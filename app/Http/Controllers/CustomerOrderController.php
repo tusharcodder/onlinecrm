@@ -40,7 +40,7 @@ class CustomerOrderController extends Controller
     {
         //
 		$search = $request->input('search');
-		
+		$status = $request->input('status');
         //
 		$customerorders = CustomerOrder::where(function($query) use ($search) {
 					$query->Where('order_id','LIKE','%'.$search.'%')
@@ -130,6 +130,9 @@ class CustomerOrderController extends Controller
     {
 		// delete row
 		//DB::table("customer_orders")->where('id',$id)->delete();
+		
+		$user = Auth::user();
+		$uid = $user->id;
 		
 		// update quantity 0
 		$customerorders = CustomerOrder::find($id);
@@ -298,4 +301,64 @@ class CustomerOrderController extends Controller
 			} 
 		}
     }
+
+	//order reshipped
+	public function orderReshipped($id){
+
+		try{
+			$user = Auth::user();
+			$uid = $user->id;
+
+			$order = CustomerOrder::find($id);
+			//count how many time order shipped
+			$count = DB::table('customer_orders')
+					->select(DB::raw("count(id) as count"))
+					->where('order_id',$order->order_id)
+					->get();
+			$insertarray = array(
+				'order_id'=>$order->order_id,
+				'order_item_id'=>($order->order_item_id.'-'.$count[0]->count),
+				'purchase_date'=>$order->purchase_date,
+				'payments_date'=>$order->payments_date,
+				'reporting_date'=>$order->reporting_date,
+				'promise_date'=>$order->promise_date,
+				'days_past_promise'=>$order->days_past_promise,
+				'buyer_email'=>$order->buyer_email,
+				'buyer_name'=>$order->buyer_name,
+				'buyer_phone_number'=>$order->buyer_phone_number,
+				'sku'=>$order->sku,
+				'product_name'=>$order->product_name,
+				'quantity_purchased'=>$order->quantity_purchased,
+				'quantity_shipped'=>0,
+				'quantity_to_ship'=>$order->quantity_shipped,
+				'quantity_to_be_shipped'=>0,
+				
+				'ship_service_level'=>$order->ship_service_level,
+				'recipient_name'=>$order->recipient_name,
+				'ship_address_1'=>$order->ship_address_1,
+				'ship_address_2'=>$order->ship_address_2,
+				'ship_address_3'=>$order->ship_address_3,
+				'ship_city'=>$order->ship_city,
+				'ship_state'=>$order->ship_state,
+				'ship_postal_code'=>$order->ship_postal_code,
+				'ship_country'=>$order->ship_country,
+				'is_business_order'=>$order->is_business_order,
+				'purchase_order_number'=>$order->purchase_order_number,
+				'price_designation'=>$order->price_designation,
+				'created_by'=>$uid ,
+				'updated_by'=>$uid ,
+				'created_at'=>now(),
+				'updated_at'=>now(),			
+			);	
+			
+			DB::table('customer_orders')->insert($insertarray);
+			return redirect()->route('customerorders.index')
+                        ->with('success','Order Created Successfully');
+		}
+		catch(\Exception $ex){
+			return redirect()->route('customerorders.index')
+                        ->with('error',$ex->getMessage());
+		}
+		
+	}
 }

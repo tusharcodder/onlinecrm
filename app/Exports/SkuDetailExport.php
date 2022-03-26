@@ -30,8 +30,7 @@ class SkuDetailExport  implements FromView
 		$isbn10 = $this->request['isbn10'];
 		$skucode = $this->request['skucode'];
 		$mrp = $this->request['mrp'];
-		$weight = $this->request['weight'];
-		$pkg_weight = $this->request['pkg_weight'];
+		$weight = $this->request['weight'];		
 	
 		$format = $this->request['format'];
 		$exporttype = $this->request['exporttype'];

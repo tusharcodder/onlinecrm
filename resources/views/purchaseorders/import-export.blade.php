@@ -144,14 +144,20 @@
 							</div>	
 							<div class="col-md-3">
 								<div class="form-group">
-									<label for="quantity" class="col-form-label text-md-right">{{ __('Quantity') }}</label>
-									<input id="quantity" type="text" class="form-control" name="quantity" value="{{ old('quantity') }}"  autocomplete="quantity" >
+									<label for="isbn13" class="col-form-label text-md-right">{{ __('Book Title') }}</label>
+									<input id="bookname" type="text" class="form-control" name="bookname" value="{{ old('bookname') }}"  autocomplete="bookname" >
 								</div>
-							</div>	
+							</div>
+							
 						</div>
 						
 						<div class="row">
-													
+							<div class="col-md-3">
+								<div class="form-group">
+									<label for="quantity" class="col-form-label text-md-right">{{ __('Quantity') }}</label>
+									<input id="quantity" type="text" class="form-control" name="quantity" value="{{ old('quantity') }}"  autocomplete="quantity" >
+								</div>
+							</div>							
 							<div class="col-md-3">
 								<div class="form-group">
 									<label for="mrp" class="col-form-label text-md-right">{{ __('MRP') }}</label>
@@ -170,15 +176,16 @@
 									<input id="purchase_by" type="text" class="form-control" name="purchase_by" value="{{ old('purchase_by') }}"  autocomplete="purchase_by">
 								</div>
 							</div>
+							
+						</div>
+						
+						<div class="row">
 							<div class="col-md-3">
 								<div class="form-group">
 									<label for="purchase_date_from" class="col-form-label text-md-right">{{ __('Purchase date from*') }}</label>
 									<input id="purchase_date_from" type="date" class="form-control" name="purchase_date_from" value="{{ old('purchase_date_from',date('Y-m-d')) }}"  autocomplete="purchase_date_from" required>
 								</div>
 							</div>
-						</div>
-						
-						<div class="row">
 							<div class="col-md-3">
 								<div class="form-group">
 									<label for="purchase_date_to" class="col-form-label text-md-right">{{ __('Purchase date to*') }}</label>

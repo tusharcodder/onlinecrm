@@ -30,6 +30,28 @@
 							<p>{{ $message }}</p>
 						</div>
 					@endif
+					@can('download-tjw-stock')
+						<form action="{{route('export-stock')}}" method="POST">
+						@csrf
+							<div class="form-group row">
+								<div class="col-md-2">
+								<input type="hidden" name="hiddensearch" id="hiddensearch" value="{{$search}}" />
+									<label for="exporttype" class="">{{ __('File Type*') }}</label> 
+									<select class="form-control" id="exporttype" name="exporttype">
+										<option value="csv">CSV</option>
+										<option value="xls">XLS</option>
+										<option value="xlsx">XLSX</option>
+									</select>
+								</div>
+								<div class="col-md-1">
+									<input type="hidden" value="" id="formval" name="formval">
+									<button type="submit" class="btn btn-primary" style="margin-top: 30px !important;" id="downloadreport">
+										{{ __('Download') }}
+									</button>
+								</div>
+							</div>
+						</form>
+					@endcan
 					<div class="row mb-1">
 						<div class="col-sm-8">	
 							Showing {{($stocks->currentPage()-1)* $stocks->perPage()+($stocks->total() ? 1:0)}} to {{($stocks->currentPage()-1)*$stocks->perPage()+count($stocks)}}  of  {{$stocks->total()}}  Results

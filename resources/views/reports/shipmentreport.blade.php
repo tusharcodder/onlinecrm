@@ -9,7 +9,7 @@
 						{{ __('Shipment Report') }}
 					</div>
 					<div class="float-right">
-					{{-- @can('shipment-track-import')
+						{{-- @can('shipment-track-import')
 							<a class="btn btn-secondary btn-sm" href="{{ route('shipment-track-import') }}">Shipment Track import</a>
 						@endcan --}}
 					</div>
@@ -17,29 +17,30 @@
 				</div>
 				<div class="card-body">
 					@can('download-shipment-report')
-						<form action="{{ route('downloadshipmentreport') }}" method="POST">
+					<form action="{{ route('downloadshipmentreport') }}" method="POST">
 						@csrf
-							<div class="form-group row">
-								<div class="col-md-2">
-									<label for="exporttype" class="">{{ __('File Type*') }}</label> 
-									<select class="form-control" id="exporttype" name="exporttype">
-										<option value="csv">CSV</option>
-										<option value="xls">XLS</option>
-										<option value="xlsx">XLSX</option>
-									</select>
-								</div>
-								<div class="col-md-1">
-									<input type="hidden" value="" id="formval" name="formval">
-									<button type="submit" class="btn btn-primary" style="margin-top: 30px !important;" id="downloadreport">
-										{{ __('Download') }}
-									</button>
-								</div>
+						<div class="form-group row">
+							<div class="col-md-2">
+								<label for="exporttype" class="">{{ __('File Type*') }}</label>
+								<select class="form-control" id="exporttype" name="exporttype">
+									<option value="csv">CSV</option>
+									<option value="xls">XLS</option>
+									<option value="xlsx">XLSX</option>
+								</select>
 							</div>
-						</form>
+							<div class="col-md-1">
+								<input type="hidden" value="" id="formval" name="formval">
+								<button type="submit" class="btn btn-primary" style="margin-top: 30px !important;" id="downloadreport">
+									{{ __('Download') }}
+								</button>
+							</div>
+						</div>
+					</form>
 					@endcan
+					<!--<a href="{{route('download-label')}}" class="btn btn-sm">Run Api</a>-->
 					<div class="row mb-1">
-						<div class="col-sm-8">	
-							Showing {{($shipmentreports->currentPage()-1)* $shipmentreports->perPage()+($shipmentreports->total() ? 1:0)}} to {{($shipmentreports->currentPage()-1)*$shipmentreports->perPage()+count($shipmentreports)}}  of  {{$shipmentreports->total()}}  Results
+						<div class="col-sm-8">
+							Showing {{($shipmentreports->currentPage()-1)* $shipmentreports->perPage()+($shipmentreports->total() ? 1:0)}} to {{($shipmentreports->currentPage()-1)*$shipmentreports->perPage()+count($shipmentreports)}} of {{$shipmentreports->total()}} Results
 						</div>
 						<div class="col-sm-4">
 						</div>
@@ -72,41 +73,47 @@
 								<th>Country</th>
 								<th>MarPla_acc</th>
 								<th>Ship_type</th>
-								<th>Listing_wgt</th>
+								<th>Wght</th>
+								<th>ounce</th>
+								<th>Mrp</th>
 							</tr>
 							@if($shipmentreports->total() > 0)
-								@foreach ($shipmentreports as $key => $shipment)
-								<tr>
-									<td>{{ ($shipmentreports->currentPage()-1) * $shipmentreports->perPage() + $loop->index + 1 }}</td>
-									<td>{{ $shipment->isbnno}}</td>
-									<td>{{ $shipment->sku}}</td>
-									<td>{{ $shipment->proname}}</td>
-									<td>{{ $shipment->author}}</td>
-									<td>{{ $shipment->publisher}}</td>
-									<td>{{ $shipment->order_id}}</td>
-									<td>{{ $shipment->order_item_id}}</td>
-									<td> {{ \Carbon\Carbon::parse($shipment->purchase_date)->format('d-m-Y')}}</td>
-									<td>{{ $shipment->shipedqty }}</td>
-									<td>{{ $shipment->ware_id}}</td>
-									<td>{{ $shipment->warename}}</td>
-									<td>{{ $shipment->wccode}}</td>
-									<td>{{ $shipment->buyer_name}}</td>
-									<td>{{ $shipment->recipient_name }}</td>
-									<td>{{ $shipment->buyer_phone_number }}</td>
-									<td>{{ $shipment->ship_address_1}}</td>
-									<td>{{ $shipment->ship_address_2}}</td>
-									<td>{{ $shipment->ship_address_3 }}</td>
-									<td>{{ $shipment->ship_city }}</td>
-									<td>{{ $shipment->ship_state }}</td>
-									<td>{{ $shipment->ship_postal_code }}</td>
-									<td>{{ $shipment->ship_country }}</td>
-									<td>{{ $shipment->markname }}</td>
-									<td>{{ $shipment->ship_service_level }}</td>
-									<td>{{ $shipment->pkg_wght }}</td>
-								</tr>
-								@endforeach
+							@foreach ($shipmentreports as $key => $shipment)
+							<tr>
+								<td>{{ ($shipmentreports->currentPage()-1) * $shipmentreports->perPage() + $loop->index + 1 }}</td>
+								<td>{{ $shipment->isbnno}}</td>
+								<td>{{ $shipment->sku}}</td>
+								<td>{{ $shipment->proname}}</td>
+								<td>{{ $shipment->author}}</td>
+								<td>{{ $shipment->publisher}}</td>
+								<td>{{ $shipment->order_id}}</td>
+								<td>{{ $shipment->order_item_id}}</td>
+								<td> {{ \Carbon\Carbon::parse($shipment->purchase_date)->format('d-m-Y')}}</td>
+								<td>{{ $shipment->shipedqty }}</td>
+								<td>{{ $shipment->ware_id}}</td>
+								<td>{{ $shipment->warename}}</td>
+								<td>{{ $shipment->wccode}}</td>
+								<td>{{ $shipment->buyer_name}}</td>
+								<td>{{ $shipment->recipient_name }}</td>
+								<td>{{ $shipment->buyer_phone_number }}</td>
+								<td>{{ $shipment->ship_address_1}}</td>
+								<td>{{ $shipment->ship_address_2}}</td>
+								<td>{{ $shipment->ship_address_3 }}</td>
+								<td>{{ $shipment->ship_city }}</td>
+								<td>{{ $shipment->ship_state }}</td>
+								<td>{{ $shipment->ship_postal_code }}</td>
+								<td>{{ $shipment->ship_country }}</td>
+								<td>{{ $shipment->markname }}</td>
+								<td>{{ $shipment->ship_service_level }}</td>
+								<td>{{ $shipment->wght }}</td>
+								<td>{{ $shipment->ounce }}</td>
+								<td>{{ $shipment->mrp }}</td>
+							</tr>
+							@endforeach
 							@else
-								<tr><td colspan="26">No records found.</td></tr>
+							<tr>
+								<td colspan="28">No records found.</td>
+							</tr>
 							@endif
 						</table>
 						{{ $shipmentreports->links() }}
@@ -114,6 +121,6 @@
 				</div>
 			</div>
 		</div>
-    </div>
+	</div>
 </div>
 @endsection

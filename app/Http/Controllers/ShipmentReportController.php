@@ -15,12 +15,14 @@ use DateTime;
 use App\Rules\DateRange; // date range rule validation
 use DB;
 use App\Exports\ShipmentReportExport;
+use App\Exports\ShippedOrderExport;
 use App\Imports\ShipmentReportImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Zip;
 use App\Common;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Http;
 
 class ShipmentReportController extends Controller
 {
@@ -58,7 +60,7 @@ class ShipmentReportController extends Controller
 					
 		// generate report 
 		$shipmentres = DB::table('customer_orders')
-			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher',DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = customer_orders.ship_country GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13 having sum(warehouse_stocks.quantity) >= customer_orders.quantity_to_ship LIMIT 1) as ostkqty"),DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = 'IN' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13) as indstkqty"))
+			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','skudetails.wght as wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher',DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = customer_orders.ship_country and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13 having sum(warehouse_stocks.quantity) >= customer_orders.quantity_to_ship LIMIT 1) as ostkqty"),DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = 'IN' and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13) as indstkqty"),'skudetails.oz_wt','skudetails.mrp')
 			->leftJoin("skudetails","skudetails.sku_code","=","customer_orders.sku")
 			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
 			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
@@ -171,7 +173,9 @@ class ShipmentReportController extends Controller
 						'ship_country' => $val->ship_country,
 						'markname' => $val->markname,
 						'ship_service_level' => $val->ship_service_level,
-						'pkg_wght' => $val->pkg_wght
+						'wght' => $val->wght,
+						'ounce' => $val->oz_wt,
+						'mrp' => $val->mrp
 					]);
 				}
 			}
@@ -255,6 +259,14 @@ class ShipmentReportController extends Controller
     {
 		return view('reports.track-import');
     }
+	
+	/**
+    * @return \Illuminate\Support\Collection
+    */
+	public function shipmentTrackExport(Request $request) 
+    {	
+		return Excel::download(new ShippedOrderExport($request), "shippedorder.".$request['exporttype']);
+    }
    
     /**
     * @return \Illuminate\Support\Collection
@@ -263,7 +275,176 @@ class ShipmentReportController extends Controller
     {	
 		return Excel::download(new ShipmentReportExport($request), "shipmentreport.".$request['exporttype']);
     }
-   
+	public function downloadLabel(){
+		$curl = curl_init();
+		
+		curl_setopt_array($curl, array(
+		  CURLOPT_URL => 'https://api.ypn.io/v2/shipping/shipments',
+		  CURLOPT_RETURNTRANSFER => true,
+		  CURLOPT_ENCODING => '',
+		  CURLOPT_MAXREDIRS => 10,
+		  CURLOPT_TIMEOUT => 0,
+		  CURLOPT_FOLLOWLOCATION => true,
+		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		  CURLOPT_CUSTOMREQUEST => 'POST',
+		  CURLOPT_POSTFIELDS =>'{
+			"date": "2022-03-26",
+			"service": "USPS",
+			"from":{
+				"name": "Ravi",
+				"company": "NE  Warehouse.",
+				"phone": "2013660444",
+				"email": "info@abc-corp.com",
+				"street1": "100 Main St",
+				"street2": "",
+				"street3": "",
+				"city": "Bellevue Ne",
+				"state": "NE",
+				"postal_code": "68005",
+				"country": "US",
+				"residential": false,
+				"tax_id": ""
+			},		
+		
+			"to": {
+				"name": "Tushar gupta",
+				"company": "",
+				"phone": "2013660475",
+				"email": "",
+				"street1": "100 Broad St",
+				"street2": "",
+				"street3": "",
+				"city": "Portland",
+				"state": "OR",
+				"postal_code": "97216",
+				"country": "US",
+				"residential": true,
+				"tax_id": ""
+			},
+			"type": "box",
+			"parcels": [
+				{
+					"number": 2,
+					"code": "",
+					"unit": "imperial",
+					"weight": 5.25,
+					"length": 10,
+					"width": 8.5,
+					"height": 6,
+					"dg_code": null
+				}
+			],
+			"insurance": null,
+			"references": [
+				{
+					"type": "customer_ref",
+					"value": "123"
+				}
+			],
+			"remarks": null,
+			"signature": "none",
+			"pickup": "dropoff",
+			"domestic_options": {
+				"value": {
+					"currency": "USD",
+					"amount": 0
+				},
+				"contents": "Books"
+			},
+			"international_options": null,
+			"additional_options": null,
+			"document_options": {
+				"return": true,
+				"label_format": "pdf",
+				"medium": "url"
+			},
+			"notifications": null
+		}','{
+			"date": "2022-03-26",
+			"service": "USPS",
+			"from":{
+				"name": "Ravi",
+				"company": "NE  Warehouse.",
+				"phone": "2013660444",
+				"email": "info@abc-corp.com",
+				"street1": "100 Main St",
+				"street2": "",
+				"street3": "",
+				"city": "Bellevue Ne",
+				"state": "NE",
+				"postal_code": "68005",
+				"country": "US",
+				"residential": false,
+				"tax_id": ""
+			},		
+		
+			"to": {
+				"name": "Tushar gupta",
+				"company": "",
+				"phone": "2013660475",
+				"email": "",
+				"street1": "100 Broad St",
+				"street2": "",
+				"street3": "",
+				"city": "Portland",
+				"state": "OR",
+				"postal_code": "97216",
+				"country": "US",
+				"residential": true,
+				"tax_id": ""
+			},
+			"type": "box",
+			"parcels": [
+				{
+					"number": 2,
+					"code": "",
+					"unit": "imperial",
+					"weight": 5.25,
+					"length": 10,
+					"width": 8.5,
+					"height": 6,
+					"dg_code": null
+				}
+			],
+			"insurance": null,
+			"references": [
+				{
+					"type": "customer_ref",
+					"value": "my shipment 3"
+				}
+			],
+			"remarks": null,
+			"signature": "none",
+			"pickup": "dropoff",
+			"domestic_options": {
+				"value": {
+					"currency": "USD",
+					"amount": 0
+				},
+				"contents": "Books"
+			},
+			"international_options": null,
+			"additional_options": null,
+			"document_options": {
+				"return": true,
+				"label_format": "pdf",
+				"medium": "url"
+			},
+			"notifications": null
+		}',
+		
+		  CURLOPT_HTTPHEADER => array(
+			'Content-Type: application/json',
+			'Authorization: Basic TlRRPS4rbHNORytJdVRpMzZWOHpjT0JFLzd2N1Axc3luWFh5c0VKL3pTaE41M3ZjPTo='
+		  ),
+		));
+		
+		$response = curl_exec($curl);
+		
+		curl_close($curl);
+		echo $response;
+		
+	}
     /**
     * @return \Illuminate\Support\Collection
     */

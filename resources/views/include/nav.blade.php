@@ -98,7 +98,7 @@
 								<li class="nav-sub-item"><a href="{{ route('multipackagingreport') }}" class="nav-sub-link">Multi Packaging Report</a></li>
 							@endcan
 							@can('purchase-report')
-								<li class="nav-sub-item"><a href="{{ route('purchasereports.index') }}" class="nav-sub-link">Pruchase Report</a></li>
+								<li class="nav-sub-item"><a href="{{ route('purchasereports.index') }}" class="nav-sub-link">Purchase Report</a></li>
 							@endcan
 						</ul>
 					</li>

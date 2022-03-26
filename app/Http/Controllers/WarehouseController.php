@@ -34,7 +34,7 @@ class WarehouseController extends Controller
 		$warehouses = Warehouse::where(function($query) use ($search) {
 					$query->where('name','LIKE','%'.$search.'%')					
 					->orWhere('country_code','LIKE','%'.$search.'%');
-				})->orderBy('name','ASC')->paginate(10)->setPath('');
+				})->orderBy('is_shipped','DESC')->paginate(10)->setPath('');
 		
 		// bind value with pagination link
 		$pagination = $warehouses->appends ( array (
@@ -72,6 +72,12 @@ class WarehouseController extends Controller
 			'country_code' => 'required'		
 		]);
 		
+		$is_shipped = $request->input('is_shipped');
+		if($is_shipped)
+			$is_shipped=1;
+		else
+			$is_shipped=0;
+		
         if(strtoupper($request->input('country_code'))=='IN'){
             return redirect()->route('warehouse.index')
                         ->with('error','You can not create warehouse in India.');
@@ -79,7 +85,8 @@ class WarehouseController extends Controller
 		// save value in db
 		Warehouse::create([			
 			'name' => $request->input('name'),			
-			'country_code' => strtoupper($request->input('country_code')),			
+			'country_code' => strtoupper($request->input('country_code')),
+			'is_shipped' =>	$is_shipped,
 			'created_by' => $uid,
 			'updated_by' => $uid
 		]);
@@ -108,8 +115,8 @@ class WarehouseController extends Controller
     public function edit($id)
     {
         //
-        $Warehouse = Warehouse::find($id);
-		return view('Warehouses.edit',compact('Warehouse'));
+        $warehouse = Warehouse::find($id);
+		return view('warehouses.edit',compact('warehouse'));
     }
 
     /**
@@ -135,10 +142,17 @@ class WarehouseController extends Controller
             return redirect()->route('warehouse.index')
                         ->with('error','You can not create warehouse in India.');
         }
+		
+		$is_shipped = $request->input('is_shipped');
+		if($is_shipped)
+			$is_shipped=1;
+		else
+			$is_shipped=0;
+		
 		// update value in db
 		$Warehouse = Warehouse::find($id);	    
         $Warehouse->name = $request->input('name');       
-        $Warehouse->country_code = strtoupper($request->input('country_code'));       
+        $Warehouse->country_code = strtoupper($request->input('country_code')); $Warehouse->is_shipped =	$is_shipped;
         $Warehouse->updated_by = $uid;
         $Warehouse->save();
 		

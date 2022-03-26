@@ -38,17 +38,23 @@ class SkuDetailimport implements ToModel, WithHeadingRow, WithBatchInserts, With
 		// current login id
 		$user = Auth::user();
 		$uid = $user->id;
-
+		
+		if(!empty(count($skudata))){ // remove same duplicate sku value
+			DB::table('skudetails')
+				->where('sku_code',strval($row['sku_code']))
+				->delete();
+		}
+		$oz_wt = round(((float)$row['weight(kg)'] * 35.2739),2);//calc ounces wgt
         return new SkuDetail([
-            'market_id' => $row['Market_Place'],
+            'market_id' => strval($row['Market_Place']),
             //'warehouse_id' =>$row['Warehouse'],
             'isbn13' =>strval($row['isbn13']),
             'isbn10' =>strval($row['isbn10']),
-            'sku_code' =>$row['sku_code'],
-            'mrp' =>$row['mrp'],           
-            'disc' =>$row['disc'],
-            'wght' =>$row['weight(kg)'],
-            'pkg_wght' =>$row['pkg_weight(kg)'],
+            'sku_code' =>strval($row['sku_code']),
+            'mrp' =>strval($row['mrp']),           
+            'disc' =>strval($row['disc']),
+            'wght' =>strval($row['weight(kg)']),
+            'oz_wt' => $oz_wt,
             'created_by' =>$uid,
             'updated_by'=>$uid,
         ]);

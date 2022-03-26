@@ -43,39 +43,40 @@ class CustomerOrderImport implements ToModel, WithHeadingRow, WithBatchInserts, 
 		$user = Auth::user();
 		$uid = $user->id;
 		
-		$customerdata = CustomerOrder::where('order_id', '=', $row['order-id'])->where('order_item_id', '=', $val['order-item-id'])->get();
+		$customerdata = CustomerOrder::where('order_id', '=', strval($row['order-id']))
+					->where('order_item_id', '=', strval($row['order-item-id']))->get();
 		if(!empty(count($customerdata))) // not inserted duplicated data
 			return '';
 		
 		// insert and update product image path in product image table
         return new CustomerOrder([
-            'order_id' => $row['order-id'],
-			'order_item_id' => $row['order-item-id'],
-			'purchase_date' => $row['purchase-date'],
-			'payments_date' => $row['payments-date'],
-			'reporting_date' => $row['reporting-date'],
-			'promise_date' => $row['promise-date'],
-			'days_past_promise' => $row['days-past-promise'],
-			'buyer_email' => $row['buyer-email'],
-			'buyer_name' => $row['buyer-name'],
-			'buyer_phone_number' => $row['buyer-phone-number'],
-			'sku' => $row['sku'],
-			'product_name' => $row['product-name'],
-			'quantity_purchased' => $row['quantity-purchased'],
-			'quantity_shipped' => $row['quantity-shipped'],
-			'quantity_to_ship' => $row['quantity-to-ship'],
-			'ship_service_level' => $row['ship-service-level'],
-			'recipient_name' => $row['recipient-name'],
-			'ship_address_1' => $row['ship-address-1'],
-			'ship_address_2' => $row['ship-address-2'],
-			'ship_address_3' => $row['ship-address-3'],
-			'ship_city' => $row['ship-city'],
-			'ship_state' => $row['ship-state'],
-			'ship_postal_code' => $row['ship-postal-code'],
-			'ship_country' => $row['ship-country'],
-			'is_business_order' => $row['is-business-order'],
-			'purchase_order_number' => $row['purchase-order-number'],
-			'price_designation' => $row['price-designation'],
+            'order_id' => strval($row['order-id']),
+			'order_item_id' => strval($row['order-item-id']),
+			'purchase_date' => strval($row['purchase-date']),
+			'payments_date' => strval($row['payments-date']),
+			'reporting_date' => strval($row['reporting-date']),
+			'promise_date' => strval($row['promise-date']),
+			'days_past_promise' => strval($row['days-past-promise']),
+			'buyer_email' => strval($row['buyer-email']),
+			'buyer_name' => strval($row['buyer-name']),
+			'buyer_phone_number' => strval($row['buyer-phone-number']),
+			'sku' => strval($row['sku']),
+			'product_name' => strval($row['product-name']),
+			'quantity_purchased' => strval($row['quantity-purchased']),
+			'quantity_shipped' => strval($row['quantity-shipped']),
+			'quantity_to_ship' => strval($row['quantity-to-ship']),
+			'ship_service_level' => strval($row['ship-service-level']),
+			'recipient_name' => strval($row['recipient-name']),
+			'ship_address_1' => strval($row['ship-address-1']),
+			'ship_address_2' => strval($row['ship-address-2']),
+			'ship_address_3' => strval($row['ship-address-3']),
+			'ship_city' => strval($row['ship-city']),
+			'ship_state' => strval($row['ship-state']),
+			'ship_postal_code' => strval($row['ship-postal-code']),
+			'ship_country' => strval($row['ship-country']),
+			'is_business_order' => strval($row['is-business-order']),
+			'purchase_order_number' => strval($row['purchase-order-number']),
+			'price_designation' => strval($row['price-designation']),
 			'created_by' => $uid,
 			'updated_by' => $uid
         ]);

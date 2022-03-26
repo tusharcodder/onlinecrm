@@ -2,24 +2,32 @@
 <body>
 	<table class="table table-striped table-bordered">
 		<thead>
-			<tr>
-				<th>isbn13</th>
+			<tr>				
+				<th>Sku</th>
+				<th>Isbn 13</th>
 				<th>Book Name</th>
+				<th>Mrp</th>
 				<th>Author</th>
-                <th>publisher</th>
-				<th>Quantity</th>
-				<th>Vendor</th>							
+				<th>Publisher</th>
+				<th>Require quantity</th>
+				<th>Vendor quantity</th>
+				<th>Vendor Name</th>
+				<th>Vendor Data</th>						
 			</tr>
 		</thead>
 		@if(count($results) > 0)
 			@foreach ($results as $res)
 				<tr>
+					<td >{{ $res['Sku'] }}</td>
 					<td >{{ $res['isbn13'] }}</td>
 					<td >{{ $res['book'] }}</td>
+					<td >{{ $res['mrp'] }}</td>
 					<td >{{ $res['author'] }}</td>
 					<td >{{ $res['publisher'] }}</td>
+					<td >{{ $res['New'] }}</td>
 					<td >{{ $res['quantity'] }}</td>
-					<td >{{ $res['vendor_name'] }}</td>						
+					<td >{{ $res['vendor_name'] }}</td>	
+					<td >{{ $res['vendordata'] }}</td>					
 				</tr>
 			@endforeach
 		@endif

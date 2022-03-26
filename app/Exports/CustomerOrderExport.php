@@ -34,6 +34,7 @@ class CustomerOrderExport implements FromView
 		$buyer_phone_number = $this->request['buyer_phone_number'];
 		$product_name = $this->request['product_name'];
 		$sku = $this->request['sku'];
+		$status = $this->request['status'];
 		$format = $this->request['format'];
 		$exporttype = $this->request['exporttype'];
 		
@@ -60,6 +61,10 @@ class CustomerOrderExport implements FromView
 				$query->where(DB::raw("(DATE_FORMAT(reporting_date,'%Y-%m-%d'))"), '=', $reporting_date);
 			if(!empty($promise_date))
 				$query->where(DB::raw("(DATE_FORMAT(promise_date,'%Y-%m-%d'))"), '=', $promise_date);
+			if($status=='Pending')
+				$query->where('quantity_to_ship','!=','0');
+			else				
+				$query->where('quantity_to_ship','=','0');
 				
 			$results = $query->orderBy('id', 'ASC')->get();
 		}else // only data heading for format
