@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Boxisbn;
+use App\BoxIsbn;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -34,7 +34,7 @@ class BoxIsbnController extends Controller
         //
 		$search = $request->input('search');
         //
-		$boxisbns = Boxisbn::where('box_isbn13','LIKE','%'.$search.'%')
+		$boxisbns = BoxIsbn::where('box_isbn13','LIKE','%'.$search.'%')
                     ->orderBy('id','DESC')->paginate(10)->setPath('');
 		
 		// bind value with pagination link
@@ -78,7 +78,7 @@ class BoxIsbnController extends Controller
             'name.required'=>'Box Isbn is required'
         ]);
         //save box isbn in parent table
-       $boxisbn =  Boxisbn::create([
+       $boxisbn =  BoxIsbn::create([
             'box_isbn13' => $request->input('name'),               
             'created_by' => $uid,
             'updated_by' => $uid
@@ -121,7 +121,7 @@ class BoxIsbnController extends Controller
     public function edit($id)
     {
         //
-		$boxparentisbn = Boxisbn::find($id);
+		$boxparentisbn = BoxIsbn::find($id);
         $boxchildisbn = DB::table('box_child_isbns')
                         ->select('book_isbn13')
                         ->where('box_isbn_id', $id)
@@ -129,7 +129,7 @@ class BoxIsbnController extends Controller
         
         $isbn13 = DB::table('skudetails')->select(DB::raw("DISTINCT isbn13"))->get();
 
-        $boxisbns = Boxisbn::orderBy('id','DESC')->paginate(10)->setPath('');
+        $boxisbns = BoxIsbn::orderBy('id','DESC')->paginate(10)->setPath('');
 		$search = '';
 		// bind value with pagination link
 		
@@ -157,7 +157,7 @@ class BoxIsbnController extends Controller
         //$book_isbns = $request->input('book_isbns');
         //print_r( $book_isbns);exit;
 	   //save box isbn in parent table
-       $boxisbn =  Boxisbn::find($id);
+       $boxisbn =  BoxIsbn::find($id);
        $boxisbn->box_isbn13 = $request->input('name');               
        $boxisbn->created_by = $uid;
        $boxisbn->updated_by = $uid;
