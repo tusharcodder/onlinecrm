@@ -50,7 +50,11 @@
 						<table class="table table-bordered">
 							<tr>
 								<th>#ID</th>
-								<th>Name</th>							
+								<th>Name</th>
+								<th>Address</th>
+								<th>City</th>
+								<th>State</th>
+								<th>Postal Cdde</th>							
 								<th>Country Code</th>
 								<th>Is Shipped</th>								
 								<th width="227px">Action</th>
@@ -61,6 +65,10 @@
 									<!--<<td>{{ ($warehouses->currentPage()-1) * $warehouses->perPage() + $loop->index + 1 }}</td>-->
 									<td>{{ $warehouse->id }}</td>
 									<td>{{ $warehouse->name }}</td>
+									<td>{{ $warehouse->address }}</td>
+									<td>{{ $warehouse->city }}</td>
+									<td>{{ $warehouse->state }}</td>
+									<td>{{ $warehouse->postal_code }}</td>
 									<td>{{ $warehouse->country_code }}</td>
 									@if($warehouse->is_shipped == 1)
 										<td>{{__('True')}}</td>

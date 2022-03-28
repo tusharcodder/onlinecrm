@@ -17,6 +17,10 @@ class CreateWarehousesTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('country_code');
+	$table->longText('address');
+			$table->string('city');
+			$table->string('state');
+			$table->string('postal_code');
             $table->integer('created_by');
 			$table->integer('updated_by');
             $table->timestamps();

@@ -46,5 +46,18 @@ class CommonController extends Controller{
 	  
         return response()->json($response);
 	}   
+      public function getIsbn(Request $request)
+      {
+        $search = $request['search'];
+        $isbn13 = DB::table('skudetails')->select(DB::raw("DISTINCT isbn13"));
+        if($search)
+        {
+                $isbn13 = $isbn13->where('skudetails.isbn13', 'LIKE', '%'.$search .'%');
+        }
+        $isbn13 = $isbn13->get();
+
+        return $isbn13;
+
+      }  
 }
 ?>

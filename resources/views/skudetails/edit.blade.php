@@ -63,15 +63,16 @@
 									<input id="isbn13" type="text" class="form-control" name="isbn13" value="{{ old('isbn13',$skudetails->isbn13) }}"  autocomplete="isbn13" required>
 								</div>
 							</div>
-						</div>
-						
-						<div class="row">
 							<div class="col-md-4">
 								<div class="form-group">
 									<label for="isbn10" class="col-form-label text-md-right">{{ __('ISBN10*') }}</label>
 									<input type="text" id="isbn10" name="isbn10" class="form-control" value="{{ old('isbn10',$skudetails->isbn10) }}" autocomplete="isbn10" required />
 								</div>
 							</div>
+						</div>
+						
+						<div class="row">
+							
                             <div class="col-md-4">
 								<div class="form-group">
 									<label for="sku" class="col-form-label text-md-right">{{ __('SKU*') }}</label>
@@ -84,27 +85,44 @@
 									<input type="text" id="mrp" name="mrp" class="form-control" value="{{ old('mrp',$skudetails->mrp) }}" autocomplete="mrp" required />
 								</div>
                             </div>
-						</div>
-
-                        <div class="row">
 							<div class="col-md-4">
 								<div class="form-group">
 									<label for="disc" class="col-form-label text-md-right">{{ __('Disc*') }}</label>
 									<input type="text" id="disc" name="disc" class="form-control" value="{{ old('disc',$skudetails->disc) }}" autocomplete="disc" required />
 								</div>
 							</div>
+						</div>
+
+                        <div class="row">
+							
                             <div class="col-md-4">
 								<div class="form-group">
 									<label for="wght" class="col-form-label text-md-right">{{ __('Weight(kg)*') }}</label>
 									<input type="text" id="wght" name="wght" class="form-control" value="{{ old('wght',$skudetails->wght) }}" autocomplete="wght" required />
 								</div>                               
 							</div>
-                            <div class="col-md-4">
+							<div class="col-md-4">
+								<div class="form-group">
+									<label for="type" class="col-form-label text-md-right">{{ __('Type*') }}</label>
+									<!-- <input id="mplace" type="text" class="form-control" name="mplace" value="{{ old('mplace') }}"  autocomplete="mplace" required> -->
+                                    <select class="form-control" id="type" name="type" autofocus required>
+										<option value="">-- Select --</option>
+										@if($skudetails->type == 'Single')
+											<option value="Single" selected>Single</option>
+											<option value="Box">Box</option>
+										@else 	
+											<option value="Single" >Single</option>
+											<option value="Box" selected>Box</option>
+										@endif	
+									</select>
+								</div>
+							</div>
+                            <!-- <div class="col-md-4">
                             <div class="form-group">
 									<label for="pgkwght" class="col-form-label text-md-right">{{ __('Pkg-weight(kg)*') }}</label>
 									<input type="text" id="pgkwght" name="pgkwght" class="form-control" value="{{ old('pgkwght',$skudetails->pkg_wght) }}" autocomplete="pgkwght" required />
 								</div>
-                            </div>
+                            </div> -->
 						</div>
 
 						<div class="form-group row mb-0">

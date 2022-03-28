@@ -14,6 +14,6 @@ class SkuDetail extends Model
      * @var array
      */
     protected $fillable = [
-        'market_id', 'warehouse_id', 'isbn13', 'isbn10', 'mrp','sku_code','disc','wght','pkg_wght','oz_wt','created_by', 'updated_by'
+        'market_id', 'warehouse_id', 'isbn13', 'isbn10', 'mrp','sku_code','disc','wght','pkg_wght','oz_wt','type','created_by', 'updated_by'
     ];
 }

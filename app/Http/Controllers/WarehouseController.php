@@ -87,6 +87,10 @@ class WarehouseController extends Controller
 			'name' => $request->input('name'),			
 			'country_code' => strtoupper($request->input('country_code')),
 			'is_shipped' =>	$is_shipped,
+			'address'	=> $request->input('address'),
+			'city'	=> $request->input('city'),
+			'state'	=> $request->input('state'),
+			'postal_code'	=> $request->input('postal_code'),
 			'created_by' => $uid,
 			'updated_by' => $uid
 		]);
@@ -152,7 +156,12 @@ class WarehouseController extends Controller
 		// update value in db
 		$Warehouse = Warehouse::find($id);	    
         $Warehouse->name = $request->input('name');       
-        $Warehouse->country_code = strtoupper($request->input('country_code')); $Warehouse->is_shipped =	$is_shipped;
+        $Warehouse->country_code = strtoupper($request->input('country_code')); 
+        $Warehouse->is_shipped  =	$is_shipped;
+        $Warehouse->address		= $request->input('address');
+		$Warehouse->city		= $request->input('city');
+		$Warehouse->state		= $request->input('state');
+		$Warehouse->postal_code	= $request->input('postal_code');
         $Warehouse->updated_by = $uid;
         $Warehouse->save();
 		

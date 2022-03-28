@@ -59,9 +59,12 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::resource('customerorders','CustomerOrderController');
 	Route::resource('purchaseorders','PurchaseOrderController');
 	Route::resource('purchasereports','PurchaseReportController');
-	
+	Route::resource('boxisbns','BoxIsbnController');
 	Route::get('download-label', 'ShipmentReportController@downloadLabel')->name('download-label');
 
+	//customer order reshipped
+	Route::get('get-isbn','CommonController@getIsbn')->name('get-isbn');
+	
 	//customer order reshipped
 	Route::post('order-reshipped/{id}','CustomerOrderController@orderReshipped')->name('order-reshipped');
 	//export track order

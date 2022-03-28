@@ -4,6 +4,7 @@ $(document).ready(function(){
 	autocomplete('bill_no', 'purchase_orders', 'bill_no');
 	autocomplete('isbn13', 'purchase_orders', 'isbn13');
     autocomplete('purchase_by', 'purchase_orders', 'purchase_by');
+	autocomplete('bookname', 'book_details', 'name');
 	
 	// on import with update click 
 	$('#importtype').on('click', function(e) {

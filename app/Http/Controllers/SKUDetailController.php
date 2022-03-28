@@ -46,6 +46,7 @@ class SKUDetailController extends Controller
 					$query->where('market_places.name','LIKE','%'.$search.'%')
 						->orWhere('isbn13','LIKE','%'.$search.'%')
 						->orWhere('sku_code','LIKE','%'.$search.'%')
+                        ->orWhere('type','LIKE','%'.$search.'%')
 						->orWhere('isbn10','LIKE','%'.$search.'%');
 				})->orderBy('skudetails.id','desc')->paginate(10)->setPath('');
 		
@@ -89,7 +90,8 @@ class SKUDetailController extends Controller
             'sku' => 'required|unique:skudetails,sku_code',	
             'isbn13' => 'required',	
             'isbn10' => 'required',		
-            'mrp' => 'required',		
+            'mrp' => 'required',	
+            'type' => 'required',	
 		]);
 		
         $oz_wt = round(( (float)$request->input('wght') * 35.2739),2 );//calc ounces wgt
@@ -103,6 +105,7 @@ class SKUDetailController extends Controller
                                 'disc' => $request->input('disc'),
                                 'wght' => $request->input('wght'),
                                 'oz_wt' => $oz_wt,
+                                'type' => $request->input('type'),
 								'created_by' => $uid,
 								'updated_by' => $uid
 							]);
@@ -162,7 +165,8 @@ class SKUDetailController extends Controller
             'sku' => 'required|unique:skudetails,sku_code,'.$id,	
             'isbn13' => 'required',	
             'isbn10' => 'required',		
-            'mrp' => 'required',		
+            'mrp' => 'required',	
+            'type' => 'required',	
 		]);
 
         $oz_wt = round(( (float)$request->input('wght') * 35.2739),2 );//calc ounces wgt
@@ -175,7 +179,8 @@ class SKUDetailController extends Controller
 		$skudetail->sku_code = $request->input('sku');  
         $skudetail->mrp  = $request->input('mrp');
         $skudetail->disc = $request->input('disc');  
-		$skudetail->wght = $request->input('wght');        
+		$skudetail->wght = $request->input('wght');   
+        $skudetail->type = $request->input('type');        
 		$skudetail->oz_wt = $oz_wt;       
         $skudetail->updated_by = $uid;
         $skudetail->save();

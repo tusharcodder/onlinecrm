@@ -45,6 +45,7 @@ class SkuDetailimport implements ToModel, WithHeadingRow, WithBatchInserts, With
 				->delete();
 		}
 		$oz_wt = round(((float)$row['weight(kg)'] * 35.2739),2);//calc ounces wgt
+        
         return new SkuDetail([
             'market_id' => strval($row['Market_Place']),
             //'warehouse_id' =>$row['Warehouse'],
@@ -54,6 +55,7 @@ class SkuDetailimport implements ToModel, WithHeadingRow, WithBatchInserts, With
             'mrp' =>strval($row['mrp']),           
             'disc' =>strval($row['disc']),
             'wght' =>strval($row['weight(kg)']),
+            'type' =>strval($row['type']),
             'oz_wt' => $oz_wt,
             'created_by' =>$uid,
             'updated_by'=>$uid,

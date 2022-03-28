@@ -96,6 +96,17 @@
 									<input type="text" id="wght" name="wght" class="form-control" value="{{ old('wght') }}" autocomplete="wght" required />
 								</div>                               
 							</div>
+							<div class="col-md-3">
+								<div class="form-group">
+									<label for="type" class="col-form-label text-md-right">{{ __('Type*') }}</label>
+									<!-- <input id="mplace" type="text" class="form-control" name="mplace" value="{{ old('mplace') }}"  autocomplete="mplace" required> -->
+                                    <select class="form-control" id="type" name="type" autofocus required>
+										<option value="">-- Select --</option>
+										<option value="Single">Single</option>
+										<option value="Box">Box</option>
+									</select>
+								</div>
+							</div>
                             <!-- <div class="col-md-4">
                             <div class="form-group">
 									<label for="pgkwght" class="col-form-label text-md-right">{{ __('Pkg-weight(kg)*') }}</label>

@@ -56,8 +56,11 @@
 							@can('sku-list')
 								<li class="nav-sub-item"><a href="{{ route('skudetails.index') }}" class="nav-sub-link">Manage Sku Code</a></li> 
 							@endcan
+							@can('sku-list')
+								<li class="nav-sub-item"><a href="{{ route('boxisbns.index') }}" class="nav-sub-link">Manage Box Isbns</a></li> 
+							@endcan
 						</ul>
-					</li>
+					</li> 
 				@endcanany
 				
 				@canany(['vendor-stock-list', 'tjw-stock-list'])

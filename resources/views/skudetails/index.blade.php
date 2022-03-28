@@ -57,6 +57,7 @@
                                 <th>Disc</th>
                                 <th>Weight(kg)</th>                              
 								<th>Ounces wt</th>
+								<th>Type</th>
 								<th width="227px">Action</th>
 							</tr>
 							@if($skudetails->total() > 0)                          
@@ -73,6 +74,7 @@
                                     <td>{{ $skudetail->disc}}</td>
                                     <td>{{ $skudetail->wght}}</td>									
 									<td>{{ $skudetail->oz_wt }}</td>
+									<td>{{ $skudetail->type }}</td>
 									<td>
 										<a class="btn btn-info btn-sm" href="{{ route('skudetails.show',$skudetail->id) }}">Show</a>
 										@can('sku-edit')
