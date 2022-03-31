@@ -34,10 +34,22 @@
 									{{ __('Download') }}
 								</button>
 							</div>
-						</div>
+						
 					</form>
 					@endcan
-					<!--<a href="{{route('download-label')}}" class="btn btn-sm">Run Api</a>-->
+					@can('download-shipment-label')
+					<form action="{{ route('downloadshipmentlabel') }}" method="POST">
+						@csrf
+						
+							<div class="col-md-12">
+								<button type="submit" class="btn btn-info" style="margin-top: 30px !important;" id="downloadlabel">
+									{{ __('Download labels') }}
+								</button>
+							</div>
+						
+					</form>
+					@endcan
+					</div>
 					<div class="row mb-1">
 						<div class="col-sm-8">
 							Showing {{($shipmentreports->currentPage()-1)* $shipmentreports->perPage()+($shipmentreports->total() ? 1:0)}} to {{($shipmentreports->currentPage()-1)*$shipmentreports->perPage()+count($shipmentreports)}} of {{$shipmentreports->total()}} Results

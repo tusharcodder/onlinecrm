@@ -60,7 +60,7 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::resource('purchaseorders','PurchaseOrderController');
 	Route::resource('purchasereports','PurchaseReportController');
 	Route::resource('boxisbns','BoxIsbnController');
-	Route::get('download-label', 'ShipmentReportController@downloadLabel')->name('download-label');
+	//Route::get('download-label', 'ShipmentReportController@downloadLabel')->name('download-label');
 
 	//customer order reshipped
 	Route::get('get-isbn','CommonController@getIsbn')->name('get-isbn');
@@ -81,6 +81,7 @@ Route::group(['middleware' => ['auth']], function() {
 	// load shipment report 
 	Route::get('shipmentreport', 'ShipmentReportController@index')->name('shipmentreport');
 	Route::post('downloadshipmentreport', 'ShipmentReportController@export')->name('downloadshipmentreport');
+	Route::post('downloadshipmentlabel', 'ShipmentReportController@downloadShipmentLabel')->name('downloadshipmentlabel');
 	Route::get('shipment-track-import', 'ShipmentReportController@shipmentTrackImport')->name('shipment-track-import');
 	Route::post('shipmenttrackimport', 'ShipmentReportController@import')->name('shipmenttrackimport');
 	
