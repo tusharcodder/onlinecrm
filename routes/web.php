@@ -60,7 +60,6 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::resource('purchaseorders','PurchaseOrderController');
 	Route::resource('purchasereports','PurchaseReportController');
 	Route::resource('boxisbns','BoxIsbnController');
-	//Route::get('download-label', 'ShipmentReportController@downloadLabel')->name('download-label');
 
 	//customer order reshipped
 	Route::get('get-isbn','CommonController@getIsbn')->name('get-isbn');

@@ -347,108 +347,169 @@ class ShipmentReportController extends Controller
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'skudetails.isbn13')
 			->orderBy('customer_orders.reporting_date','ASC')
 			->having(DB::raw('sum(customer_orders.quantity_to_be_shipped)'), '>' , 0)->get();
-			
+		
+		$labelapiarr = array();
 		if(!empty($results)){
 			foreach($results as $val){
-				$val->shipingqty = empty($val->shipingqty) ? 0 : $val->shipingqty;
-				$postfeilds = '{
-					"date": "'.$labeldate.'",
-					"service": "USPS",
-					"from":{
-						"name": "'.$val->wname.'",
-						"company": "",
-						"phone": "'.$val->wphone.'",
-						"email": "'.$val->wemail.'",
-						"street1": "'.$val->wadd.'",
-						"street2": "",
-						"street3": "",
-						"city": "'.$val->wcity.'",
-						"state": "'.$val->wstate.'",
-						"postal_code": "'.$val->wpcode.'",
-						"country": "'.$val->wcountry.'",
-						"residential": false,
-						"tax_id": ""
-					},
-					"to": {
-						"name": "'.$val->buyer_name.'",
-						"company": "",
-						"phone": "'.$val->buyer_phone_number.'",
-						"email": "'.$val->buyer_email.'",
-						"street1": "'.$val->ship_address_1.'",
-						"street2": "'.$val->ship_address_2.'",
-						"street3": "'.$val->ship_address_3.'",
-						"city": "'.$val->ship_city.'",
-						"state": "'.$val->ship_state.'",
-						"postal_code": "'.$val->ship_postal_code.'",
-						"country": "'.$val->ship_country.'",
-						"residential": true,
-						"tax_id": ""
-					},
-					"type": "box",
-					"parcels": [
-						{
-							"number": 2,
-							"code": "",
-							"unit": "imperial",
-							"weight": 5.25,
-							"length": 10,
-							"width": 8.5,
-							"height": 6,
-							"dg_code": null
-						}
-					],
-					"insurance": null,
-					"references": [
-						{
-							"type": "customer_ref",
-							"value": "'.$val->order_item_id .'",
-						}
-					],
-					"remarks": "'.$val->product_name.'",
-					"signature": "none",
-					"pickup": "dropoff",
-					"domestic_options": {
-						"value": {
-							"currency": "USD",
-							"amount": 0
-						},
-						"contents": "Books"
-					},
-					"international_options": null,
-					"additional_options": null,
-					"document_options": {
-						"return": true,
-						"label_format": "pdf",
-						"medium": "url"
-					},
-					"notifications": null
-				}';
+				$labelapiarr[$val->order_id][] = $val;
+			}
+		}
 
-				$curl = curl_init();
-				curl_setopt_array($curl, array(
-				  CURLOPT_URL => 'https://api.ypn.io/v2/shipping/shipments',
-				  CURLOPT_RETURNTRANSFER => true,
-				  CURLOPT_ENCODING => '',
-				  CURLOPT_MAXREDIRS => 10,
-				  CURLOPT_TIMEOUT => 0,
-				  CURLOPT_FOLLOWLOCATION => true,
-				  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-				  CURLOPT_CUSTOMREQUEST => 'POST',
-				  CURLOPT_POSTFIELDS =>$postfeilds,
-				  CURLOPT_HTTPHEADER => array(
-					'Content-Type: application/json',
-					'Authorization: '.$token
-				  ),
-				));
+		if(!empty($labelapiarr)){
+			foreach($labelapiarr as $val){
+				$labelvalarr = array();
 				
-				$response = curl_exec($curl);
-				curl_close($curl);
-				echo '<pre>';
-				print_r(json_decode($response));
-				exit;
+				$labelvalarr['from'] = [
+					"name" => $val[0]->wname,
+					"company" => "",
+					"phone" => $val[0]->wphone,
+					"email" =>  $val[0]->wemail,
+					"street1" =>  $val[0]->wadd,
+					"street2" => "",
+					"street3" => "",
+					"city" => $val[0]->wcity,
+					"state" => $val[0]->wstate,
+					"postal_code" => $val[0]->wpcode,
+					"country" => $val[0]->wcountry,
+					"residential" => false,
+					"tax_id"=> ""
+				];
+				
+				$labelvalarr['to'] = [
+					"name"=>$val[0]->buyer_name,
+					"company"=> "",
+					"phone"=> $val[0]->buyer_phone_number,
+					"email"=> $val[0]->buyer_email,
+					"street1"=>$val[0]->ship_address_1,
+					"street2"=> $val[0]->ship_address_2,
+					"street3"=> $val[0]->ship_address_3,
+					"city"=> $val[0]->ship_city,
+					"state"=> $val[0]->ship_state,
+					"postal_code"=> $val[0]->ship_postal_code,
+					"country"=> $val[0]->ship_country,
+					"residential"=> true,
+					"tax_id"=> ""
+				];
+				
+				$parno = 0;
+				$oz_weight = 0;
+				foreach($val as $labelval){
+					$oz_weight = $oz_weight + (float)$labelval->oz_wt;
+					$labelvalarr['parcels'] = [
+						"number"=> $parno + 1,
+						"code"=> "",
+						"unit"=> "imperial",
+						"weight"=> $oz_weight,
+						"length"=> 10,
+						"width"=> 8.5,
+						"height"=> 2,
+						"dg_code"=> null
+					];
+				}
+				//$this->labelAPICallback($labelvalarr);
 			}
 		}else{
 			return false;
 		}
+	}
+	
+	// call api method
+	function labelAPICallback($val){
+		/* $val->shipingqty = empty($val->shipingqty) ? 0 : $val->shipingqty;
+		$postfeilds = '{
+			"date": "'.$labeldate.'",
+			"service": "USPS",
+			"from":{
+				"name": "'.$val->wname.'",
+				"company": "",
+				"phone": "'.$val->wphone.'",
+				"email": "'.$val->wemail.'",
+				"street1": "'.$val->wadd.'",
+				"street2": "",
+				"street3": "",
+				"city": "'.$val->wcity.'",
+				"state": "'.$val->wstate.'",
+				"postal_code": "'.$val->wpcode.'",
+				"country": "'.$val->wcountry.'",
+				"residential": false,
+				"tax_id": ""
+			},
+			"to": {
+				"name": "'.$val->buyer_name.'",
+				"company": "",
+				"phone": "'.$val->buyer_phone_number.'",
+				"email": "'.$val->buyer_email.'",
+				"street1": "'.$val->ship_address_1.'",
+				"street2": "'.$val->ship_address_2.'",
+				"street3": "'.$val->ship_address_3.'",
+				"city": "'.$val->ship_city.'",
+				"state": "'.$val->ship_state.'",
+				"postal_code": "'.$val->ship_postal_code.'",
+				"country": "'.$val->ship_country.'",
+				"residential": true,
+				"tax_id": ""
+			},
+			"type": "box",
+			"parcels": [
+				{
+					"number": 2,
+					"code": "",
+					"unit": "imperial",
+					"weight": 5.25,
+					"length": 10,
+					"width": 8.5,
+					"height": 2,
+					"dg_code": null
+				}
+			],
+			"insurance": null,
+			"references": [
+				{
+					"type": "customer_ref",
+					"value": "'.$val->order_item_id .'",
+				}
+			],
+			"remarks": "'.$val->product_name.'",
+			"signature": "none",
+			"pickup": "dropoff",
+			"domestic_options": {
+				"value": {
+					"currency": "USD",
+					"amount": 0
+				},
+				"contents": "Books"
+			},
+			"international_options": null,
+			"additional_options": null,
+			"document_options": {
+				"return": true,
+				"label_format": "pdf",
+				"medium": "url"
+			},
+			"notifications": null
+		}';
+
+		$curl = curl_init();
+		curl_setopt_array($curl, array(
+		  CURLOPT_URL => 'https://api.ypn.io/v2/shipping/shipments',
+		  CURLOPT_RETURNTRANSFER => true,
+		  CURLOPT_ENCODING => '',
+		  CURLOPT_MAXREDIRS => 10,
+		  CURLOPT_TIMEOUT => 0,
+		  CURLOPT_FOLLOWLOCATION => true,
+		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		  CURLOPT_CUSTOMREQUEST => 'POST',
+		  CURLOPT_POSTFIELDS =>$postfeilds,
+		  CURLOPT_HTTPHEADER => array(
+			'Content-Type: application/json',
+			'Authorization: '.$token
+		  ),
+		));
+		
+		$response = curl_exec($curl);
+		curl_close($curl);
+		echo '<pre>';
+		print_r(json_decode($response));
+		exit; */
 	}
 }
