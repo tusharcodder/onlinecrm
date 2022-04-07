@@ -333,9 +333,6 @@ class ShipmentReportController extends Controller
     */
 	public function downloadShipmentLabel(Request $request) 
     {
-		$labeldate = date('Y-m-d');
-		$token = 'Basic TlRRPS4rbHNORytJdVRpMzZWOHpjT0JFLzd2N1Axc3luWFh5c0VKL3pTaE41M3ZjPTo=';
-			
 		// download shipment label based on the shipment records
 		$results = DB::table('customer_orders')
 			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','skudetails.wght as wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher', DB::raw('sum(customer_orders.quantity_to_be_shipped) as shipingqty'),'skudetails.oz_wt','skudetails.mrp', 'book_details.publisher as publisher', 'warehouses.name as wname', 'warehouses.country_code as wcountry', 'warehouses.address as wadd', 'warehouses.city as wcity', 'warehouses.state as wstate', 'warehouses.postal_code as wpcode', 'warehouses.email as wemail', 'warehouses.phone as wphone')
@@ -343,7 +340,9 @@ class ShipmentReportController extends Controller
 			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
 			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
 			->leftJoin("warehouses","warehouses.id","=","customer_orders.warehouse_id")
+			//->where('customer_orders.ship_country', '=' ,'US')
 			->where('customer_orders.quantity_to_ship', '>' ,0)
+			->whereNull('customer_orders.label_pdf_url')
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'skudetails.isbn13')
 			->orderBy('customer_orders.reporting_date','ASC')
 			->having(DB::raw('sum(customer_orders.quantity_to_be_shipped)'), '>' , 0)->get();
@@ -357,11 +356,12 @@ class ShipmentReportController extends Controller
 
 		if(!empty($labelapiarr)){
 			foreach($labelapiarr as $val){
+				$val[0]->wcountry = ($val[0]->wcountry == 'IN') ? "US" : "US";
+				$val[0]->wname = "Ravi (NE Warehouse)";
 				$labelvalarr = array();
-				
 				$labelvalarr['from'] = [
 					"name" => $val[0]->wname,
-					"company" => "",
+					"company" => "NE  Warehouse.",
 					"phone" => $val[0]->wphone,
 					"email" =>  $val[0]->wemail,
 					"street1" =>  $val[0]->wadd,
@@ -384,101 +384,88 @@ class ShipmentReportController extends Controller
 					"street2"=> $val[0]->ship_address_2,
 					"street3"=> $val[0]->ship_address_3,
 					"city"=> $val[0]->ship_city,
-					"state"=> $val[0]->ship_state,
+					"state"=> substr($val[0]->ship_state, 0 ,2),
 					"postal_code"=> $val[0]->ship_postal_code,
-					"country"=> $val[0]->ship_country,
+					"country"=> substr($val[0]->ship_country, 0 ,2),
 					"residential"=> true,
 					"tax_id"=> ""
 				];
 				
-				$parno = 0;
+				$qty = 0;
 				$oz_weight = 0;
+				$maxsize = 100;
+				$pronames = array();
+				$order_item_id = array();
+				$lengthsz = $maxsize / count($val) - 5;
+				$lengthsz = round($lengthsz);
 				foreach($val as $labelval){
-					$oz_weight = $oz_weight + (float)$labelval->oz_wt;
+					$labelval->shipingqty = empty($labelval->shipingqty) ? 0 : $labelval->shipingqty;
+					$order_item_id[$labelval->order_item_id] = $labelval->order_item_id; 
+					$oz_weight = $oz_weight + ((float)$labelval->shipingqty * (float)$labelval->oz_wt);
+					$qty = $qty + (float)$labelval->shipingqty;
+					$proname = empty($labelval->proname) ? $labelval->product_name : $labelval->proname;
+					$pronames[$proname] = substr($proname, 0 ,$lengthsz);
 					$labelvalarr['parcels'] = [
-						"number"=> $parno + 1,
+						"number"=> $qty,
 						"code"=> "",
 						"unit"=> "imperial",
-						"weight"=> $oz_weight,
+						//"weight"=> $oz_weight,
+						"weight"=> 10,
 						"length"=> 10,
 						"width"=> 8.5,
 						"height"=> 2,
 						"dg_code"=> null
 					];
 				}
-				//$this->labelAPICallback($labelvalarr);
+
+				$labelvalarr['domestic_options_contents'] = join(",", $pronames);
+				$this->labelAPICallback($labelvalarr, $labelval->order_id, $order_item_id);
 			}
+			return true;
 		}else{
 			return false;
 		}
 	}
 	
-	// call api method
-	function labelAPICallback($val){
-		/* $val->shipingqty = empty($val->shipingqty) ? 0 : $val->shipingqty;
+	// call api method for label printing
+	function labelAPICallback($val, $order_id, $order_item_arr = array()){
+		$labeldate = date('Y-m-d');
+		$token = 'Basic TlRRPS4rbHNORytJdVRpMzZWOHpjT0JFLzd2N1Axc3luWFh5c0VKL3pTaE41M3ZjPTo=';
+		$from = json_encode($val['from']);
+		$to = json_encode($val['to']);
+		$parcels = json_encode($val['parcels']);
+		$domestic_options = $val['domestic_options_contents'];
+		
 		$postfeilds = '{
 			"date": "'.$labeldate.'",
 			"service": "USPS",
-			"from":{
-				"name": "'.$val->wname.'",
-				"company": "",
-				"phone": "'.$val->wphone.'",
-				"email": "'.$val->wemail.'",
-				"street1": "'.$val->wadd.'",
-				"street2": "",
-				"street3": "",
-				"city": "'.$val->wcity.'",
-				"state": "'.$val->wstate.'",
-				"postal_code": "'.$val->wpcode.'",
-				"country": "'.$val->wcountry.'",
-				"residential": false,
-				"tax_id": ""
-			},
-			"to": {
-				"name": "'.$val->buyer_name.'",
-				"company": "",
-				"phone": "'.$val->buyer_phone_number.'",
-				"email": "'.$val->buyer_email.'",
-				"street1": "'.$val->ship_address_1.'",
-				"street2": "'.$val->ship_address_2.'",
-				"street3": "'.$val->ship_address_3.'",
-				"city": "'.$val->ship_city.'",
-				"state": "'.$val->ship_state.'",
-				"postal_code": "'.$val->ship_postal_code.'",
-				"country": "'.$val->ship_country.'",
-				"residential": true,
-				"tax_id": ""
-			},
+			"from":'.$from.',
+			"to": '.$to.',
 			"type": "box",
 			"parcels": [
-				{
-					"number": 2,
-					"code": "",
-					"unit": "imperial",
-					"weight": 5.25,
-					"length": 10,
-					"width": 8.5,
-					"height": 2,
-					"dg_code": null
-				}
+				'.$parcels.'
 			],
 			"insurance": null,
 			"references": [
 				{
+					"type": "po_number",
+					"value": "'.$order_id.'",
+				},
+				{
 					"type": "customer_ref",
-					"value": "'.$val->order_item_id .'",
+					"value": "'.$domestic_options.'",
 				}
 			],
-			"remarks": "'.$val->product_name.'",
+			"remarks": null,
 			"signature": "none",
 			"pickup": "dropoff",
 			"domestic_options": {
-				"value": {
-					"currency": "USD",
-					"amount": 0
-				},
-				"contents": "Books"
-			},
+                "value": {
+                    "currency": "USD",
+                    "amount": 0
+                },
+                "contents": "'.$domestic_options.'"
+            },
 			"international_options": null,
 			"additional_options": null,
 			"document_options": {
@@ -508,8 +495,23 @@ class ShipmentReportController extends Controller
 		
 		$response = curl_exec($curl);
 		curl_close($curl);
-		echo '<pre>';
-		print_r(json_decode($response));
-		exit; */
+		$apires = json_decode($response);
+		if(!empty($apires) && empty($apires->errors)){
+			$trackno = $apires->documents[0]->tracking_number;
+			$pdfurl = $apires->documents[0]->url;
+			
+			foreach($order_item_arr as $val_item_id){
+				// save this value on orderid and order item id
+				DB::table('customer_orders')
+				->where('order_id', strval($order_id))
+				->where('order_item_id', strval($val_item_id))
+				->update([
+					'tracking_number' => $trackno,
+					'label_pdf_url' => $pdfurl,
+				]);
+			}
+
+		}
+		return true;
 	}
 }
