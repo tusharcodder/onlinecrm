@@ -352,7 +352,7 @@ class ShipmentReportController extends Controller
 			//->whereNull('customer_orders.label_pdf_url')
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'skudetails.isbn13')
 			->orderBy('customer_orders.reporting_date','ASC')
-			->limit(1)
+			->limit(10)
 			->having(DB::raw('sum(customer_orders.quantity_to_be_shipped)'), '>' , 0)->get();
 		
 		$labelapiarr = array();
@@ -524,10 +524,13 @@ class ShipmentReportController extends Controller
 			$response = curl_exec($curl);
 			curl_close($curl);
 			$apires = json_decode($response);
+
 			if(!empty($apires) && empty($apires->errors)){
 				$trackno = $apires->documents[0]->tracking_number;
 				$pdfurl = $apires->documents[0]->url;
 				$pdfattachment = $apires->documents[0]->base64;
+				$labeldate = $apires->date;
+				$labelid = $apires->id;
 				//$pdfattachment = base64_decode($apires->documents[0]->base64);
 				
 				// store pdf on server
@@ -543,6 +546,8 @@ class ShipmentReportController extends Controller
 						'tracking_number' => $trackno,
 						'label_pdf_url' => $pdfurl,
 						'pdf_attachment_code' => $pdfattachment,
+						'label_date' => $labeldate,
+						'label_id' => $labelid,
 					]);
 				}
 				

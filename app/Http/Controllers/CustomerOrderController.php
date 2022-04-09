@@ -332,7 +332,6 @@ class CustomerOrderController extends Controller
 				'quantity_shipped'=>0,
 				'quantity_to_ship'=>$order->quantity_shipped,
 				'quantity_to_be_shipped'=>0,
-				
 				'ship_service_level'=>$order->ship_service_level,
 				'recipient_name'=>$order->recipient_name,
 				'ship_address_1'=>$order->ship_address_1,
