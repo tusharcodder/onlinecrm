@@ -335,6 +335,7 @@ class ShipmentReportController extends Controller
     */
 	public function downloadShipmentLabel(Request $request) 
     {
+		
 		// delete files after download file
 		$path = public_path('label_pdf');
 		$fileSystem = new Filesystem();
@@ -347,11 +348,11 @@ class ShipmentReportController extends Controller
 			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
 			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
 			->leftJoin("warehouses","warehouses.id","=","customer_orders.warehouse_id")
-			//->where('customer_orders.ship_country', '=' ,'US')
 			->where('customer_orders.quantity_to_ship', '>' ,0)
-			->whereNull('customer_orders.label_pdf_url')
+			//->whereNull('customer_orders.label_pdf_url')
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'skudetails.isbn13')
 			->orderBy('customer_orders.reporting_date','ASC')
+			->limit(1)
 			->having(DB::raw('sum(customer_orders.quantity_to_be_shipped)'), '>' , 0)->get();
 		
 		$labelapiarr = array();
@@ -367,6 +368,15 @@ class ShipmentReportController extends Controller
 			foreach($labelapiarr as $val){
 				$val[0]->wcountry = "US";
 				$val[0]->buyer_phone_number = empty($val[0]->buyer_phone_number) ? '+1 111-111-1111' : $val[0]->buyer_phone_number;
+				
+				$states = DB::table('states')
+						->select('*')
+						->Where('state_name', '=', $val[0]->ship_state)
+						->limit(1)
+						->get();
+				if(!empty(count($states))){
+					$val[0]->ship_state = $states[0]->state_code;
+				}
 				$labelvalarr = array();
 				$labelvalarr['from'] = [
 					"name" => $val[0]->wname,
@@ -411,7 +421,7 @@ class ShipmentReportController extends Controller
 					$labelval->shipingqty = empty($labelval->shipingqty) ? 0 : $labelval->shipingqty;
 					$order_item_id[$labelval->order_item_id] = $labelval->order_item_id; 
 					$oz_weight = $oz_weight + ((float)$labelval->shipingqty * (float)$labelval->oz_wt);
-					$oz_weight = ($oz_weight > 15) ? 15: $oz_weight;
+					$oz_weight = ($oz_weight > 26) ? 25: $oz_weight;
 					$qty = $qty + (float)$labelval->shipingqty;
 					$proname = empty($labelval->proname) ? $labelval->product_name : $labelval->proname;
 					$pronames[$proname] = substr($proname, 0 ,$lengthsz);
@@ -428,7 +438,7 @@ class ShipmentReportController extends Controller
 				}
 
 				$labelvalarr['domestic_options_contents'] = join(",", $pronames);
-				$fname = $this->labelAPICallback($labelvalarr, $labelval->order_id, $order_item_id);
+				$fname = $this->labelAPICallback($labelvalarr, $val[0]->order_id, $order_item_id, $val[0]->label_pdf_url, $val[0]->pdf_attachment_code);
 				
 				if(!empty($fname)){
 					$fname = public_path("label_pdf/$fname");
@@ -438,20 +448,21 @@ class ShipmentReportController extends Controller
 			
 			$pdfMerger->merge();
 			$pdfMerger->save("download_labels_".date('d-m-Y').".pdf", "download");
+			return back();
 		}else{
 			return false;
 		}
 	}
 	
 	// call api method for label printing
-	function labelAPICallback($val, $order_id, $order_item_arr = array()){
+	function labelAPICallback($val, $order_id, $order_item_arr = array(), $pdfurl, $pdfattachment){
 		$labeldate = date('Y-m-d');
 		$token = 'Basic TlRRPS4rbHNORytJdVRpMzZWOHpjT0JFLzd2N1Axc3luWFh5c0VKL3pTaE41M3ZjPTo=';
 		$from = json_encode($val['from']);
 		$to = json_encode($val['to']);
 		$parcels = json_encode($val['parcels']);
 		$domestic_options = $val['domestic_options_contents'];
-		
+
 		$postfeilds = '{
 			"date": "'.$labeldate.'",
 			"service": "USPS",
@@ -491,49 +502,55 @@ class ShipmentReportController extends Controller
 			},
 			"notifications": null
 		}';
-
-		$curl = curl_init();
-		curl_setopt_array($curl, array(
-		  CURLOPT_URL => 'https://api.ypn.io/v2/shipping/shipments',
-		  CURLOPT_RETURNTRANSFER => true,
-		  CURLOPT_ENCODING => '',
-		  CURLOPT_MAXREDIRS => 10,
-		  CURLOPT_TIMEOUT => 0,
-		  CURLOPT_FOLLOWLOCATION => true,
-		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-		  CURLOPT_CUSTOMREQUEST => 'POST',
-		  CURLOPT_POSTFIELDS =>$postfeilds,
-		  CURLOPT_HTTPHEADER => array(
-			'Content-Type: application/json',
-			'Authorization: '.$token
-		  ),
-		));
 		
-		$response = curl_exec($curl);
-		curl_close($curl);
-		$apires = json_decode($response);
-		if(!empty($apires) && empty($apires->errors)){
-			$trackno = $apires->documents[0]->tracking_number;
-			$pdfurl = $apires->documents[0]->url;
-			$pdfattachment = $apires->documents[0]->base64;
-			//$pdfattachment = base64_decode($apires->documents[0]->base64);
+		if(empty($pdfurl)){ // pdf url is empty
+			$curl = curl_init();
+			curl_setopt_array($curl, array(
+			  CURLOPT_URL => 'https://api.ypn.io/v2/shipping/shipments',
+			  CURLOPT_RETURNTRANSFER => true,
+			  CURLOPT_ENCODING => '',
+			  CURLOPT_MAXREDIRS => 10,
+			  CURLOPT_TIMEOUT => 0,
+			  CURLOPT_FOLLOWLOCATION => true,
+			  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			  CURLOPT_CUSTOMREQUEST => 'POST',
+			  CURLOPT_POSTFIELDS =>$postfeilds,
+			  CURLOPT_HTTPHEADER => array(
+				'Content-Type: application/json',
+				'Authorization: '.$token
+			  ),
+			));
 			
-			// store pdf on server
-			$filename = basename($pdfurl);
-			file_put_contents(public_path("label_pdf/$filename"), base64_decode($apires->documents[0]->base64));
-			
-			foreach($order_item_arr as $val_item_id){
-				// save this value on orderid and order item id
-				DB::table('customer_orders')
-				->where('order_id', strval($order_id))
-				->where('order_item_id', strval($val_item_id))
-				->update([
-					'tracking_number' => $trackno,
-					'label_pdf_url' => $pdfurl,
-					'pdf_attachment_code' => $pdfattachment,
-				]);
+			$response = curl_exec($curl);
+			curl_close($curl);
+			$apires = json_decode($response);
+			if(!empty($apires) && empty($apires->errors)){
+				$trackno = $apires->documents[0]->tracking_number;
+				$pdfurl = $apires->documents[0]->url;
+				$pdfattachment = $apires->documents[0]->base64;
+				//$pdfattachment = base64_decode($apires->documents[0]->base64);
+				
+				// store pdf on server
+				$filename = basename($pdfurl);
+				file_put_contents(public_path("label_pdf/$filename"), base64_decode($apires->documents[0]->base64));
+				
+				foreach($order_item_arr as $val_item_id){
+					// save this value on orderid and order item id
+					DB::table('customer_orders')
+					->where('order_id', strval($order_id))
+					->where('order_item_id', strval($val_item_id))
+					->update([
+						'tracking_number' => $trackno,
+						'label_pdf_url' => $pdfurl,
+						'pdf_attachment_code' => $pdfattachment,
+					]);
+				}
+				
+				return $filename;
 			}
-			
+		}else{
+			$filename = basename($pdfurl);
+			file_put_contents(public_path("label_pdf/$filename"), base64_decode($pdfattachment));
 			return $filename;
 		}
 		return false;
