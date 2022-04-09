@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Boxisbn extends Model
+class BoxIsbn extends Model
 {
 	protected $table = 'box_parent_isbns';
 	 

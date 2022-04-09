@@ -23,6 +23,8 @@ use Zip;
 use App\Common;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
+use LynX39\LaraPdfMerger\Facades\PdfMerger;
+use Illuminate\Filesystem\Filesystem;
 
 class ShipmentReportController extends Controller
 {
@@ -333,6 +335,11 @@ class ShipmentReportController extends Controller
     */
 	public function downloadShipmentLabel(Request $request) 
     {
+		// delete files after download file
+		$path = public_path('label_pdf');
+		$fileSystem = new Filesystem();
+		$fileSystem->cleanDirectory($path);
+			
 		// download shipment label based on the shipment records
 		$results = DB::table('customer_orders')
 			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','skudetails.wght as wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher', DB::raw('sum(customer_orders.quantity_to_be_shipped) as shipingqty'),'skudetails.oz_wt','skudetails.mrp', 'book_details.publisher as publisher', 'warehouses.name as wname', 'warehouses.country_code as wcountry', 'warehouses.address as wadd', 'warehouses.city as wcity', 'warehouses.state as wstate', 'warehouses.postal_code as wpcode', 'warehouses.email as wemail', 'warehouses.phone as wphone')
@@ -355,9 +362,11 @@ class ShipmentReportController extends Controller
 		}
 
 		if(!empty($labelapiarr)){
+			
+			$pdfMerger = PDFMerger::init(); //Initialize the merger
 			foreach($labelapiarr as $val){
-				$val[0]->wcountry = ($val[0]->wcountry == 'IN') ? "US" : "US";
-				$val[0]->wname = "Ravi (NE Warehouse)";
+				$val[0]->wcountry = "US";
+				$val[0]->buyer_phone_number = empty($val[0]->buyer_phone_number) ? '+1 111-111-1111' : $val[0]->buyer_phone_number;
 				$labelvalarr = array();
 				$labelvalarr['from'] = [
 					"name" => $val[0]->wname,
@@ -402,6 +411,7 @@ class ShipmentReportController extends Controller
 					$labelval->shipingqty = empty($labelval->shipingqty) ? 0 : $labelval->shipingqty;
 					$order_item_id[$labelval->order_item_id] = $labelval->order_item_id; 
 					$oz_weight = $oz_weight + ((float)$labelval->shipingqty * (float)$labelval->oz_wt);
+					$oz_weight = ($oz_weight > 15) ? 15: $oz_weight;
 					$qty = $qty + (float)$labelval->shipingqty;
 					$proname = empty($labelval->proname) ? $labelval->product_name : $labelval->proname;
 					$pronames[$proname] = substr($proname, 0 ,$lengthsz);
@@ -409,8 +419,7 @@ class ShipmentReportController extends Controller
 						"number"=> $qty,
 						"code"=> "",
 						"unit"=> "imperial",
-						//"weight"=> $oz_weight,
-						"weight"=> 10,
+						"weight"=> $oz_weight,
 						"length"=> 10,
 						"width"=> 8.5,
 						"height"=> 2,
@@ -419,9 +428,16 @@ class ShipmentReportController extends Controller
 				}
 
 				$labelvalarr['domestic_options_contents'] = join(",", $pronames);
-				$this->labelAPICallback($labelvalarr, $labelval->order_id, $order_item_id);
+				$fname = $this->labelAPICallback($labelvalarr, $labelval->order_id, $order_item_id);
+				
+				if(!empty($fname)){
+					$fname = public_path("label_pdf/$fname");
+					$pdfMerger->addPDF($fname, 'all');
+				}
 			}
-			return true;
+			
+			$pdfMerger->merge();
+			$pdfMerger->save("download_labels_".date('d-m-Y').".pdf", "download");
 		}else{
 			return false;
 		}
@@ -471,7 +487,7 @@ class ShipmentReportController extends Controller
 			"document_options": {
 				"return": true,
 				"label_format": "pdf",
-				"medium": "url"
+				"medium": "attachment"
 			},
 			"notifications": null
 		}';
@@ -499,6 +515,12 @@ class ShipmentReportController extends Controller
 		if(!empty($apires) && empty($apires->errors)){
 			$trackno = $apires->documents[0]->tracking_number;
 			$pdfurl = $apires->documents[0]->url;
+			$pdfattachment = $apires->documents[0]->base64;
+			//$pdfattachment = base64_decode($apires->documents[0]->base64);
+			
+			// store pdf on server
+			$filename = basename($pdfurl);
+			file_put_contents(public_path("label_pdf/$filename"), base64_decode($apires->documents[0]->base64));
 			
 			foreach($order_item_arr as $val_item_id){
 				// save this value on orderid and order item id
@@ -508,10 +530,12 @@ class ShipmentReportController extends Controller
 				->update([
 					'tracking_number' => $trackno,
 					'label_pdf_url' => $pdfurl,
+					'pdf_attachment_code' => $pdfattachment,
 				]);
 			}
-
+			
+			return $filename;
 		}
-		return true;
+		return false;
 	}
 }

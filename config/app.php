@@ -176,6 +176,7 @@ return [
         App\Providers\RouteServiceProvider::class,
 		Maatwebsite\Excel\ExcelServiceProvider::class,
 		ZanySoft\Zip\ZipServiceProvider::class,
+		LynX39\LaraPdfMerger\PdfMergerServiceProvider::class,	
 		
     ],
 
@@ -230,6 +231,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 		'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 		'Zip' => ZanySoft\Zip\ZipFacade::class,
+		'PdfMerger' => LynX39\LaraPdfMerger\Facades\PdfMerger::class,
     ],
 
 ];
