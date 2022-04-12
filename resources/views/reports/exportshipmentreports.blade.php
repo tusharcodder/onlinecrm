@@ -39,7 +39,8 @@
 				<th>box_id</th>
 				<th>box_shipper_id</th>
 				<th>shipment_date</th>
-				<th>ncp</th>
+				<th>ncp</th>				
+				<th>Label Pdf Url</th>
 			</tr>
 		</thead>
 		@if(count($results) > 0)
@@ -80,11 +81,12 @@
 					<td></td>
 					<td></td>
 					<td></td>
+					<td>{{ $shipment->tracking_number }}</td>
 					<td></td>
 					<td></td>
 					<td></td>
-					<td></td>
-					<td></td>
+					<td></td>					
+					<td><{{ $shipment->label_pdf_url }}</td>
 				</tr>
 			@endforeach
 		@endif

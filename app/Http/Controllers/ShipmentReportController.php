@@ -177,7 +177,9 @@ class ShipmentReportController extends Controller
 						'ship_service_level' => $val->ship_service_level,
 						'wght' => $val->wght,
 						'ounce' => $val->oz_wt,
-						'mrp' => $val->mrp
+						'mrp' => $val->mrp,
+						'tracking_number' => $val->tracking_number,
+						'label_pdf_url' => $val->label_pdf_url,
 					]);
 				}
 			}

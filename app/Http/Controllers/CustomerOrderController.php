@@ -93,7 +93,10 @@ class CustomerOrderController extends Controller
      */
     public function show($id)
     {
-        $customerorders = CustomerOrder::find($id);
+        $customerorders = CustomerOrder::select('customer_orders.*','customer_orders.order_id as cust_order_id','customer_orders.order_item_id as cust_order_item_id','order_tracking.*')
+		->leftjoin('order_tracking', 'order_tracking.order_item_id', '=', 'customer_orders.order_item_id' )
+		->where('customer_orders.id', $id)
+		->get();
 		return view('customerorders.show',compact('customerorders'));
     }
 

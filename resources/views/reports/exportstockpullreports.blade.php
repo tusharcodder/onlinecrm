@@ -21,6 +21,7 @@
 								
 				<tr>
 					<td>{{ ++$key }}</td>
+					<td>{{ $stockpull->warehouse_name }}</td>
 					<td>{{ $stockpull->isbnno }}</td>
 					<td>{{ $stockpull->bookname }}</td>
 					<td>{{ $actualstock }}</td>

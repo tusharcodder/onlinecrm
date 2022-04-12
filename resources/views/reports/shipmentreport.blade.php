@@ -88,6 +88,8 @@
 								<th>Wght</th>
 								<th>ounce</th>
 								<th>Mrp</th>
+								<th>Track No</th>
+								<th>Download Label</th>
 							</tr>
 							@if($shipmentreports->total() > 0)
 							@foreach ($shipmentreports as $key => $shipment)
@@ -120,11 +122,17 @@
 								<td>{{ $shipment->wght }}</td>
 								<td>{{ $shipment->ounce }}</td>
 								<td>{{ $shipment->mrp }}</td>
+								<td>{{ $shipment->tracking_number }}</td>
+								<td>
+									@if($shipment->label_pdf_url != '')
+										<a href="{{$shipment->label_pdf_url}}" target="_blank" title="Download" download><img src="{{asset('images/pdficon.png')}}" width=50 height=50/></a> 
+									@endif
+								</td>
 							</tr>
 							@endforeach
 							@else
 							<tr>
-								<td colspan="28">No records found.</td>
+								<td colspan="30">No records found.</td>
 							</tr>
 							@endif
 						</table>

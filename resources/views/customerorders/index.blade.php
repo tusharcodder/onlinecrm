@@ -102,7 +102,7 @@
 												<form method="POST" action="{{ route('order-reshipped',$customerorder->id) }}" style="display:inline">
 														@csrf
 														@method('POST')
-														<button type="submit" onclick="return confirm('Are you sure?')" class="btn btn-success btn-sm">
+														<button type="submit" onclick="return confirm('Are you sure?')" class="btn btn-success btn-sm mt-2">
 															{{ __('Re-Shipped') }}
 														</button>
 													</form>
