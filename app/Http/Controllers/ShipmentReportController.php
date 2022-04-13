@@ -354,7 +354,7 @@ class ShipmentReportController extends Controller
 			//->whereNull('customer_orders.label_pdf_url')
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'skudetails.isbn13')
 			->orderBy('customer_orders.reporting_date','ASC')
-			->limit(10)
+			//->limit(10)
 			->having(DB::raw('sum(customer_orders.quantity_to_be_shipped)'), '>' , 0)->get();
 		
 		$labelapiarr = array();

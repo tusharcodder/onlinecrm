@@ -363,4 +363,60 @@ class CustomerOrderController extends Controller
 		}
 		
 	}
+	
+	//cancel Shipment
+	public function cancelShipmentLabel($id){
+		  
+		try{
+			$user = Auth::user();
+			$uid = $user->id;
+
+			$order = CustomerOrder::find($id);
+			if(!empty($order)){
+				
+				$token = 'Basic TlRRPS4rbHNORytJdVRpMzZWOHpjT0JFLzd2N1Axc3luWFh5c0VKL3pTaE41M3ZjPTo=';
+				
+				// cancel shipment label
+				$curl = curl_init();
+				curl_setopt_array($curl, array(
+				  CURLOPT_URL => "https://api.ypn.io/v2/shipping/shipments/".$order->label_id,
+				  CURLOPT_RETURNTRANSFER => true,
+				  CURLOPT_ENCODING => '',
+				  CURLOPT_MAXREDIRS => 10,
+				  CURLOPT_TIMEOUT => 0,
+				  CURLOPT_FOLLOWLOCATION => true,
+				  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+				  CURLOPT_CUSTOMREQUEST => 'DELETE',
+				  //CURLOPT_POSTFIELDS =>$postfeilds,
+				  CURLOPT_HTTPHEADER => array(
+					'Content-Type: application/json',
+					'Authorization: '.$token
+				  ),
+				));
+				$response = curl_exec($curl);
+				curl_close($curl);				
+				$apires = json_decode($response);
+				
+				if($apires->success){
+					// update value of label id
+					CustomerOrder::where('label_id', $order->label_id)
+				   ->update([
+					   'tracking_number' => NULL,
+					   'label_pdf_url' => NULL,
+					   'pdf_attachment_code' => NULL,
+					   'deleted_at' => date('Y-m-d H:i:s'),
+					   'deleted_by' => $uid,
+					]);
+				}
+			}
+			
+			return redirect()->back()
+                        ->with('success','Shipment Label Cancelled Successfully.');
+		}
+		catch(\Exception $ex){
+			return redirect()->route('customerorders.index')
+                        ->with('error',$ex->getMessage());
+		}
+		
+	}
 }

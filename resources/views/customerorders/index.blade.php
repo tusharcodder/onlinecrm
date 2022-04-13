@@ -108,6 +108,17 @@
 													</form>
 											@endcan
 										@endif
+										@if($customerorder->quantity_to_ship > 0 && !empty($customerorder->tracking_number))
+											@can('cancel-shipment-label')
+												<form method="POST" action="{{ route('cancel-shipment-label',$customerorder->id) }}" style="display:inline">
+													@csrf
+													@method('POST')
+													<button type="submit" onclick="return confirm('Are you sure?')" class="btn btn-warning btn-sm mt-2">
+														{{ __('Cancel Ship Label') }}
+													</button>
+												</form>
+											@endcan
+										@endif
 									</td>
 								</tr>                               
 								@endforeach

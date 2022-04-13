@@ -68,6 +68,8 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::post('order-reshipped/{id}','CustomerOrderController@orderReshipped')->name('order-reshipped');
 	//export track order
 	Route::post('shippedorderexport','ShipmentReportController@shipmentTrackExport')->name('shippedorderexport');
+	// cancel shipment label
+	Route::post('cancel-shipment-label/{id}','CustomerOrderController@cancelShipmentLabel')->name('cancel-shipment-label');
 	
 	//export current stock
 	Route::post('export-stock','TJWStockController@export')->name('export-stock');
