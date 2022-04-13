@@ -66,6 +66,8 @@
                                 <th>Product Name</th>
                                 <th>SKU</th>
                                 <th>Quantity</th>
+								<th>Track No</th>
+								<th>Download Label</th>
                                 <th width="210px">Action</th>
 							</tr>
 							@if($customerorders->total() > 0)                          
@@ -82,6 +84,12 @@
                                     <td>{{ $customerorder->product_name }}</td>
 									<td>{{ $customerorder->sku }}</td>
 									<td>{{ $customerorder->quantity_purchased }}</td>
+									<td>{{ $customerorder->tracking_number }}</td>
+									<td>@if($customerorder->label_pdf_url != '')
+											<a href="{{$customerorder->label_pdf_url}}" target="_blank" title="Download" download><img src="{{asset('images/pdficon.png')}}" width=50 height=50/></a> 
+										@endif
+									</td>
+
 									<td>
 										<a class="btn btn-info btn-sm" href="{{ route('customerorders.show',$customerorder->id) }}">Show</a>
 										@can('customer-order-delete-refund')

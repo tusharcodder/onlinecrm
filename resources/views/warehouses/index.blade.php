@@ -51,6 +51,8 @@
 							<tr>
 								<th>#ID</th>
 								<th>Name</th>
+								<th>Email</th>
+								<th>Phone</th>
 								<th>Address</th>
 								<th>City</th>
 								<th>State</th>
@@ -65,6 +67,8 @@
 									<!--<<td>{{ ($warehouses->currentPage()-1) * $warehouses->perPage() + $loop->index + 1 }}</td>-->
 									<td>{{ $warehouse->id }}</td>
 									<td>{{ $warehouse->name }}</td>
+									<td>{{ $warehouse->email }}</td>
+									<td>{{ $warehouse->phone }}</td>
 									<td>{{ $warehouse->address }}</td>
 									<td>{{ $warehouse->city }}</td>
 									<td>{{ $warehouse->state }}</td>

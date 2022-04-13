@@ -55,26 +55,38 @@
 							</div>
 							<div class="col-md-4">
 								<div class="form-group">
-									<label for="country_code" class="col-form-label text-md-right">{{ __('Address') }}</label>
-									<textarea id="address" name="address" class="form-control">{{$warehouse->address}}</textarea>
+									<label for="email" class="col-form-label text-md-right">{{ __('Email') }}</label>
+									<input type="email" id="email" name="email" value="{{ old('email',$warehouse->email) }}" class="form-control"/>
 								</div>
 							</div>
 							<div class="col-md-4">
 								<div class="form-group">
-									<label for="country_code" class="col-form-label text-md-right">{{ __('City') }}</label>
-									<input id="city" type="text" class="form-control" name="city" value="{{ old('city',$warehouse->city) }}" />
+									<label for="phone" class="col-form-label text-md-right">{{ __('Phone*') }}</label>
+									<input type="number" id="phone" name="phone" value="{{ old('phone',$warehouse->phone) }}"  class="form-control" required/>
 								</div>
 							</div>
 							<div class="col-md-4">
 								<div class="form-group">
-									<label for="country_code" class="col-form-label text-md-right">{{ __('State e.g US') }}</label>
-									<input id="state" type="text" class="form-control" name="state" value="{{ old('state',$warehouse->state) }}" autocomplete="state" minlength="2" maxlength="2" />
+									<label for="country_code" class="col-form-label text-md-right">{{ __('Address*') }}</label>
+									<textarea id="address" name="address" class="form-control" required>{{$warehouse->address}}</textarea>
 								</div>
 							</div>
 							<div class="col-md-4">
 								<div class="form-group">
-									<label for="country_code" class="col-form-label text-md-right">{{ __('Postal Code') }}</label>
-									<input id="postalcode" type="text" class="form-control" name="postalcode" value="{{ old('postalcode',$warehouse->postal_code) }}" / >
+									<label for="country_code" class="col-form-label text-md-right">{{ __('City*') }}</label>
+									<input id="city" type="text" class="form-control" name="city" value="{{ old('city',$warehouse->city) }}" required />
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label for="country_code" class="col-form-label text-md-right">{{ __('State e.g US*') }}</label>
+									<input id="state" type="text" class="form-control" name="state" value="{{ old('state',$warehouse->state) }}" autocomplete="state" minlength="2" maxlength="2" required />
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label for="country_code" class="col-form-label text-md-right">{{ __('Postal Code*') }}</label>
+									<input id="postalcode" type="text" class="form-control" name="postalcode" value="{{ old('postalcode',$warehouse->postal_code) }}" required / >
 								</div>
 							</div>
                         </div>							

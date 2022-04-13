@@ -90,6 +90,8 @@ class WarehouseController extends Controller
 			'address'	=> $request->input('address'),
 			'city'	=> $request->input('city'),
 			'state'	=> $request->input('state'),
+            'email'	=> $request->input('email'),
+			'phone'	=> $request->input('phone'),
 			'postal_code'	=> $request->input('postal_code'),
 			'created_by' => $uid,
 			'updated_by' => $uid
@@ -159,6 +161,8 @@ class WarehouseController extends Controller
         $Warehouse->country_code = strtoupper($request->input('country_code')); 
         $Warehouse->is_shipped  =	$is_shipped;
         $Warehouse->address		= $request->input('address');
+        $Warehouse->email		= $request->input('email');
+        $Warehouse->phone		= $request->input('phone');
 		$Warehouse->city		= $request->input('city');
 		$Warehouse->state		= $request->input('state');
 		$Warehouse->postal_code	= $request->input('postal_code');

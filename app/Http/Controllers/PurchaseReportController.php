@@ -112,7 +112,7 @@ class PurchaseReportController extends Controller
 								
 							//set updated quantity
 							if($venderdetails[0]->quantity >=$remainquantity )
-								$updatequantity = (($venderdetails[0]->quantity)-($remainquantity));
+								$updatequantity = ((int)($venderdetails[0]->quantity)-((int)$remainquantity));
 							else
 								$updatequantity =0;
 							
