@@ -59,130 +59,236 @@ class ShipmentReportController extends Controller
 			'warehouse_country_code' => null,
 			'quantity_to_be_shipped' => 0,
 		]);
-					
-		// generate report 
+		// for box 
+		$shipmentresbox = DB::table('customer_orders')
+			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','skudetails.wght as wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher',DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = box_child_isbns.book_isbn13 and warehouses.country_code = customer_orders.ship_country and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13 having sum(warehouse_stocks.quantity) >= customer_orders.quantity_to_ship LIMIT 1) as ostkqty"),DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = box_child_isbns.book_isbn13 and warehouses.country_code = 'IN' and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13) as indstkqty"),'skudetails.oz_wt','skudetails.mrp','box_child_isbns.book_isbn13 as bookisbn', 'skudetails.type')
+			->leftJoin("skudetails","skudetails.sku_code","=","customer_orders.sku")
+			->leftJoin("box_parent_isbns","box_parent_isbns.box_isbn13","=","skudetails.isbn13")
+			->leftJoin("box_child_isbns","box_child_isbns.box_isbn_id","=","box_parent_isbns.id")
+			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
+			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
+			->where('customer_orders.quantity_to_ship', '>' ,0)
+			->where('skudetails.type','=', 'box')
+			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'customer_orders.ship_country', 'skudetails.isbn13', 'box_child_isbns.book_isbn13')
+			->orderBy('customer_orders.reporting_date','ASC');
+		
+		// generate report for single 
 		$shipmentres = DB::table('customer_orders')
-			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','skudetails.wght as wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher',DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = customer_orders.ship_country and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13 having sum(warehouse_stocks.quantity) >= customer_orders.quantity_to_ship LIMIT 1) as ostkqty"),DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = 'IN' and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13) as indstkqty"),'skudetails.oz_wt','skudetails.mrp')
+			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','skudetails.wght as wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher',DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = customer_orders.ship_country and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13 having sum(warehouse_stocks.quantity) >= customer_orders.quantity_to_ship LIMIT 1) as ostkqty"),DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = 'IN' and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13) as indstkqty"),'skudetails.oz_wt','skudetails.mrp','skudetails.isbn13 as bookisbn', 'skudetails.type')
 			->leftJoin("skudetails","skudetails.sku_code","=","customer_orders.sku")
 			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
 			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
 			->where('customer_orders.quantity_to_ship', '>' ,0)
+			->where('skudetails.type','=', 'single')
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'customer_orders.ship_country', 'skudetails.isbn13')
-			->orderBy('customer_orders.reporting_date','ASC')->get();
+			->orderBy('customer_orders.reporting_date','ASC')
+			->unionAll($shipmentresbox)
+			->get();
 
 		if(!empty($shipmentres)){
-			
 			// get stock value based on isbn no
 			foreach($shipmentres as $key => $val){
+				$type = $val->type;
 				$shipcountry = $val->ship_country;
-				if(!empty($val->ostkqty)){// for order country code
-					$ostkqty = $val->ostkqty;
-					$ostkqty = explode("-",$ostkqty);
+				if(!empty($val->bookisbn)){
+					if(!empty($val->ostkqty)){// for order country code
+						$ostkqty = $val->ostkqty;
+						$ostkqty = explode("-",$ostkqty);
+						
+						$cowid = empty($ostkqty[0]) ? '' : $ostkqty[0];
+						$costkqty = empty($ostkqty[1]) ? 0 : $ostkqty[1];
+						$cowname = empty($ostkqty[2]) ? '' : $ostkqty[2];
+						
+						
+						$isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wid'] = $cowid;
+						$isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wname'] = $cowname;
+						$isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wsqty'] = (float)$costkqty;
+					}
 					
-					$cowid = empty($ostkqty[0]) ? '' : $ostkqty[0];
-					$costkqty = empty($ostkqty[1]) ? 0 : $ostkqty[1];
-					$cowname = empty($ostkqty[2]) ? '' : $ostkqty[2];
-					
-					
-					$isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wid'] = $cowid;
-					$isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wname'] = $cowname;
-					$isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wsqty'] = (float)$costkqty;
-				}
-				
-				if(!empty($val->indstkqty)){// for India
-					$indstkqty = $val->indstkqty;
-					$indstkqty = explode("-",$indstkqty);
-					
-					$inwid = empty($indstkqty[0]) ? '' : $indstkqty[0];
-					$instkqty = empty($indstkqty[1]) ? 0 : $indstkqty[1];
-					$inwname = empty($indstkqty[2]) ? '' : $indstkqty[2];
-					
-					$isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wid'] = $inwid;
-					$isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wname'] = $inwname;
-					$isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wsqty'] = (float)$instkqty;
+					if(!empty($val->indstkqty)){// for India
+						$indstkqty = $val->indstkqty;
+						$indstkqty = explode("-",$indstkqty);
+						
+						$inwid = empty($indstkqty[0]) ? '' : $indstkqty[0];
+						$instkqty = empty($indstkqty[1]) ? 0 : $indstkqty[1];
+						$inwname = empty($indstkqty[2]) ? '' : $indstkqty[2];
+						
+						$isbnstkqty['IN'.'-'.$val->bookisbn.'-'.'wid'] = $inwid;
+						$isbnstkqty['IN'.'-'.$val->bookisbn.'-'.'wname'] = $inwname;
+						$isbnstkqty['IN'.'-'.$val->bookisbn.'-'.'wsqty'] = (float)$instkqty;
+					}
 				}
 			}
 			
-			
+			$boxarr = array();
 			foreach($shipmentres as $key => $val){
+				$type = $val->type;
 				$shipcountry = $val->ship_country;
 				$quantity_to_ship = empty($val->quantity_to_ship) ? 0 : $val->quantity_to_ship;
 				
-				$stkqty = isset($isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wsqty']) ? $isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wsqty'] : 0;
-				$instkqty =  isset($isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wsqty']) ? $isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wsqty'] : 0 ;
+				$stkqty = isset($isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wsqty']) ? $isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wsqty'] : 0;
+				
+				$instkqty =  isset($isbnstkqty['IN'.'-'.$val->bookisbn.'-'.'wsqty']) ? $isbnstkqty['IN'.'-'.$val->bookisbn.'-'.'wsqty'] : 0 ;
 				
 				$shipedqty = 0;
 				$wid = '';
 				$wname = '';
 				$wccode = '';
-				
-				if($quantity_to_ship <= $stkqty && $shipcountry != "IN" && !empty($stkqty)){ // for order country code
-				//	echo $shipedqty;
-					$shipedqty = $quantity_to_ship;
-					$wid = $isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wid'];
-					$wname = $isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wname'];
-					$wccode = $shipcountry;
-					$isbnstkqty[$shipcountry.'-'.$val->isbnno.'-'.'wsqty'] = $stkqty - $quantity_to_ship;
-				}elseif($quantity_to_ship <= $instkqty && !empty($instkqty)){ // for India
-				//	echo 'hey';
-					$shipedqty = $quantity_to_ship;
-					$wid = $isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wid'];
-					$wname = $isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wname'];
-					$wccode = "IN";
-					$isbnstkqty['IN'.'-'.$val->isbnno.'-'.'wsqty'] = $instkqty - $quantity_to_ship;
-				}else{
-					$shipedqty = 0;
-				}
-				
-				// not empty shipped qty
-				if(!empty($shipedqty)){
+				if($type == 'Single'){ // for single
+					if($quantity_to_ship <= $stkqty && $shipcountry != "IN" && !empty($stkqty)){ // for order country code
+						$shipedqty = $quantity_to_ship;
+						$wid = $isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wid'];
+						$wname = $isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wname'];
+						$wccode = $shipcountry;
+						$isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wsqty'] = $stkqty - $quantity_to_ship;
+					}elseif($quantity_to_ship <= $instkqty && !empty($instkqty)){ // for India
+						$shipedqty = $quantity_to_ship;
+						$wid = $isbnstkqty['IN'.'-'.$val->bookisbn.'-'.'wid'];
+						$wname = $isbnstkqty['IN'.'-'.$val->bookisbn.'-'.'wname'];
+						$wccode = "IN";
+						$isbnstkqty['IN'.'-'.$val->bookisbn.'-'.'wsqty'] = $instkqty - $quantity_to_ship;
+					}else{
+						$shipedqty = 0;
+					}
 					
-					//update shipqty into the quantity_to_be_shipped column
-					DB::table('customer_orders')
-					->where('order_id', $val->order_id)
-					->where('order_item_id', $val->order_item_id)
-					->where('sku', $val->sku)
-					->update([
-						'warehouse_id' => $wid,
-						'warehouse_name' => $wname,
-						'warehouse_country_code' => $wccode,
-						'quantity_to_be_shipped' => $shipedqty,
-					]);
-									
-					$finalarray[] = (object)([
-						'isbnno' => $val->isbnno, 
-						'sku' => $val->sku,
-						//'proname' => $val->proname,
-						'proname' => (!empty($val->proname)) ? $val->proname : $val->product_name,
-						'author' => $val->author,
-						'publisher' => $val->publisher,
-						'order_id' => $val->order_id,
-						'order_item_id' => $val->order_item_id,
-						'purchase_date' => $val->purchase_date,
-						'shipedqty' => $shipedqty,
-						'ware_id' => $wid,
-						'warename' => $wname,
-						'wccode' => $wccode,
-						'buyer_name' => $val->buyer_name,
-						'recipient_name' => $val->recipient_name,
-						'buyer_phone_number' => $val->buyer_phone_number,
-						'ship_address_1' => $val->ship_address_1,
-						'ship_address_2' => $val->ship_address_2,
-						'ship_address_3' => $val->ship_address_3,
-						'ship_city' => $val->ship_city,
-						'ship_state' => $val->ship_state,
-						'ship_postal_code' => $val->ship_postal_code,
-						'ship_country' => $val->ship_country,
-						'markname' => $val->markname,
-						'ship_service_level' => $val->ship_service_level,
-						'wght' => $val->wght,
-						'ounce' => $val->oz_wt,
-						'mrp' => $val->mrp,
-						'tracking_number' => $val->tracking_number,
-						'label_pdf_url' => $val->label_pdf_url,
-					]);
+					// not empty shipped qty
+					if(!empty($shipedqty)){
+						
+						//update shipqty into the quantity_to_be_shipped column
+						DB::table('customer_orders')
+						->where('order_id', $val->order_id)
+						->where('order_item_id', $val->order_item_id)
+						->where('sku', $val->sku)
+						->update([
+							'warehouse_id' => $wid,
+							'warehouse_name' => $wname,
+							'warehouse_country_code' => $wccode,
+							'quantity_to_be_shipped' => $shipedqty,
+						]);
+										
+						$finalarray[] = (object)([
+							'isbnno' => $val->isbnno, 
+							'sku' => $val->sku,
+							//'proname' => $val->proname,
+							'proname' => (!empty($val->proname)) ? $val->proname : $val->product_name,
+							'author' => $val->author,
+							'publisher' => $val->publisher,
+							'order_id' => $val->order_id,
+							'order_item_id' => $val->order_item_id,
+							'purchase_date' => $val->purchase_date,
+							'shipedqty' => $shipedqty,
+							'ware_id' => $wid,
+							'warename' => $wname,
+							'wccode' => $wccode,
+							'buyer_name' => $val->buyer_name,
+							'recipient_name' => $val->recipient_name,
+							'buyer_phone_number' => $val->buyer_phone_number,
+							'ship_address_1' => $val->ship_address_1,
+							'ship_address_2' => $val->ship_address_2,
+							'ship_address_3' => $val->ship_address_3,
+							'ship_city' => $val->ship_city,
+							'ship_state' => $val->ship_state,
+							'ship_postal_code' => $val->ship_postal_code,
+							'ship_country' => $val->ship_country,
+							'markname' => $val->markname,
+							'ship_service_level' => $val->ship_service_level,
+							'wght' => $val->wght,
+							'ounce' => $val->oz_wt,
+							'mrp' => $val->mrp,
+							'tracking_number' => $val->tracking_number,
+							'label_pdf_url' => $val->label_pdf_url,
+						]);
+					}
+				}
+				if($type == 'Box'){ // for box
+					$boxarr[$val->order_item_id][] = $val;
 				}
 			}
+			$boxinarr = array();
+			if(!empty($boxarr)){
+				// check stock is available on internation warehouse except India
+				foreach($boxarr as $key => $val_order_box_item){
+
+					$shipedqty = 0;
+					$orderqty = 0;
+											
+					$wid = '';
+					$wname = '';
+					$wccode = '';
+					foreach($val_order_box_item as $val){
+						$type = $val->type;
+						$shipcountry = $val->ship_country;
+						$quantity_to_ship = empty($val->quantity_to_ship) ? 0 : $val->quantity_to_ship;
+						$orderqty = $orderqty + $quantity_to_ship;
+						
+						$stkqty = isset($isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wsqty']) ? $isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wsqty'] : 0;
+
+						if($quantity_to_ship <= $stkqty && $shipcountry != "IN" && !empty($stkqty)){ // for order country code
+							$shipedqty = $shipedqty + $quantity_to_ship;
+							$wid = $isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wid'];
+							$wname = $isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wname'];
+							$wccode = $shipcountry;
+							$isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wsqty'] = $stkqty - $quantity_to_ship;
+						}else{
+							$shipedqty = $shipedqty + 0;
+						}
+					}
+					
+					// not empty shipped qty
+					if(!empty($shipedqty) && $shipedqty == $orderqty){
+						
+						//update shipqty into the quantity_to_be_shipped column
+						DB::table('customer_orders')
+						->where('order_id', $val_order_box_item[0]->order_id)
+						->where('order_item_id', $val_order_box_item[0]->order_item_id)
+						->where('sku', $val_order_box_item[0]->sku)
+						->update([
+							'warehouse_id' => $wid,
+							'warehouse_name' => $wname,
+							'warehouse_country_code' => $wccode,
+							'quantity_to_be_shipped' => $val_order_box_item[0]->quantity_to_ship,
+						]);
+										
+						$finalarray[] = (object)([
+							'isbnno' => $val_order_box_item[0]->isbnno, 
+							'sku' => $val_order_box_item[0]->sku,
+							//'proname' => $val_order_box_item[0]->proname,
+							'proname' => (!empty($val_order_box_item[0]->proname)) ? $val_order_box_item[0]->proname : $val_order_box_item[0]->product_name,
+							'author' => $val_order_box_item[0]->author,
+							'publisher' => $val_order_box_item[0]->publisher,
+							'order_id' => $val_order_box_item[0]->order_id,
+							'order_item_id' => $val_order_box_item[0]->order_item_id,
+							'purchase_date' => $val_order_box_item[0]->purchase_date,
+							'shipedqty' => $val_order_box_item[0]->quantity_to_ship,
+							'ware_id' => $wid,
+							'warename' => $wname,
+							'wccode' => $wccode,
+							'buyer_name' => $val_order_box_item[0]->buyer_name,
+							'recipient_name' => $val_order_box_item[0]->recipient_name,
+							'buyer_phone_number' => $val_order_box_item[0]->buyer_phone_number,
+							'ship_address_1' => $val_order_box_item[0]->ship_address_1,
+							'ship_address_2' => $val_order_box_item[0]->ship_address_2,
+							'ship_address_3' => $val_order_box_item[0]->ship_address_3,
+							'ship_city' => $val_order_box_item[0]->ship_city,
+							'ship_state' => $val_order_box_item[0]->ship_state,
+							'ship_postal_code' => $val_order_box_item[0]->ship_postal_code,
+							'ship_country' => $val_order_box_item[0]->ship_country,
+							'markname' => $val_order_box_item[0]->markname,
+							'ship_service_level' => $val_order_box_item[0]->ship_service_level,
+							'wght' => $val_order_box_item[0]->wght,
+							'ounce' => $val_order_box_item[0]->oz_wt,
+							'mrp' => $val_order_box_item[0]->mrp,
+							'tracking_number' => $val_order_box_item[0]->tracking_number,
+							'label_pdf_url' => $val_order_box_item[0]->label_pdf_url,
+						]);
+					}else{
+						$boxinarr[$val_order_box_item[0]->order_item_id] = $val_order_box_item;
+					}
+				}
+			}
+			echo '<pre>';
+			print_r($boxinarr);
+			exit;
 			//exit;
 		}
 		$shipmentreports = collect($finalarray)->paginate(10)->setPath('');
@@ -431,7 +537,7 @@ class ShipmentReportController extends Controller
 						"number"=> $qty,
 						"code"=> "",
 						"unit"=> "imperial",
-						"weight"=> $oz_weight,
+						"weight"=> $oz_weight/16,
 						"length"=> 10,
 						"width"=> 8.5,
 						"height"=> 2,

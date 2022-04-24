@@ -85,7 +85,7 @@
 					<td></td>
 					<td></td>
 					<td></td>
-					<td></td>					
+					<td></td>
 					<td><{{ $shipment->label_pdf_url }}</td>
 				</tr>
 			@endforeach
