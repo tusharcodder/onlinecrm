@@ -7,6 +7,7 @@
 				<th>isbn13</th>
 				<th>sku</th>
 				<th>product_name</th>
+				<th>books_isbn</th>
 				<th>author</th>
 				<th>publisher</th>
 				<th>order_id</th>
@@ -53,6 +54,7 @@
 					<td>"{{ $shipment->isbnno}}"</td>
 					<td>{{ $shipment->sku}}</td>
 					<td> {{ (!empty($shipment->proname)) ? $shipment->proname  :  $shipment->product_name}}</td>
+					<td>"{{ $shipment->shipper_book_isbn}}"</td>
 					<td>{{ $shipment->author}}</td>
 					<td>{{ $shipment->publisher}}</td>
 					<td>{{ $shipment->order_id}}</td>
@@ -86,7 +88,7 @@
 					<td></td>
 					<td></td>
 					<td></td>
-					<td><{{ $shipment->label_pdf_url }}</td>
+					<td>{{ $shipment->label_pdf_url }}</td>
 				</tr>
 			@endforeach
 		@endif

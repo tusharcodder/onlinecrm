@@ -51,6 +51,14 @@ class ShipmentReportController extends Controller
 		$isbnstkqty = array();
 		$finalarray = array();
 		
+		$whouses = DB::table('warehouses') 
+			->select('*')
+			->where('is_shipped' ,1)
+			->orderBy('id','DESC')
+			->get();
+		if(empty($whouses))
+			return redirect()->route('shippedorderexport')->with('error','Warehouse is not available.');
+		
 		// before generate all quantity_to_be_shipped value should be zero
 		DB::table('customer_orders')
 		->update([
@@ -164,6 +172,7 @@ class ShipmentReportController extends Controller
 							'warehouse_name' => $wname,
 							'warehouse_country_code' => $wccode,
 							'quantity_to_be_shipped' => $shipedqty,
+							'shipper_book_isbn' => $val->bookisbn,
 						]);
 										
 						$finalarray[] = (object)([
@@ -204,34 +213,45 @@ class ShipmentReportController extends Controller
 					$boxarr[$val->order_item_id][] = $val;
 				}
 			}
+			
 			$boxinarr = array();
 			if(!empty($boxarr)){
 				// check stock is available on internation warehouse except India
 				foreach($boxarr as $key => $val_order_box_item){
-
-					$shipedqty = 0;
-					$orderqty = 0;
-											
 					$wid = '';
 					$wname = '';
 					$wccode = '';
-					foreach($val_order_box_item as $val){
-						$type = $val->type;
-						$shipcountry = $val->ship_country;
-						$quantity_to_ship = empty($val->quantity_to_ship) ? 0 : $val->quantity_to_ship;
-						$orderqty = $orderqty + $quantity_to_ship;
+					$bookisbns = array();	
+					foreach($whouses as $valw){
+						$shwid = $valw->id;
+						$shipedqty = 0;
+						$orderqty = 0;
 						
-						$stkqty = isset($isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wsqty']) ? $isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wsqty'] : 0;
-
-						if($quantity_to_ship <= $stkqty && $shipcountry != "IN" && !empty($stkqty)){ // for order country code
-							$shipedqty = $shipedqty + $quantity_to_ship;
-							$wid = $isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wid'];
-							$wname = $isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wname'];
-							$wccode = $shipcountry;
-							$isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wsqty'] = $stkqty - $quantity_to_ship;
-						}else{
-							$shipedqty = $shipedqty + 0;
+						foreach($val_order_box_item as $val){
+							$type = $val->type;
+							$shipcountry = $val->ship_country;
+							$quantity_to_ship = empty($val->quantity_to_ship) ? 0 : $val->quantity_to_ship;
+							$orderqty = $orderqty + $quantity_to_ship;
+							
+							$stkqty = isset($isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wsqty']) ? $isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wsqty'] : 0;
+							
+							$bookisbns[] = $val->bookisbn;
+							$wid = isset($isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wid']) ? $isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wid'] : '';
+							if($wid == $shwid && !empty($wid)){ // for order country code
+								if($quantity_to_ship <= $stkqty && !empty($stkqty)){ // for order country code
+									$shipedqty = $shipedqty + $quantity_to_ship;
+									$wname = $isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wname'];
+									$wccode = $shipcountry;
+									$isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wsqty'] = $stkqty - $quantity_to_ship;
+								}else{
+									$shipedqty = $shipedqty + 0;
+								}
+							}
 						}
+						
+						// not empty shipped qty
+						if(!empty($shipedqty) && $shipedqty == $orderqty)
+							break;
 					}
 					
 					// not empty shipped qty
@@ -246,6 +266,7 @@ class ShipmentReportController extends Controller
 							'warehouse_id' => $wid,
 							'warehouse_name' => $wname,
 							'warehouse_country_code' => $wccode,
+							'shipper_book_isbn' => join(", ",$bookisbns),
 							'quantity_to_be_shipped' => $val_order_box_item[0]->quantity_to_ship,
 						]);
 										
@@ -286,10 +307,10 @@ class ShipmentReportController extends Controller
 					}
 				}
 			}
-			echo '<pre>';
-			print_r($boxinarr);
+			/* echo '<pre>';
+			print_r($finalarray);
 			exit;
-			//exit;
+			//exit; */
 		}
 		$shipmentreports = collect($finalarray)->paginate(10)->setPath('');
         return view('reports.shipmentreport',compact('shipmentreports', 'request'))
@@ -451,7 +472,7 @@ class ShipmentReportController extends Controller
 			
 		// download shipment label based on the shipment records
 		$results = DB::table('customer_orders')
-			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','skudetails.wght as wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher', DB::raw('sum(customer_orders.quantity_to_be_shipped) as shipingqty'),'skudetails.oz_wt','skudetails.mrp', 'book_details.publisher as publisher', 'warehouses.name as wname', 'warehouses.country_code as wcountry', 'warehouses.address as wadd', 'warehouses.city as wcity', 'warehouses.state as wstate', 'warehouses.postal_code as wpcode', 'warehouses.email as wemail', 'warehouses.phone as wphone')
+			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','skudetails.wght as wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher', DB::raw('sum(customer_orders.quantity_to_be_shipped) as shipingqty'),'skudetails.oz_wt','skudetails.mrp','skudetails.type', 'book_details.publisher as publisher', 'warehouses.name as wname', 'warehouses.country_code as wcountry', 'warehouses.address as wadd', 'warehouses.city as wcity', 'warehouses.state as wstate', 'warehouses.postal_code as wpcode', 'warehouses.email as wemail', 'warehouses.phone as wphone')
 			->leftJoin("skudetails","skudetails.sku_code","=","customer_orders.sku")
 			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
 			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
@@ -532,6 +553,9 @@ class ShipmentReportController extends Controller
 					$oz_weight = ($oz_weight > 26) ? 25: $oz_weight;
 					$qty = $qty + (float)$labelval->shipingqty;
 					$proname = empty($labelval->proname) ? $labelval->product_name : $labelval->proname;
+					if($type == "Box")
+						$proname = $labelval->product_name;
+					
 					$pronames[$proname] = substr($proname, 0 ,$lengthsz);
 					$labelvalarr['parcels'] = [
 						"number"=> $qty,
