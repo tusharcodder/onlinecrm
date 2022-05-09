@@ -177,6 +177,7 @@ class ShipmentReportController extends Controller
 										
 						$finalarray[] = (object)([
 							'isbnno' => $val->isbnno, 
+							'bisbnno' => $val->bookisbn, 
 							'sku' => $val->sku,
 							//'proname' => $val->proname,
 							'proname' => (!empty($val->proname)) ? $val->proname : $val->product_name,
@@ -271,7 +272,8 @@ class ShipmentReportController extends Controller
 						]);
 										
 						$finalarray[] = (object)([
-							'isbnno' => $val_order_box_item[0]->isbnno, 
+							'isbnno' => $val_order_box_item[0]->isbnno,
+							'bisbnno' => join(", ",$bookisbns), 
 							'sku' => $val_order_box_item[0]->sku,
 							//'proname' => $val_order_box_item[0]->proname,
 							'proname' => (!empty($val_order_box_item[0]->proname)) ? $val_order_box_item[0]->proname : $val_order_box_item[0]->product_name,

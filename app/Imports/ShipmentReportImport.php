@@ -46,6 +46,7 @@ class ShipmentReportImport implements ToModel, WithHeadingRow, WithBatchInserts,
 		
 		$row['order_item_id'] = str_replace('"', "", strval($row['order_item_id']));
 		$row['isbn13'] = str_replace('"', "", strval($row['isbn13']));
+		$row['bisbn'] = str_replace('"', "", strval($row['bisbn']));
 		
 		if(empty(strval($row['shipper_tracking_id'])) || is_null(strval($row['shipper_tracking_id'])) || strval($row['shipper_tracking_id']) == "#VALUE!" || strval($row['shipper_tracking_id']) == "#N/A") // not insert blank track id data
 			return '';
@@ -81,6 +82,7 @@ class ShipmentReportImport implements ToModel, WithHeadingRow, WithBatchInserts,
 				->where('order_item_id', strval($val->order_item_id))
 				->where('sku', strval($val->sku))
 				->update([
+					'tracking_number' => strval($row['shipper_tracking_id']),
 					'quantity_to_be_shipped' => $qtytobeship,
 					'quantity_to_ship' => $qtytoship,
 					'quantity_shipped' => $shippedqty,
@@ -100,6 +102,7 @@ class ShipmentReportImport implements ToModel, WithHeadingRow, WithBatchInserts,
 			'order_item_id' => strval($row['order_item_id']),
 			'sku' => strval($row['sku']),
 			'isbnno' => strval($row['isbn13']),
+			'shipper_book_isbn' => strval($row['bisbn']),
 			'warehouse_id' => strval($row['warehouse_id']),
 			'warehouse_name' => strval($row['warehouse']),
 			'box_shipper_id' => strval($row['box_shipper_id']),

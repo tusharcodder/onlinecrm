@@ -5,6 +5,7 @@
 			<tr>
 				<th>No</th>
 				<th>isbn13</th>
+				<th>bisbn</th>
 				<th>sku</th>
 				<th>product_name</th>
 				<th>books_isbn</th>
@@ -52,6 +53,7 @@
 				<tr>
 					<td>{{ ++$key }}</td>
 					<td>"{{ $shipment->isbnno}}"</td>
+					<td>"{{ $shipment->shipper_book_isbn}}"</td>
 					<td>{{ $shipment->sku}}</td>
 					<td> {{ (!empty($shipment->proname)) ? $shipment->proname  :  $shipment->product_name}}</td>
 					<td>"{{ $shipment->shipper_book_isbn}}"</td>

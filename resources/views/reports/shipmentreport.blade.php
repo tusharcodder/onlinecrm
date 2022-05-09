@@ -62,6 +62,7 @@
 							<tr>
 								<th>No</th>
 								<th>isbn13</th>
+								<th>bisbn</th>
 								<th>sku</th>
 								<th>Product_name</th>
 								<th>Author</th>
@@ -96,6 +97,7 @@
 							<tr>
 								<td>{{ ($shipmentreports->currentPage()-1) * $shipmentreports->perPage() + $loop->index + 1 }}</td>
 								<td>{{ $shipment->isbnno}}</td>
+								<td>{{ $shipment->bisbnno}}</td>
 								<td>{{ $shipment->sku}}</td>
 								<td>{{ $shipment->proname}}</td>
 								<td>{{ $shipment->author}}</td>
