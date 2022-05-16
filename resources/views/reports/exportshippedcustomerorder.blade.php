@@ -78,9 +78,8 @@
 					<td>{{ $shipment->shipper_tracking_id }}</td>
 					<td>{{ $shipment->box_id }}</td>
 					<td>{{ $shipment->box_shipper_id }}</td>
-					<td>{{\Carbon\Carbon::parse($shipment->shipment_date)->format('d-m-Y')}}</td>
+					<td>{{ $shipment->shipment_date }}</td>
 					<td>{{ $shipment->ncp }}</td>
-					
 				</tr>
 			@endforeach
 		@endif

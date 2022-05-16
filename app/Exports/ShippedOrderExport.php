@@ -58,9 +58,9 @@ class ShippedOrderExport implements FromView
 			if(!empty($sku))
 				$query->where('order_tracking.sku', '=', $sku);
 			if(!empty($from_date))
-				$query->where(DB::raw("(DATE_FORMAT(shipment_date,'%Y-%m-%d'))"), '>=', $from_date);
+				$query->where(DB::raw("(DATE_FORMAT(order_tracking.shipment_date,'%Y-%m-%d'))"), '>=', $from_date);
 			if(!empty($to_date))
-				$query->where(DB::raw("(DATE_FORMAT(shipment_date,'%Y-%m-%d'))"), '<=', $to_date);		
+				$query->where(DB::raw("(DATE_FORMAT(order_tracking.shipment_date,'%Y-%m-%d'))"), '<=', $to_date);		
 				
 			$results = $query->orderBy('order_tracking.id', 'ASC')->get();
 		}else // only data heading for format
@@ -68,7 +68,7 @@ class ShippedOrderExport implements FromView
 			
         return view('reports.exportshippedcustomerorder', [
 			'results' => $results,
-			'exporttype' => $exporttype,
+			'exporttype' => $exporttype, 
 		]);
     }
 }

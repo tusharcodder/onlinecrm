@@ -74,7 +74,7 @@ class ShipmentReportController extends Controller
 			->leftJoin("box_parent_isbns","box_parent_isbns.box_isbn13","=","skudetails.isbn13")
 			->leftJoin("box_child_isbns","box_child_isbns.box_isbn_id","=","box_parent_isbns.id")
 			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
-			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
+			->leftJoin("book_details","book_details.isbnno","=","box_child_isbns.book_isbn13")
 			->where('customer_orders.quantity_to_ship', '>' ,0)
 			->where('skudetails.type','=', 'box')
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'customer_orders.ship_country', 'skudetails.isbn13', 'box_child_isbns.book_isbn13')
