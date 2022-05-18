@@ -194,8 +194,8 @@ class BoxIsbnController extends Controller
         //
 		DB::table("box_parent_isbns")->where('id',$id)->delete();
         DB::table("box_child_isbns")->where('box_isbn_id',$id)->delete();
-        return redirect()->route('currencies.index')
-                        ->with('success','Currencies deleted successfully.');
+        return redirect()->route('boxisbns.index')
+                        ->with('success','Box Isbns deleted successfully.');
     }
     
 }

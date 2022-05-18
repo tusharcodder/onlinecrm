@@ -77,7 +77,7 @@ class ShipmentReportController extends Controller
 			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
 			->leftJoin("book_details","book_details.isbnno","=","box_child_isbns.book_isbn13")
 			->where('customer_orders.quantity_to_ship', '>' ,0)
-			->where('skudetails.type','=', 'box')
+			->where('skudetails.type','=', 'Box')
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'customer_orders.ship_country', 'skudetails.isbn13', 'box_child_isbns.book_isbn13')
 			->orderBy('customer_orders.reporting_date','ASC');
 
@@ -88,7 +88,7 @@ class ShipmentReportController extends Controller
 			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
 			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
 			->where('customer_orders.quantity_to_ship', '>' ,0)
-			->where('skudetails.type','=', 'single')
+			->where('skudetails.type','=', 'Single')
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'customer_orders.ship_country', 'skudetails.isbn13')
 			->orderBy('customer_orders.reporting_date','ASC')
 			->unionAll($shipmentresbox)
@@ -255,7 +255,7 @@ class ShipmentReportController extends Controller
 						if(!empty($shipedqty) && $shipedqty == $orderqty)
 							break;
 					}
-					
+
 					// not empty shipped qty
 					if(!empty($shipedqty) && $shipedqty == $orderqty){
 						
