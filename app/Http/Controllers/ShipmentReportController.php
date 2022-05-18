@@ -76,7 +76,7 @@ class ShipmentReportController extends Controller
 			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
 			->leftJoin("book_details","book_details.isbnno","=","box_child_isbns.book_isbn13")
 			->where('customer_orders.quantity_to_ship', '>' ,0)
-			->where('skudetails.type','=', 'box')
+			->where('skudetails.type','=', 'Box')
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'customer_orders.ship_country', 'skudetails.isbn13', 'box_child_isbns.book_isbn13')
 			->orderBy('customer_orders.reporting_date','ASC');
 		
@@ -87,7 +87,7 @@ class ShipmentReportController extends Controller
 			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
 			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
 			->where('customer_orders.quantity_to_ship', '>' ,0)
-			->where('skudetails.type','=', 'single')
+			->where('skudetails.type','=', 'Single')
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'customer_orders.ship_country', 'skudetails.isbn13')
 			->orderBy('customer_orders.reporting_date','ASC')
 			->unionAll($shipmentresbox)
@@ -214,7 +214,10 @@ class ShipmentReportController extends Controller
 					$boxarr[$val->order_item_id][] = $val;
 				}
 			}
-			
+			echo '<pre>'; 
+			print_r($isbnstkqty);
+			echo '</pre>';
+			// exit;
 			$boxinarr = array();
 			if(!empty($boxarr)){
 				// check stock is available on internation warehouse except India
@@ -224,12 +227,12 @@ class ShipmentReportController extends Controller
 					$wccode = '';
 					$bookisbns = array();	
 					foreach($whouses as $valw){
-						$shwid = $valw->id;
+						echo $shwid = $valw->id;
 						$shipedqty = 0;
 						$orderqty = 0;
 						
 						foreach($val_order_box_item as $val){
-							$type = $val->type;
+						echo $type = $val->type;
 							$shipcountry = $val->ship_country;
 							$quantity_to_ship = empty($val->quantity_to_ship) ? 0 : $val->quantity_to_ship;
 							$orderqty = $orderqty + $quantity_to_ship;
@@ -254,7 +257,8 @@ class ShipmentReportController extends Controller
 						if(!empty($shipedqty) && $shipedqty == $orderqty)
 							break;
 					}
-					
+					echo bookisbns;
+					exit;
 					// not empty shipped qty
 					if(!empty($shipedqty) && $shipedqty == $orderqty){
 						

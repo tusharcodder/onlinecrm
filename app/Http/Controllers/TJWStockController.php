@@ -40,26 +40,95 @@ class TJWStockController extends Controller
     public function index(Request $request)
     { 
         $search = $request->input('search');
-		
-        $stocks = DB::table('warehouse_stocks',)
-		->select('warehouses.name','warehouse_stocks.isbn13','book_details.name as book_title',
-		DB::raw("(sum(case when warehouse_stocks.quantity is not null THEN warehouse_stocks.quantity else 0 END)-(IFNULL( ( SELECT sum(customer_orders.quantity_to_be_shipped) from customer_orders INNER join skudetails on skudetails.sku_code = customer_orders.sku where skudetails.isbn13 = warehouse_stocks.isbn13 and customer_orders.warehouse_id = warehouse_stocks.warehouse_id), 0))) as stock"))
-		->leftJoin('book_details','book_details.isbnno','=','warehouse_stocks.isbn13')
-        ->leftJoin('warehouses','warehouses.id','=','warehouse_stocks.warehouse_id')       
+        $stockreportarr = array();
+        $stock = '';
+		$stocksboxisbn = DB::table('warehouse_stocks',)
+		->select('warehouses.name','warehouses.id as warehouse_id','warehouse_stocks.isbn13 as isbnno','book_details.name as book_title','skudetails.type as isbntype',
+        DB::raw("IFNULL(warehouse_stocks.quantity,0) as wareqty"),
+        DB::raw("IFNULL(sum(customer_orders.quantity_to_be_shipped),0) as orderqty"))
+        ->leftJoin('box_child_isbns','box_child_isbns.book_isbn13','=','warehouse_stocks.isbn13')
+        ->leftJoin('box_parent_isbns','box_parent_isbns.id','=','box_child_isbns.box_isbn_id')
+		->leftJoin('skudetails','skudetails.isbn13','=','box_parent_isbns.box_isbn13')
+        ->leftJoin('customer_orders','customer_orders.sku','=','skudetails.sku_code')
+        ->leftJoin('warehouses','warehouses.id','=','warehouse_stocks.warehouse_id')
+        ->leftJoin('book_details','book_details.isbnno','=','warehouse_stocks.isbn13')         
+        
+    
+        ->where('skudetails.type','Box')        
 		->where(function($query) use ($search) {
 			$query->where('warehouse_stocks.isbn13','LIKE','%'.$search.'%')
 			->orWhere('warehouses.name','LIKE','%'.$search.'%')
 			->orWhere('book_details.name','LIKE','%'.$search.'%');
 		})
-		->groupby('warehouse_stocks.isbn13','warehouse_stocks.warehouse_id')  
-		->orderBy('book_details.name','ASC')->paginate(20)->setPath('');
+		->groupby('warehouse_stocks.isbn13','warehouse_stocks.warehouse_id')
+        ->orderBy('book_details.name','ASC');
         
-        // bind value with pagination link
-        $pagination = $stocks->appends ( array (
-			'search' => $search
-        ));
+        
+		
+
+        $stocks = DB::table('warehouse_stocks',)
+		->select('warehouses.name','warehouses.id as warehouse_id','warehouse_stocks.isbn13 as isbnno','book_details.name as book_title','skudetails.type as isbntype',
+        DB::raw("IFNULL(warehouse_stocks.quantity,0) as wareqty"),
+        DB::raw("IFNULL(sum(customer_orders.quantity_to_be_shipped),0) as orderqty"))
+        ->leftJoin('skudetails','skudetails.isbn13','=','warehouse_stocks.isbn13')     
+		
+        ->leftJoin('customer_orders','customer_orders.sku','=','skudetails.sku_code')
+        ->leftJoin('warehouses','warehouses.id','=','warehouse_stocks.warehouse_id')
+        ->leftJoin('book_details','book_details.isbnno','=','warehouse_stocks.isbn13')         
+        
        
-		return view('stocks.index',compact('stocks','search'))
+        ->where('skudetails.type','Single')        
+		->where(function($query) use ($search) {
+			$query->where('warehouse_stocks.isbn13','LIKE','%'.$search.'%')
+			->orWhere('warehouses.name','LIKE','%'.$search.'%')
+			->orWhere('book_details.name','LIKE','%'.$search.'%');
+		})
+		->groupby('warehouse_stocks.isbn13','warehouse_stocks.warehouse_id')
+        ->orderBy('book_details.name','ASC')
+        ->unionAll($stocksboxisbn)
+        ->get();
+        
+        
+
+        if(!empty($stocks)){
+			$isbnstkqty = array();
+            $warehouse_id = array();
+			// add to be ship qty based on isbn
+			foreach($stocks as $key => $val){
+				$val->orderqty = empty($val->orderqty) ? 0 : (float)$val->orderqty; 
+                $val->wareqty = empty($val->wareqty) ? 0 : (float)$val->wareqty; 
+				if (array_key_exists($val->warehouse_id.'-'.$val->isbnno, $isbnstkqty)){
+					$isbnstkqty[$val->warehouse_id.'-'.$val->isbnno]  = $isbnstkqty[$val->warehouse_id.'-'.$val->isbnno] +  $val->orderqty;
+                    //$stock = ($val->wareqty - $val->orderqty);
+				}
+				else{
+					$isbnstkqty[$val->warehouse_id.'-'.$val->isbnno]  =  $val->orderqty;
+                   // $stock = ($val->wareqty - $val->orderqty);
+				}
+				
+				$stockreportarr[$val->warehouse_id.'-'.$val->isbnno] = (object)([
+					'name' => $val->name, 
+					'isbn13' =>  $val->isbnno, 
+					'book_title' => $val->book_title,
+					'stock' => ($val->wareqty - $isbnstkqty[$val->warehouse_id.'-'.$val->isbnno]),
+					
+				]);
+			}
+		}
+
+        // echo '<pre>';
+        // print_r($stockreportarr);
+        // echo '</pre>';
+        // exit;
+
+
+
+        // // bind value with pagination link
+        // $pagination = $stocks->appends ( array (
+		// 	'search' => $search
+        // ));
+        $stockreports = collect($stockreportarr)->paginate(10)->setPath('');
+		return view('stocks.index',compact('stockreports','search'))
             ->with('i', ($request->input('page', 1) - 1) * 20);
     }
 

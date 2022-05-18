@@ -54,7 +54,7 @@
 					@endcan
 					<div class="row mb-1">
 						<div class="col-sm-8">	
-							Showing {{($stocks->currentPage()-1)* $stocks->perPage()+($stocks->total() ? 1:0)}} to {{($stocks->currentPage()-1)*$stocks->perPage()+count($stocks)}}  of  {{$stocks->total()}}  Results
+							Showing {{($stockreports->currentPage()-1)* $stockreports->perPage()+($stockreports->total() ? 1:0)}} to {{($stockreports->currentPage()-1)*$stockreports->perPage()+count($stockreports)}}  of  {{$stockreports->total()}}  Results
 						</div>
 						<div class="col-sm-4">
 							<form method="GET" action="{{ route('stocklist') }}" role="search">
@@ -78,10 +78,10 @@
 								<th>Book Title</th>								
                                 <th  style="width:10%;">Stock</th>                            
 							</tr>
-							@if($stocks->total() > 0)                          
-								@foreach ($stocks as $key => $stock)
+							@if($stockreports->total() > 0)                          
+								@foreach ($stockreports as $key => $stock)
 								<tr>
-									<td>{{ ($stocks->currentPage()-1) * $stocks->perPage() + $loop->index + 1 }}</td>
+									<td>{{ ($stockreports->currentPage()-1) * $stockreports->perPage() + $loop->index + 1 }}</td>
                                    	<td>{{ $stock->name}}</td>									
 									<td>{{ $stock->isbn13}}</td>   
                                     <td>{{ $stock->book_title}}</td>
@@ -92,7 +92,7 @@
 								<tr><td colspan="5">No records found.</td></tr>
 							@endif
 						</table>
-						{{ $stocks->links() }}
+						{{ $stockreports->links() }}
 					</div>
 				</div>
 			</div>
