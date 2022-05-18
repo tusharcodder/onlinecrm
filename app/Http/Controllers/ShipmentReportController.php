@@ -56,6 +56,7 @@ class ShipmentReportController extends Controller
 			->where('is_shipped' ,1)
 			->orderBy('id','DESC')
 			->get();
+			
 		if(empty($whouses))
 			return redirect()->route('shippedorderexport')->with('error','Warehouse is not available.');
 		
@@ -79,7 +80,7 @@ class ShipmentReportController extends Controller
 			->where('skudetails.type','=', 'box')
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'customer_orders.ship_country', 'skudetails.isbn13', 'box_child_isbns.book_isbn13')
 			->orderBy('customer_orders.reporting_date','ASC');
-		
+
 		// generate report for single 
 		$shipmentres = DB::table('customer_orders')
 			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','skudetails.wght as wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher',DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = customer_orders.ship_country and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13 having sum(warehouse_stocks.quantity) >= customer_orders.quantity_to_ship LIMIT 1) as ostkqty"),DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = 'IN' and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13) as indstkqty"),'skudetails.oz_wt','skudetails.mrp','skudetails.isbn13 as bookisbn', 'skudetails.type')
@@ -214,7 +215,7 @@ class ShipmentReportController extends Controller
 					$boxarr[$val->order_item_id][] = $val;
 				}
 			}
-			
+
 			$boxinarr = array();
 			if(!empty($boxarr)){
 				// check stock is available on internation warehouse except India
@@ -309,11 +310,104 @@ class ShipmentReportController extends Controller
 					}
 				}
 			}
-			/* echo '<pre>';
-			print_r($finalarray);
-			exit;
-			//exit; */
+			
+			// only for India
+			if(!empty($boxinarr)){
+				// check stock is available on internation warehouse except India
+				foreach($boxinarr as $key => $val_order_box_item){
+					$wid = '';
+					$wname = '';
+					$wccode = '';
+					$bookisbns = array();	
+					foreach($whouses as $valw){
+						$shwid = $valw->id;
+						$shwcou = $valw->country_code ;
+						$shipedqty = 0;
+						$orderqty = 0;
+						if($shwcou == "IN"){
+							foreach($val_order_box_item as $val){
+								
+								$type = $val->type;
+								$shipcountry = $shwcou;
+								$quantity_to_ship = empty($val->quantity_to_ship) ? 0 : (float)$val->quantity_to_ship;
+								$orderqty = $orderqty + $quantity_to_ship;
+								
+								$stkqty = isset($isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wsqty']) ? $isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wsqty'] : 0;
+								
+								$bookisbns[] = $val->bookisbn;
+								$wid = isset($isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wid']) ? $isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wid'] : '';
+								if($wid == $shwid && !empty($wid)){ // for order country code
+									
+									if($quantity_to_ship <= $stkqty && !empty($stkqty)){ // for order country code
+										$shipedqty = $shipedqty + $quantity_to_ship;
+										$wname = $isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wname'];
+										$wccode = $shipcountry;
+										$isbnstkqty[$shipcountry.'-'.$val->bookisbn.'-'.'wsqty'] = $stkqty - $quantity_to_ship;
+									}else{
+										$shipedqty = $shipedqty + 0;
+									}
+								}
+							}
+						}
+						// not empty shipped qty
+						if(!empty($shipedqty) && $shipedqty == $orderqty)
+							break;
+					}
+						
+					// not empty shipped qty
+					if(!empty($shipedqty) && $shipedqty == $orderqty){
+						
+						//update shipqty into the quantity_to_be_shipped column
+						DB::table('customer_orders')
+						->where('order_id', $val_order_box_item[0]->order_id)
+						->where('order_item_id', $val_order_box_item[0]->order_item_id)
+						->where('sku', $val_order_box_item[0]->sku)
+						->update([
+							'warehouse_id' => $wid,
+							'warehouse_name' => $wname,
+							'warehouse_country_code' => $wccode,
+							'shipper_book_isbn' => join(", ",$bookisbns),
+							'quantity_to_be_shipped' => $val_order_box_item[0]->quantity_to_ship,
+						]);
+										
+						$finalarray[] = (object)([
+							'isbnno' => $val_order_box_item[0]->isbnno,
+							'bisbnno' => join(", ",$bookisbns), 
+							'sku' => $val_order_box_item[0]->sku,
+							//'proname' => $val_order_box_item[0]->proname,
+							'proname' => (!empty($val_order_box_item[0]->proname)) ? $val_order_box_item[0]->proname : $val_order_box_item[0]->product_name,
+							'author' => $val_order_box_item[0]->author,
+							'publisher' => $val_order_box_item[0]->publisher,
+							'order_id' => $val_order_box_item[0]->order_id,
+							'order_item_id' => $val_order_box_item[0]->order_item_id,
+							'purchase_date' => $val_order_box_item[0]->purchase_date,
+							'shipedqty' => $val_order_box_item[0]->quantity_to_ship,
+							'ware_id' => $wid,
+							'warename' => $wname,
+							'wccode' => $wccode,
+							'buyer_name' => $val_order_box_item[0]->buyer_name,
+							'recipient_name' => $val_order_box_item[0]->recipient_name,
+							'buyer_phone_number' => $val_order_box_item[0]->buyer_phone_number,
+							'ship_address_1' => $val_order_box_item[0]->ship_address_1,
+							'ship_address_2' => $val_order_box_item[0]->ship_address_2,
+							'ship_address_3' => $val_order_box_item[0]->ship_address_3,
+							'ship_city' => $val_order_box_item[0]->ship_city,
+							'ship_state' => $val_order_box_item[0]->ship_state,
+							'ship_postal_code' => $val_order_box_item[0]->ship_postal_code,
+							'ship_country' => $val_order_box_item[0]->ship_country,
+							'markname' => $val_order_box_item[0]->markname,
+							'ship_service_level' => $val_order_box_item[0]->ship_service_level,
+							'wght' => $val_order_box_item[0]->wght,
+							'ounce' => $val_order_box_item[0]->oz_wt,
+							'mrp' => $val_order_box_item[0]->mrp,
+							'tracking_number' => $val_order_box_item[0]->tracking_number,
+							'label_pdf_url' => $val_order_box_item[0]->label_pdf_url,
+						]);
+					}
+				}
+			}
 		}
+		
 		$shipmentreports = collect($finalarray)->paginate(10)->setPath('');
         return view('reports.shipmentreport',compact('shipmentreports', 'request'))
             ->with('i', ($request->input('page', 1) - 1) * 10);
