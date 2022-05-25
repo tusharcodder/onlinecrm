@@ -74,6 +74,7 @@
 								<th>Warehouse_id</th>
 								<th>Warehouse</th>
 								<th>Warehouse_country</th>
+								<th>rack_details</th>
 								<th>Name</th>
 								<th>Recipent_name</th>
 								<th>Phone_number</th>
@@ -109,6 +110,7 @@
 								<td>{{ $shipment->ware_id}}</td>
 								<td>{{ $shipment->warename}}</td>
 								<td>{{ $shipment->wccode}}</td>
+								<td>{{ $shipment->rack_details}}</td>
 								<td>{{ $shipment->buyer_name}}</td>
 								<td>{{ $shipment->recipient_name }}</td>
 								<td>{{ $shipment->buyer_phone_number }}</td>
@@ -134,7 +136,7 @@
 							@endforeach
 							@else
 							<tr>
-								<td colspan="30">No records found.</td>
+								<td colspan="31">No records found.</td>
 							</tr>
 							@endif
 						</table>

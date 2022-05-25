@@ -18,6 +18,7 @@
 				<th>warehouse_id</th>
 				<th>warehouse</th>
 				<th>warehouse_country</th>
+				<th>rack_details</th>
 				<th>name</th>
 				<th>recipent_name</th>
 				<th>phone_number</th>
@@ -66,6 +67,7 @@
 					<td>{{ $shipment->warehouse_id}}</td>
 					<td>{{ $shipment->warehouse_name}}</td>
 					<td>{{ $shipment->warehouse_country_code}}</td>
+					<td>{{ $shipment->warehouse_rack_details}}</td>
 					<td>{{ $shipment->buyer_name}}</td>
 					<td>{{ $shipment->recipient_name }}</td>
 					<td>{{ $shipment->buyer_phone_number }}</td>

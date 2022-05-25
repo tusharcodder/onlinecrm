@@ -50,6 +50,7 @@
 								<th>Title</th>
 								<th>Stock</th>
 								<th>Quantity</th>
+								<th>Rack Details</th>
 							</tr>
 							@if($stockpullreports->total() > 0)
 								@foreach ($stockpullreports as $key => $stockpull)
@@ -66,10 +67,11 @@
 									<td>{{ $stockpull->bookname }}</td>
 									<td>{{ $actualstock }}</td>
 									<td>{{ $stockpull->shipingqty }}</td>
+									<td>{{ $stockpull->rack_details }}</td>
 								</tr>
 								@endforeach
 							@else
-								<tr><td colspan="5">No records found.</td></tr>
+								<tr><td colspan="6">No records found.</td></tr>
 							@endif
 						</table>
 						{{ $stockpullreports->links() }}

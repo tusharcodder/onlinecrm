@@ -4,10 +4,12 @@
 		<thead>
 			<tr>
 				<th>No</th>
+				<th>Warehouse</th>
 				<th>Isbn 13</th>
 				<th>Title</th>
 				<th>Stock</th>
 				<th>Quantity</th>
+				<th>Rack Details</th>
 			</tr>
 		</thead>
 		@if(count($results) > 0)
@@ -22,10 +24,11 @@
 				<tr>
 					<td>{{ ++$key }}</td>
 					<td>{{ $stockpull->warehouse_name }}</td>
-					<td>{{ $stockpull->isbnno }}</td>
+					<td>"{{ $stockpull->isbnno }}"</td>
 					<td>{{ $stockpull->bookname }}</td>
 					<td>{{ $actualstock }}</td>
 					<td>{{ $stockpull->shipingqty }}</td>
+					<td>{{ $stockpull->rack_details }}</td>
 				</tr>
 			@endforeach
 		@endif

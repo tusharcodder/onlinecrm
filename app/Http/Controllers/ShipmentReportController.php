@@ -47,7 +47,11 @@ class ShipmentReportController extends Controller
      */
     public function index(Request $request)
     {
+		$user = Auth::user();
+		$uid = $user->id;
+		
         //
+		$rackisbnstkqty = array();
 		$isbnstkqty = array();
 		$finalarray = array();
 		
@@ -67,10 +71,12 @@ class ShipmentReportController extends Controller
 			'warehouse_name' => null,
 			'warehouse_country_code' => null,
 			'quantity_to_be_shipped' => 0,
+			'shipper_book_isbn' => null,
+			'warehouse_rack_details' => null,
 		]);
 		// for box 
 		$shipmentresbox = DB::table('customer_orders')
-			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','skudetails.wght as wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher',DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = box_child_isbns.book_isbn13 and warehouses.country_code = customer_orders.ship_country and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13 having sum(warehouse_stocks.quantity) >= customer_orders.quantity_to_ship LIMIT 1) as ostkqty"),DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = box_child_isbns.book_isbn13 and warehouses.country_code = 'IN' and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13) as indstkqty"),'skudetails.oz_wt','skudetails.mrp','box_child_isbns.book_isbn13 as bookisbn', 'skudetails.type')
+			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','skudetails.wght as wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher',DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',sum(warehouse_stocks.quantity),'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = box_child_isbns.book_isbn13 and warehouses.country_code = customer_orders.ship_country and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13 having sum(warehouse_stocks.quantity) >= customer_orders.quantity_to_ship LIMIT 1) as ostkqty"),DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',sum(warehouse_stocks.quantity),'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = box_child_isbns.book_isbn13 and warehouses.country_code = 'IN' and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13) as indstkqty"),'skudetails.oz_wt','skudetails.mrp','box_child_isbns.book_isbn13 as bookisbn', 'skudetails.type')
 			->leftJoin("skudetails","skudetails.sku_code","=","customer_orders.sku")
 			->leftJoin("box_parent_isbns","box_parent_isbns.box_isbn13","=","skudetails.isbn13")
 			->leftJoin("box_child_isbns","box_child_isbns.box_isbn_id","=","box_parent_isbns.id")
@@ -83,7 +89,7 @@ class ShipmentReportController extends Controller
 
 		// generate report for single 
 		$shipmentres = DB::table('customer_orders')
-			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','skudetails.wght as wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher',DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = customer_orders.ship_country and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13 having sum(warehouse_stocks.quantity) >= customer_orders.quantity_to_ship LIMIT 1) as ostkqty"),DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',warehouse_stocks.quantity,'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = 'IN' and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13) as indstkqty"),'skudetails.oz_wt','skudetails.mrp','skudetails.isbn13 as bookisbn', 'skudetails.type')
+			->select('customer_orders.*','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','skudetails.wght as wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher',DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',sum(warehouse_stocks.quantity),'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = customer_orders.ship_country and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13 having sum(warehouse_stocks.quantity) >= customer_orders.quantity_to_ship LIMIT 1) as ostkqty"),DB::raw("(SELECT CONCAT(warehouse_stocks.warehouse_id,'-',sum(warehouse_stocks.quantity),'-',warehouses.name) FROM warehouse_stocks left join warehouses on warehouses.id = warehouse_stocks.warehouse_id WHERE warehouse_stocks.isbn13 = skudetails.isbn13 and warehouses.country_code = 'IN' and warehouses.is_shipped = '1' GROUP BY warehouse_stocks.warehouse_id, warehouse_stocks.isbn13) as indstkqty"),'skudetails.oz_wt','skudetails.mrp','skudetails.isbn13 as bookisbn', 'skudetails.type')
 			->leftJoin("skudetails","skudetails.sku_code","=","customer_orders.sku")
 			->leftJoin("market_places","market_places.id","=","skudetails.market_id")
 			->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")
@@ -163,6 +169,71 @@ class ShipmentReportController extends Controller
 					// not empty shipped qty
 					if(!empty($shipedqty)){
 						
+						//delete order rack details based on order
+						DB::table('order_shipped_isbn_rack_qty')
+							->where('order_id', $val->order_id)
+							->where('order_item_id', $val->order_item_id)
+							->delete();
+							
+						$wracksd = array();
+						$wrqty = (float)$shipedqty;
+						// get rack details of stock with isbn qty
+						$wracks = DB::table('warehouse_stocks')
+							->select('warehouse_stocks.rack_location', DB::raw('sum(warehouse_stocks.quantity) as wqty'))
+							->where('warehouse_stocks.warehouse_id',$wid)
+							->where('warehouse_stocks.isbn13',$val->bookisbn)
+							->groupBy('warehouse_stocks.isbn13', 'warehouse_stocks.rack_location')
+							->orderBy('warehouse_stocks.quantity','DESC')
+							->get();
+						
+						if(!empty($wracks)){
+							foreach($wracks as $key => $valwrd){
+								$rkey = $wid."-".$val->bookisbn."-".$valwrd->rack_location;
+								$wirqty = 0;
+								if (array_key_exists($rkey,$rackisbnstkqty)){
+									$wirqty = (float)$rackisbnstkqty[$rkey];
+								}else{
+									$rackisbnstkqty[$rkey] = $valwrd->wqty;
+									$wirqty = (float)$valwrd->wqty;
+								}
+								
+								if(!empty($wrqty) && $wirqty >= $wrqty){
+									
+									$wracksd[$val->bookisbn."-".$valwrd->rack_location] = $val->bookisbn."-".$valwrd->rack_location."-".$wrqty;
+
+									// save value in db
+									DB::table('order_shipped_isbn_rack_qty')->insert([
+										'order_id' => $val->order_id,
+										'order_item_id' =>$val->order_item_id,
+										'warehouse_id' =>$wid,
+										'isbn' =>$val->bookisbn,
+										'rack' =>$valwrd->rack_location,
+										'quantity' =>$wrqty,
+										'created_by' => $uid,
+									]);
+									
+									$rackisbnstkqty[$rkey] = $wirqty - $wrqty;
+									$wrqty = 0;
+								}elseif(!empty($wrqty) && !empty($wirqty) && $wrqty > $wirqty){
+									$wrqty = $wrqty - $wirqty;
+									$wracksd[$val->bookisbn."-".$valwrd->rack_location] = $val->bookisbn."-".$valwrd->rack_location."-".($wrqty - (float)$wirqty);
+									
+									// save value in db
+									DB::table('order_shipped_isbn_rack_qty')->insert([
+										'order_id' => $val->order_id,
+										'order_item_id' =>$val->order_item_id,
+										'warehouse_id' =>$wid,
+										'isbn' =>$val->bookisbn,
+										'rack' =>$valwrd->rack_location,
+										'quantity' =>$wrqty - (float)$wirqty,
+										'created_by' => $uid,
+									]);
+									
+									$rackisbnstkqty[$rkey] = 0;
+								}
+							}
+						}
+						
 						//update shipqty into the quantity_to_be_shipped column
 						DB::table('customer_orders')
 						->where('order_id', $val->order_id)
@@ -174,6 +245,7 @@ class ShipmentReportController extends Controller
 							'warehouse_country_code' => $wccode,
 							'quantity_to_be_shipped' => $shipedqty,
 							'shipper_book_isbn' => $val->bookisbn,
+							'warehouse_rack_details' => join(", ",$wracksd),
 						]);
 										
 						$finalarray[] = (object)([
@@ -191,6 +263,7 @@ class ShipmentReportController extends Controller
 							'ware_id' => $wid,
 							'warename' => $wname,
 							'wccode' => $wccode,
+							'rack_details' => join(", ",$wracksd),
 							'buyer_name' => $val->buyer_name,
 							'recipient_name' => $val->recipient_name,
 							'buyer_phone_number' => $val->buyer_phone_number,
@@ -259,6 +332,72 @@ class ShipmentReportController extends Controller
 					// not empty shipped qty
 					if(!empty($shipedqty) && $shipedqty == $orderqty){
 						
+						//delete order rack details based on order
+						DB::table('order_shipped_isbn_rack_qty')
+							->where('order_id', $val_order_box_item[0]->order_id)
+							->where('order_item_id', $val_order_box_item[0]->order_item_id)
+							->delete();
+							
+						$wracksd = array();
+						foreach($bookisbns as $valisbn){
+							
+							$wrqty = (float)$val_order_box_item[0]->quantity_to_ship;
+							// get rack details of stock with isbn qty
+							$wracks = DB::table('warehouse_stocks')
+								->select('warehouse_stocks.rack_location', DB::raw('sum(warehouse_stocks.quantity) as wqty'))
+								->where('warehouse_stocks.warehouse_id',$wid)
+								->where('warehouse_stocks.isbn13',$valisbn)
+								->groupBy('warehouse_stocks.isbn13', 'warehouse_stocks.rack_location')
+								->orderBy('warehouse_stocks.quantity','DESC')
+								->get();
+							
+							if(!empty($wracks)){
+								foreach($wracks as $key => $valwrd){
+									
+									$rkey = $wid."-".$valisbn."-".$valwrd->rack_location;
+									$wirqty = 0;
+									if (array_key_exists($rkey,$rackisbnstkqty)){
+										$wirqty = (float)$rackisbnstkqty[$rkey];
+									}else{
+										$rackisbnstkqty[$rkey] = $valwrd->wqty;
+										$wirqty = (float)$valwrd->wqty;
+									}
+								
+									if(!empty($wrqty) && !empty($wirqty) && $wirqty >= $wrqty){
+										$wracksd[$valisbn."-".$valwrd->rack_location] = $valisbn."-".$valwrd->rack_location."-".$wrqty;
+										
+										// save value in db
+										DB::table('order_shipped_isbn_rack_qty')->insert([
+											'order_id' => $val_order_box_item[0]->order_id,
+											'order_item_id' =>$val_order_box_item[0]->order_item_id,
+											'warehouse_id' =>$wid,
+											'isbn' =>$valisbn,
+											'rack' =>$valwrd->rack_location,
+											'quantity' =>$wrqty,
+											'created_by' => $uid,
+										]);
+										$rackisbnstkqty[$rkey] = $wirqty - $wrqty;
+										$wrqty == 0;
+									}elseif(!empty($wrqty) && !empty($wirqty) && $wrqty > $wirqty){
+										$wrqty = $wrqty - $wirqty;
+										$wracksd[$valisbn."-".$valwrd->rack_location] = $valisbn."-".$valwrd->rack_location."-".($wrqty - (float)$wirqty);
+										
+										// save value in db
+										DB::table('order_shipped_isbn_rack_qty')->insert([
+											'order_id' => $val_order_box_item[0]->order_id,
+											'order_item_id' =>$val_order_box_item[0]->order_item_id,
+											'warehouse_id' =>$wid,
+											'isbn' =>$valisbn,
+											'rack' =>$valwrd->rack_location,
+											'quantity' =>$wrqty - (float)$wirqty,
+											'created_by' => $uid,
+										]);
+										$rackisbnstkqty[$rkey] = 0;
+									}
+								}
+							}
+						}
+						
 						//update shipqty into the quantity_to_be_shipped column
 						DB::table('customer_orders')
 						->where('order_id', $val_order_box_item[0]->order_id)
@@ -270,6 +409,7 @@ class ShipmentReportController extends Controller
 							'warehouse_country_code' => $wccode,
 							'shipper_book_isbn' => join(", ",$bookisbns),
 							'quantity_to_be_shipped' => $val_order_box_item[0]->quantity_to_ship,
+							'warehouse_rack_details' => join(", ",$wracksd),
 						]);
 										
 						$finalarray[] = (object)([
@@ -287,6 +427,7 @@ class ShipmentReportController extends Controller
 							'ware_id' => $wid,
 							'warename' => $wname,
 							'wccode' => $wccode,
+							'rack_details' => join(", ",$wracksd),
 							'buyer_name' => $val_order_box_item[0]->buyer_name,
 							'recipient_name' => $val_order_box_item[0]->recipient_name,
 							'buyer_phone_number' => $val_order_box_item[0]->buyer_phone_number,
@@ -357,6 +498,72 @@ class ShipmentReportController extends Controller
 					// not empty shipped qty
 					if(!empty($shipedqty) && $shipedqty == $orderqty){
 						
+						//delete order rack details based on order
+						DB::table('order_shipped_isbn_rack_qty')
+							->where('order_id', $val_order_box_item[0]->order_id)
+							->where('order_item_id', $val_order_box_item[0]->order_item_id)
+							->delete();
+							
+						$wracksd = array();
+						foreach($bookisbns as $valisbn){
+							
+							$wrqty = (float)$val_order_box_item[0]->quantity_to_ship;
+							// get rack details of stock with isbn qty
+							$wracks = DB::table('warehouse_stocks')
+								->select('warehouse_stocks.rack_location', DB::raw('sum(warehouse_stocks.quantity) as wqty'))
+								->where('warehouse_stocks.warehouse_id',$wid)
+								->where('warehouse_stocks.isbn13',$valisbn)
+								->groupBy('warehouse_stocks.isbn13', 'warehouse_stocks.rack_location')
+								->orderBy('warehouse_stocks.quantity','DESC')
+								->get();
+							
+							if(!empty($wracks)){
+								foreach($wracks as $key => $valwrd){
+									
+									$rkey = $wid."-".$valisbn."-".$valwrd->rack_location;
+									$wirqty = 0;
+									if (array_key_exists($rkey,$rackisbnstkqty)){
+										$wirqty = (float)$rackisbnstkqty[$rkey];
+									}else{
+										$rackisbnstkqty[$rkey] = $valwrd->wqty;
+										$wirqty = (float)$valwrd->wqty;
+									}
+									
+									if(!empty($wrqty) && !empty($wirqty) && $valwrd->wqty >= $wrqty){
+										$wracksd[$valisbn."-".$valwrd->rack_location] = $valisbn."-".$valwrd->rack_location."-".$wrqty;
+										
+										// save value in db
+										DB::table('order_shipped_isbn_rack_qty')->insert([
+											'order_id' => $val_order_box_item[0]->order_id,
+											'order_item_id' =>$val_order_box_item[0]->order_item_id,
+											'warehouse_id' =>$wid,
+											'isbn' =>$valisbn,
+											'rack' =>$valwrd->rack_location,
+											'quantity' =>$wrqty,
+											'created_by' => $uid,
+										]);
+										$rackisbnstkqty[$rkey] = $wirqty - $wrqty;
+										$wrqty == 0;
+									}elseif(!empty($wrqty) && !empty($wirqty) && $wrqty > $wirqty){
+										$wrqty = $wrqty - $wirqty;
+										$wracksd[$valisbn."-".$valwrd->rack_location] = $valisbn."-".$valwrd->rack_location."-".($wrqty - (float)$wirqty);
+										
+										// save value in db
+										DB::table('order_shipped_isbn_rack_qty')->insert([
+											'order_id' => $val_order_box_item[0]->order_id,
+											'order_item_id' =>$val_order_box_item[0]->order_item_id,
+											'warehouse_id' =>$wid,
+											'isbn' =>$valisbn,
+											'rack' =>$valwrd->rack_location,
+											'quantity' =>$wrqty - (float)$wirqty,
+											'created_by' => $uid,
+										]);
+										$rackisbnstkqty[$rkey] = 0;
+									}
+								}
+							}
+						}
+						
 						//update shipqty into the quantity_to_be_shipped column
 						DB::table('customer_orders')
 						->where('order_id', $val_order_box_item[0]->order_id)
@@ -368,6 +575,7 @@ class ShipmentReportController extends Controller
 							'warehouse_country_code' => $wccode,
 							'shipper_book_isbn' => join(", ",$bookisbns),
 							'quantity_to_be_shipped' => $val_order_box_item[0]->quantity_to_ship,
+							'warehouse_rack_details' => join(", ",$wracksd),
 						]);
 										
 						$finalarray[] = (object)([
@@ -385,6 +593,7 @@ class ShipmentReportController extends Controller
 							'ware_id' => $wid,
 							'warename' => $wname,
 							'wccode' => $wccode,
+							'rack_details' => join(", ",$wracksd),
 							'buyer_name' => $val_order_box_item[0]->buyer_name,
 							'recipient_name' => $val_order_box_item[0]->recipient_name,
 							'buyer_phone_number' => $val_order_box_item[0]->buyer_phone_number,
