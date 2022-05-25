@@ -43,21 +43,28 @@ class StockTransfer implements ToModel, WithHeadingRow, WithBatchInserts, WithCh
         //check the quantity 
         $stockqty = DB::table('warehouse_stocks')->select('quantity')
                     ->where('warehouse_id', strval($row['warehouse_from']))
-                    ->where('isbn13', strval($row['isbn13']))->get();
+                    ->where('isbn13', strval($row['isbn13']))
+                    ->where('rack_location', strval($row['location_from']))->get();
 
         if($row['quantity'] <=$stockqty[0]->quantity){
 
-            $updatedqty = ($stockqty[0]->quantity- $row['quantity']);
+            //get updated quantity
+            $updatedqty = ($stockqty[0]->quantity - $row['quantity']);
 
             //update quantity into TJW stock
             DB::table('warehouse_stocks')
             ->where('warehouse_id', strval($row['warehouse_from']))
             ->where('isbn13', strval($row['isbn13']))
+            ->where('rack_location', strval($row['location_from']))
             ->update(array('quantity'=>$updatedqty));
             
+            //check the stock entry
             $isExist = DB::table('warehouse_stocks')
-                        ->select('*')->where('warehouse_id', strval($row['warehouse_to']))
-                        ->where('isbn13',strval($row['isbn13']))->get();
+                        ->select('*')
+                        ->where('warehouse_id', strval($row['warehouse_to']))
+                        ->where('isbn13',strval($row['isbn13']))
+                        ->where('rack_location', strval($row['location_to']))
+                        ->get();
 
             //update when isbn already in warehouse to            
             if($isExist->count() > 0){
@@ -65,12 +72,15 @@ class StockTransfer implements ToModel, WithHeadingRow, WithBatchInserts, WithCh
                 DB::table('warehouse_stocks')
                 ->where('warehouse_id', strval($row['warehouse_to']))
                 ->where('isbn13', strval($row['isbn13']))
+                ->where('rack_location', strval($row['location_to']))
                 ->update(array('quantity'=> $updatenewqty));           
             }else{
+                //insert new entry
                 return new WarehouseStock([
                     'warehouse_id' => strval($row['warehouse_to']),           
                     'isbn13' =>strval($row['isbn13']),           
-                    'quantity' =>strval($row['quantity'])
+                    'quantity' =>strval($row['quantity']),
+                    'rack_location' =>strval($row['location_to']),
                 ]);
             }
            

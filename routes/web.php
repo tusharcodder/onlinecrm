@@ -61,6 +61,9 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::resource('purchasereports','PurchaseReportController');
 	Route::resource('boxisbns','BoxIsbnController');
 
+	Route::get('import-export-price-list', 'PriceInventoryController@index')->name('import-export-price-list');
+	Route::post('download-price-inventory', 'PriceInventoryController@importexport')->name('download-price-inventory');
+
 	//customer order reshipped
 	Route::get('get-isbn','CommonController@getIsbn')->name('get-isbn');
 	

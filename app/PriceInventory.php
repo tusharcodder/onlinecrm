@@ -4,10 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class WarehouseStock extends Model
+class PriceInventory extends Model
 {
     //
-    protected $table = 'warehouse_stocks';
+	protected $table = 'price_inventory';
 	
 	/**
      * The attributes that are mass assignable.
@@ -15,6 +15,6 @@ class WarehouseStock extends Model
      * @var array
      */
     protected $fillable = [
-		'warehouse_id', 'isbn13','quantity','rack_location'
-    ];
+       'price', 'quantity', 'sku','lead_time',
+       ];
 }

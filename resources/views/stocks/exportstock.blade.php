@@ -7,7 +7,8 @@
 				<th>warehouse</th>
 				<th>Isbn</th>
 				<th>Book Title</th>
-				<th>Stock</th>				
+				<th>Stock</th>
+				<th>Location</th>				
 			</tr>
 		</thead>
 		@if(count($results) > 0)
@@ -17,7 +18,8 @@
 					<td>{{ $val->name }}</td>
 					<td>{{ $val->isbn13 }}</td>
 					<td>{{ $val->book_title }}</td>
-					<td>{{ $val->stock }}</td>					
+					<td>{{ $val->stock }}</td>
+					<td>{{ $val->location }}</td>					
 				</tr>
 			@endforeach
 		@endif

@@ -12,7 +12,8 @@
 				<th>discount</th>
 				<th>cost price</th>				
 				<th>purchase_by</th>
-				<th>purchase_date</th>				
+				<th>purchase_date</th>	
+				<th>location</th>			
 			</tr>
 		</thead>
 		@if(count($results) > 0)
@@ -27,7 +28,8 @@
 					<td >{{ $res->discount }}</td>
 					<td >{{ $res->cost_price }}</td>					
 					<td >{{ $res->purchase_by }}</td>
-					<td >{{ $res->purchase_date }}</td>				
+					<td >{{ $res->purchase_date }}</td>
+					<td >{{ $res->rack_location }}</td>				
 				</tr>
 			@endforeach
 		@endif

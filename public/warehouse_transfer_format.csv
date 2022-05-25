@@ -1,1 +1,1 @@
-warehouse_from,warehouse_to,isbn13,quantity
+warehouse_from,warehouse_to,isbn13,quantity,location_from,location_to

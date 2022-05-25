@@ -31,12 +31,9 @@
 			<div class="card">
 				<div class="card-header">
 					<div class="float-left">
-						{{ __('Customer Order Import') }}
+						{{ __('Price List Import') }}
 					</div>
-					<div class="float-right">
-						@can('customer-order-list')
-							<a class="btn btn-primary btn-sm" href="{{ route('customerorders.index') }}"> Back to list</a>
-						@endcan
+					<div class="float-right">					
 					</div>
 					<div class="clearfix"></div>
 				</div>
@@ -46,9 +43,8 @@
 					<span class="help-block mb-3">
 						<small>	<i class="fa fa-upload"></i> File extension allow to import: (xls, xlsx, csv, txt)</small><br>
 						<small>	<i class="fa fa-save"></i> Max upload size: 500MB</small><br>
-						
 					</span>
-					<form action="{{ route('customerorderimport') }}" method="POST" enctype="multipart/form-data">
+					<form action="{{ route('download-price-inventory') }}" method="POST" enctype="multipart/form-data">
 						@csrf
 						<div class="row mt-3">
 							<div class="col-md-5">
@@ -71,7 +67,7 @@
 						<div class="form-group row mb-1">
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-primary" id="importstock">
-                                    {{ __('Submit') }}
+                                    {{ __('Download') }}
                                 </button>
                             </div>
                         </div>
@@ -82,7 +78,7 @@
     </div>
 </div>
 
-<div class="container-fluid">
+<!-- <div class="container-fluid">
     <div class="row justify-content-center">
 		<div class="col-md-12">
 			<div class="card">
@@ -218,7 +214,7 @@
 			</div>
 		</div>
     </div>
-</div>
+</div> -->
 @endsection
 @section('footer-script')
 <script src="{{ asset('js/customerorder.js') }}" defer></script>

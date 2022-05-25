@@ -15,6 +15,6 @@ class PurchaseOrder extends Model
      * @var array
      */
     protected $fillable = [
-       'bill_no', 'isbn13', 'purchase_date', 'vendor_id', 'book_title','purchase_by', 'quantity', 'mrp', 'discount', 'cost_price','created_by', 'updated_by'
+       'bill_no', 'isbn13', 'purchase_date', 'vendor_id', 'book_title','purchase_by', 'quantity', 'mrp', 'discount', 'cost_price','created_by', 'updated_by','rack_location'
     ];
 }

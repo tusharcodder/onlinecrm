@@ -40,12 +40,12 @@ class TJWStockController extends Controller
     public function index(Request $request)
     { 
         $search = $request->input('search');
-        $stockreportarr = array();
-        $stock = '';
+        $stockreportarr = array();       
 		$stocksboxisbn = DB::table('warehouse_stocks',)
 		->select('warehouses.name','warehouses.id as warehouse_id','warehouse_stocks.isbn13 as isbnno','book_details.name as book_title','skudetails.type as isbntype',
         DB::raw("IFNULL(warehouse_stocks.quantity,0) as wareqty"),
-        DB::raw("IFNULL(sum(customer_orders.quantity_to_be_shipped),0) as orderqty"))
+        DB::raw("IFNULL(sum(customer_orders.quantity_to_be_shipped),0) as orderqty"),
+        'warehouse_stocks.rack_location')
         ->leftJoin('box_child_isbns','box_child_isbns.book_isbn13','=','warehouse_stocks.isbn13')
         ->leftJoin('box_parent_isbns','box_parent_isbns.id','=','box_child_isbns.box_isbn_id')
 		->leftJoin('skudetails','skudetails.isbn13','=','box_parent_isbns.box_isbn13')
@@ -58,9 +58,10 @@ class TJWStockController extends Controller
 		->where(function($query) use ($search) {
 			$query->where('warehouse_stocks.isbn13','LIKE','%'.$search.'%')
 			->orWhere('warehouses.name','LIKE','%'.$search.'%')
+            ->orWhere('warehouse_stocks.rack_location','LIKE','%'.$search.'%')
 			->orWhere('book_details.name','LIKE','%'.$search.'%');
 		})
-		->groupby('warehouse_stocks.isbn13','warehouse_stocks.warehouse_id')
+		->groupby('warehouse_stocks.isbn13','warehouse_stocks.warehouse_id','warehouse_stocks.rack_location')
         ->orderBy('book_details.name','ASC');
         
         
@@ -69,7 +70,8 @@ class TJWStockController extends Controller
         $stocks = DB::table('warehouse_stocks',)
 		->select('warehouses.name','warehouses.id as warehouse_id','warehouse_stocks.isbn13 as isbnno','book_details.name as book_title','skudetails.type as isbntype',
         DB::raw("IFNULL(warehouse_stocks.quantity,0) as wareqty"),
-        DB::raw("IFNULL(sum(customer_orders.quantity_to_be_shipped),0) as orderqty"))
+        DB::raw("IFNULL(sum(customer_orders.quantity_to_be_shipped),0) as orderqty"),
+        'warehouse_stocks.rack_location')
         ->leftJoin('skudetails','skudetails.isbn13','=','warehouse_stocks.isbn13')     
 		
         ->leftJoin('customer_orders','customer_orders.sku','=','skudetails.sku_code')
@@ -81,9 +83,10 @@ class TJWStockController extends Controller
 		->where(function($query) use ($search) {
 			$query->where('warehouse_stocks.isbn13','LIKE','%'.$search.'%')
 			->orWhere('warehouses.name','LIKE','%'.$search.'%')
+            ->orWhere('warehouse_stocks.rack_location','LIKE','%'.$search.'%')
 			->orWhere('book_details.name','LIKE','%'.$search.'%');
 		})
-		->groupby('warehouse_stocks.isbn13','warehouse_stocks.warehouse_id')
+		->groupby('warehouse_stocks.isbn13','warehouse_stocks.warehouse_id','warehouse_stocks.rack_location')
         ->orderBy('book_details.name','ASC')
         ->unionAll($stocksboxisbn)
         ->get();
@@ -98,19 +101,20 @@ class TJWStockController extends Controller
 				$val->orderqty = empty($val->orderqty) ? 0 : (float)$val->orderqty; 
                 $val->wareqty = empty($val->wareqty) ? 0 : (float)$val->wareqty; 
 				if (array_key_exists($val->warehouse_id.'-'.$val->isbnno, $isbnstkqty)){
-					$isbnstkqty[$val->warehouse_id.'-'.$val->isbnno]  = $isbnstkqty[$val->warehouse_id.'-'.$val->isbnno] +  $val->orderqty;
+					$isbnstkqty[$val->warehouse_id.'-'.$val->isbnno.'-'.$val->rack_location]  = $isbnstkqty[$val->warehouse_id.'-'.$val->isbnno.'-'.$val->rack_location] +  $val->orderqty;
                     //$stock = ($val->wareqty - $val->orderqty);
 				}
 				else{
-					$isbnstkqty[$val->warehouse_id.'-'.$val->isbnno]  =  $val->orderqty;
+					$isbnstkqty[$val->warehouse_id.'-'.$val->isbnno.'-'.$val->rack_location]  =  $val->orderqty;
                    // $stock = ($val->wareqty - $val->orderqty);
 				}
 				
-				$stockreportarr[$val->warehouse_id.'-'.$val->isbnno] = (object)([
+				$stockreportarr[$val->warehouse_id.'-'.$val->isbnno.'-'.$val->rack_location] = (object)([
 					'name' => $val->name, 
 					'isbn13' =>  $val->isbnno, 
 					'book_title' => $val->book_title,
-					'stock' => ($val->wareqty - $isbnstkqty[$val->warehouse_id.'-'.$val->isbnno]),
+					'stock' => ($val->wareqty - $isbnstkqty[$val->warehouse_id.'-'.$val->isbnno.'-'.$val->rack_location]),
+                    'location' => $val->rack_location,
 					
 				]);
 			}

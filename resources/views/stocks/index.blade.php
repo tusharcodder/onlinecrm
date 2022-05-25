@@ -76,7 +76,8 @@
 								<th style="width:15%;">Warehouse</th>
 								<th  style="width:15%;"> ISBN13</th>								
 								<th>Book Title</th>								
-                                <th  style="width:10%;">Stock</th>                            
+                                <th  style="width:10%;">Stock</th> 
+								<th>Location</th>				                           
 							</tr>
 							@if($stockreports->total() > 0)                          
 								@foreach ($stockreports as $key => $stock)
@@ -86,10 +87,11 @@
 									<td>{{ $stock->isbn13}}</td>   
                                     <td>{{ $stock->book_title}}</td>
                                     <td>{{ $stock->stock}}</td>
+									<td>{{ $stock->location}}</td>
 								</tr>                               
 								@endforeach
 							@else
-								<tr><td colspan="5">No records found.</td></tr>
+								<tr><td colspan="6">No records found.</td></tr>
 							@endif
 						</table>
 						{{ $stockreports->links() }}
