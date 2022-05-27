@@ -755,7 +755,7 @@ class ShipmentReportController extends Controller
                         ->with('error','No data found to imported.');
 				}
                
-				return redirect()->route('shipmentreport')
+				return redirect()->route('shipment-track-import')
                         ->with('success','Your Data has successfully imported.');
 			}else{
 				return redirect()->route('shipment-track-import')
@@ -786,7 +786,7 @@ class ShipmentReportController extends Controller
 			//->whereNull('customer_orders.label_pdf_url')
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'skudetails.isbn13')
 			->orderBy('customer_orders.reporting_date','ASC')
-			//->limit(10)
+			//->limit(1)
 			->having(DB::raw('sum(customer_orders.quantity_to_be_shipped)'), '>' , 0)->get();
 		
 		$labelapiarr = array();
@@ -795,7 +795,7 @@ class ShipmentReportController extends Controller
 				$labelapiarr[$val->order_id][] = $val;
 			}
 		}
-
+		
 		if(!empty($labelapiarr)){
 			
 			$pdfMerger = PDFMerger::init(); //Initialize the merger
@@ -857,16 +857,17 @@ class ShipmentReportController extends Controller
 					$oz_weight = $oz_weight + ((float)$labelval->shipingqty * (float)$labelval->oz_wt);
 					$oz_weight = ($oz_weight > 26) ? 25: $oz_weight;
 					$qty = $qty + (float)$labelval->shipingqty;
-					$proname = empty($labelval->proname) ? $labelval->product_name : $labelval->proname;
+					/* $proname = empty($labelval->proname) ? $labelval->product_name : $labelval->proname;
 					if($type == "Box")
-						$proname = $labelval->product_name;
+						$proname = $labelval->product_name; */
 					
+					$proname = $labelval->product_name;
 					$pronames[$proname] = substr($proname, 0 ,$lengthsz);
 					$labelvalarr['parcels'] = [
 						"number"=> $qty,
 						"code"=> "",
 						"unit"=> "imperial",
-						"weight"=> $oz_weight/16,
+						"weight"=> round($oz_weight/16, 2),
 						"length"=> 10,
 						"width"=> 8.5,
 						"height"=> 2,

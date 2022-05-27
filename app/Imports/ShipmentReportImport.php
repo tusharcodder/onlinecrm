@@ -47,18 +47,21 @@ class ShipmentReportImport implements ToModel, WithHeadingRow, WithBatchInserts,
 		$row['order_item_id'] = str_replace('"', "", strval($row['order_item_id']));
 		$row['isbn13'] = str_replace('"', "", strval($row['isbn13']));
 		$row['bisbn'] = str_replace('"', "", strval($row['bisbn']));
+		$row['rack_details'] = str_replace('"', "", strval($row['rack_details']));
+		$row['shipper_tracking_id'] = str_replace('"', "", strval($row['shipper_tracking_id']));
 		
 		if(empty(strval($row['shipper_tracking_id'])) || is_null(strval($row['shipper_tracking_id'])) || strval($row['shipper_tracking_id']) == "#VALUE!" || strval($row['shipper_tracking_id']) == "#N/A") // not insert blank track id data
-			return '';
+			return null;
 		
 		$row['quantity'] = empty($row['quantity']) ? 0 : strval($row['quantity']);
+		
 		// check duplicate track exists or not
 		$trackdata = OrderTrack::where('order_id', '=', strval($row['order_id']))
 			->where('order_item_id', '=', strval($row['order_item_id']))
 			->where('shipper_tracking_id', '=', strval($row['shipper_tracking_id']))
 			->get();
 		if(!empty(count($trackdata))) // not inserted duplicated data
-			return '';
+			return null;
 			
 		$customerdata = CustomerOrder::where('order_id', '=', strval($row['order_id']))
 			->where('order_item_id', '=', strval($row['order_item_id']))
@@ -103,6 +106,7 @@ class ShipmentReportImport implements ToModel, WithHeadingRow, WithBatchInserts,
 			'sku' => strval($row['sku']),
 			'isbnno' => strval($row['isbn13']),
 			'shipper_book_isbn' => strval($row['bisbn']),
+			'rack_details' => strval($row['rack_details']),
 			'warehouse_id' => strval($row['warehouse_id']),
 			'warehouse_name' => strval($row['warehouse']),
 			'box_shipper_id' => strval($row['box_shipper_id']),
