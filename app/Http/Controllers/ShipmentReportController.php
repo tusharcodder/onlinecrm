@@ -829,7 +829,7 @@ class ShipmentReportController extends Controller
 				];
 				
 				$labelvalarr['to'] = [
-					"name"=>$val[0]->buyer_name,
+					"name"=>$val[0]->recipient_name,
 					"company"=> "",
 					"phone"=> $val[0]->buyer_phone_number,
 					"email"=> $val[0]->buyer_email,
