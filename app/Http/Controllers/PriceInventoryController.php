@@ -184,7 +184,8 @@ class PriceInventoryController extends Controller
 				// exit;
 				// add data into order table
 				if(!empty($orderdata)){
-					DB::statement('truncate table price_inventory');
+          DB::table('price_inventory')->truncate();
+				//	DB::statement('truncate table price_inventory');
 					foreach($orderdata as $key => $val){
             if(!empty($val['seller-sku']))
             {
@@ -199,6 +200,7 @@ class PriceInventoryController extends Controller
                         ->with('success','Your Data has successfully imported.');
 			}elseif ($extension == "xlsx" || $extension == "xls" || $extension == "csv") {	// for excel
 				try{
+          DB::table('price_inventory')->truncate();
 					// import data into the database
 					$import = new PriceInventoryImport($request);
 					$path = $request->importfile->getRealPath();
@@ -206,7 +208,7 @@ class PriceInventoryController extends Controller
                     return Excel::download(new PriceInventoryExport($request), "PriceInventory.csv");
 				}catch(\Exception $ex){
 					return redirect()->route('import-export-price-list')
-                        ->with('error','Something wrong.');
+                        ->with('error',$ex->getMessage());
 				}catch(\InvalidArgumentException $ex){
 					return redirect()->route('import-export-price-list')
                         ->with('error','Wrong date format in some column.');

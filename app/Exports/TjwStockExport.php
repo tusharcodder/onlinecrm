@@ -79,7 +79,7 @@ class TjwStockExport implements FromView
 			foreach($stocks as $key => $val){
 				$val->orderqty = empty($val->orderqty) ? 0 : (float)$val->orderqty; 
                 $val->wareqty = empty($val->wareqty) ? 0 : (float)$val->wareqty; 
-				if (array_key_exists($val->warehouse_id.'-'.$val->isbnno, $isbnstkqty)){
+				if (array_key_exists($val->warehouse_id.'-'.$val->isbnno.'-'.$val->rack_location, $isbnstkqty)){
 					$isbnstkqty[$val->warehouse_id.'-'.$val->isbnno.'-'.$val->rack_location]  = $isbnstkqty[$val->warehouse_id.'-'.$val->isbnno.'-'.$val->rack_location] +  $val->orderqty;
                     //$stock = ($val->wareqty - $val->orderqty);
 				}

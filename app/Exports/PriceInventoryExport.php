@@ -24,38 +24,59 @@ class PriceInventoryExport implements FromView
     */
 	public function view(): View
     {	
-				
-		//if($format == "withheading"){ // data with heading
-			// get details of discounts from query
-			$query = PriceInventory::select('price_inventory.sku',
-            DB::raw("
-                (
-                    case when sum(vendor_stocks.quantity) < 10 THEN 0 else (
-                        case when sum(vendor_stocks.quantity) < 15 THEN 2
-                        else(
-                            case when sum(vendor_stocks.quantity) < 25 THEN 3
-                            else(
-                                case when sum(vendor_stocks.quantity) < 50 THEN 10
-                                else(
-                                    case when sum(vendor_stocks.quantity) < 100 THEN 25 else 40 END
-                                )END
-                            )END
-                        )END
-                    )END
-                )as 'market_qunatity'            
-             "),
-             DB::raw("sum(warehouse_stocks.quantity) as 'stock_qty'"),
-             DB::raw("CASE WHEN sum(warehouse_stocks.quantity) > 0 THEN 2 ELSE (CASE WHEN sum(vendor_stocks.quantity) > 0 THEN 4 else 0 end) end as 'leadtime'")
-        )->join('skudetails','skudetails.sku_code','=', 'price_inventory.sku')
-        ->join('warehouse_stocks','warehouse_stocks.isbn13','=', 'skudetails.isbn13')
-        ->join('vendor_stocks','vendor_stocks.isbnno','=', 'skudetails.isbn13')
-        ->groupBy('price_inventory.sku');
+        $queryforboxisbn = PriceInventory::select('price_inventory.sku','skudetails.type',
+        DB::raw("(select sum(vendor_stocks.quantity) from vendor_stocks where vendor_stocks.isbnno in (select box_child_isbns.book_isbn13 from box_child_isbns where box_child_isbns.box_isbn_id = box_parent_isbns.id)) as 'market_qunatity'"),
+        DB::raw("IFNULL((select sum(warehouse_stocks.quantity) from warehouse_stocks where warehouse_stocks.isbn13 in (select box_child_isbns.book_isbn13 from box_child_isbns where box_child_isbns.box_isbn_id = box_parent_isbns.id)  and warehouse_stocks.warehouse_id = 1),0) as 'stock_qty'"))
+        ->join('skudetails','skudetails.sku_code','=', 'price_inventory.sku')
+        ->join('box_parent_isbns','box_parent_isbns.box_isbn13','=', 'skudetails.isbn13')
+        //->leftJoin("box_child_isbns","box_child_isbns.box_isbn_id","=","box_parent_isbns.id")
+        //->join('warehouse_stocks','warehouse_stocks.isbn13','=', 'box_child_isbns.book_isbn13')       
+        //->where('warehouse_stocks.warehouse_id',1)
+        ->where('skudetails.type','Box');
+        //->groupBy('price_inventory.sku');
 			
+		
+    //     $query = PriceInventory::select('price_inventory.sku','skudetails.type',
+    //     DB::raw("(select sum(vendor_stocks.quantity) from vendor_stocks where vendor_stocks.isbnno = skudetails.isbn13 ) as 'market_qunatity'"),
+    //     DB::raw("IFNULL((select sum(warehouse_stocks.quantity) from warehouse_stocks where warehouse_stocks.isbn13 = skudetails.isbn13 and warehouse_stocks.warehouse_id = 1),0) as 'stock_qty'"))
+    //     ->join('skudetails','skudetails.sku_code','=', 'price_inventory.sku')
+    //     //->join('warehouse_stocks','warehouse_stocks.isbn13','=', 'skudetails.isbn13')       
+    //    // ->where('warehouse_stocks.warehouse_id',1)
+    //     ->where('skudetails.type','Single')
+    //     ->groupBy('price_inventory.sku')
+    //     ->union($queryforboxisbn);	
 				
-			$results = $query->get();
-		// }else // only data heading for format
-		// 	$results = collect([]);
-			
+		$results = $queryforboxisbn->get();
+        
+        // if(!empty($results)){
+		// 	$isbnstkqty = array();
+		// 	// add to be ship qty based on isbn
+		// 	foreach($results as $key => $val){
+		// 		$val->market_qunatity = empty($val->market_qunatity) ? 0 : (float)$val->market_qunatity;
+        //         $val->stock_qty = empty($val->stock_qty) ? 0 : (float)$val->stock_qty;
+
+		// 		if (array_key_exists($val->sku, $isbnstkqty)){
+		// 			$isbnstkqty[ $val->sku ]  =  $isbnstkqty[ $val->sku ] + $val->shipingqty;
+		// 		}
+		// 		else{
+		// 			$isbnstkqty[ $val->sku ]  = $val->shipingqty;
+		// 		}
+				
+		// 		$pullreportarr[$val->isbnno] = (object)([
+		// 			'purqty' => $val->purqty, 
+		// 			'shipingqty' => $isbnstkqty[ $val->isbnno ], 
+		// 			'warehouse_name' => $val->warehouse_name,
+		// 			'isbnno' => $val->isbnno,
+		// 			'bookname' => $val->bookname,
+		// 			'rack_details' => $val->rack_details,
+		// 		]);
+		// 	}
+		// }    
+
+		echo '<pre>';
+        print_r((array)$results);
+        echo '</pre>';
+        exit;	
         return view('reports.exportpriceinventory', [
 			'results' => $results,			
 		]);
