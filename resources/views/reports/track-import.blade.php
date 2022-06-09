@@ -106,13 +106,13 @@
 							
 							<div class="col-md-3">
 								<div class="form-group">
-									<label for="purchase_date" class="col-form-label text-md-right">{{ __('Shipment From Date') }}</label>
+									<label for="from_date" class="col-form-label text-md-right">{{ __('Shipment From Date') }}</label>
 									<input id="from_date" type="date" class="form-control" name="from_date" value="{{ old('from_date') }}" >
 								</div>
 							</div>
 							<div class="col-md-3">
 								<div class="form-group">
-									<label for="purchase_date" class="col-form-label text-md-right">{{ __('Shipment To Date') }}</label>
+									<label for="to_date" class="col-form-label text-md-right">{{ __('Shipment To Date') }}</label>
 									<input id="to_date" type="date" class="form-control" name="to_date" value="{{ old('to_date') }}" >
 								</div>
 							</div>

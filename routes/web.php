@@ -89,6 +89,10 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::get('shipment-track-import', 'ShipmentReportController@shipmentTrackImport')->name('shipment-track-import');
 	Route::post('shipmenttrackimport', 'ShipmentReportController@import')->name('shipmenttrackimport');
 	
+	// shipment track report
+	Route::get('shipmenttrackreport', 'ShipmentReportController@shipmentTrackReportindex')->name('shipmenttrackreport');
+	Route::post('downloadshipmenttrackreport', 'ShipmentReportController@exportTrackReport')->name('downloadshipmenttrackreport');
+	
 	// load stock pull report 
 	Route::get('stockpullreport', 'StockPullReportController@index')->name('stockpullreport');
 	Route::post('downloadstockpullreport', 'StockPullReportController@export')->name('downloadstockpullreport');

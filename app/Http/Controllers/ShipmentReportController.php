@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
 use DateTime;
 use App\Rules\DateRange; // date range rule validation
 use DB;
+use App\Exports\ShipmentTrackReportExport;
 use App\Exports\ShipmentReportExport;
 use App\Exports\ShippedOrderExport;
 use App\Imports\ShipmentReportImport;
@@ -38,6 +39,7 @@ class ShipmentReportController extends Controller
 		$this->middleware('permission:shipment-report', ['only' => ['index']]);
 		$this->middleware('permission:download-shipment-report', ['only' => ['export']]);
 		$this->middleware('permission:shipment-track-import', ['only' => ['shipment-track-import']]);
+		$this->middleware('permission:download-shipment-track-report', ['only' => ['shipmenttrackreport', 'downloadshipmenttrackreport']]);
     }
 	
     /**
@@ -969,6 +971,9 @@ class ShipmentReportController extends Controller
 				$pdfattachment = $apires->documents[0]->base64;
 				$labeldate = $apires->date;
 				$labelid = $apires->id;
+				$labelser = $apires->service;
+				$labelcarname = $apires->carrier;
+
 				//$pdfattachment = base64_decode($apires->documents[0]->base64);
 				
 				// store pdf on server
@@ -986,6 +991,9 @@ class ShipmentReportController extends Controller
 						'pdf_attachment_code' => $pdfattachment,
 						'label_date' => $labeldate,
 						'label_id' => $labelid,
+						'carrier_service' => $labelser,
+						'carrier_name' => $labelcarname,
+						'label_api_response' => $response,
 					]);
 				}
 				
@@ -998,4 +1006,40 @@ class ShipmentReportController extends Controller
 		}
 		return false;
 	}
+	
+	
+	/**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function shipmentTrackReportindex(Request $request)
+    {
+		$results = DB::table('order_tracking')
+			->select('order_tracking.*','customer_orders.carrier_service as carrier_service','customer_orders.carrier_name as carrier_name');
+		$results = $results->leftjoin("customer_orders",function($join){
+			
+				$join->on("customer_orders.order_id","=","order_tracking.order_id")
+				->on("customer_orders.order_item_id","=","order_tracking.order_item_id");
+			})
+			->where(DB::raw("(DATE_FORMAT(order_tracking.shipment_date,'%Y-%m-%d'))"), '=', date('Y-m-d'))
+			->orderBy('order_tracking.shipment_date','asc')
+			->paginate(10)->setPath('');
+		
+		// bind value with pagination link
+		/* $pagination = $results->appends ( array (
+			'search' => $search
+		)); */
+		
+        return view('reports.shipmenttrackindex',compact('results'))
+            ->with('i', ($request->input('page', 1) - 1) * 10);
+    }
+	
+	/**
+    * @return \Illuminate\Support\Collection
+    */
+	public function exportTrackReport(Request $request) 
+    {	
+		return Excel::download(new ShipmentTrackReportExport($request), "shipmenttrackreport.".$request['exporttype']);
+    }
 }
