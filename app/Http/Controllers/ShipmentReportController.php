@@ -870,9 +870,9 @@ class ShipmentReportController extends Controller
 						"code"=> "",
 						"unit"=> "imperial",
 						"weight"=> round($oz_weight/16, 2),
-						"length"=> 10,
-						"width"=> 8.5,
-						"height"=> 2,
+						"length"=> 8,
+						"width"=>  6,
+						"height"=> 1,
 						"dg_code"=> null
 					];
 				}
@@ -905,7 +905,7 @@ class ShipmentReportController extends Controller
 
 		$postfeilds = '{
 			"date": "'.$labeldate.'",
-			"service": "USPS",
+			"service": "BPM",
 			"from":'.$from.',
 			"to": '.$to.',
 			"type": "box",

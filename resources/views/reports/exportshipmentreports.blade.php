@@ -33,7 +33,7 @@
 				<th>ship_type</th>
 				<th>wght</th>
 				<th>ounce</th>
-				<th>Mrp</th>
+				<th>mrp</th>
 				<th>price</th>
 				<th>selling_price</th>
 				<th>shipping_price</th>

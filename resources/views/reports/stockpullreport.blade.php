@@ -46,6 +46,7 @@
 							<tr>
 								<th>No</th>
 								<th>Warehouse</th>
+								<!--<th>Box Isbn</th>-->
 								<th>Isbn 13</th>
 								<th>Title</th>
 								<th>Stock</th>
@@ -63,6 +64,7 @@
 								<tr>
 									<td>{{ ($stockpullreports->currentPage()-1) * $stockpullreports->perPage() + $loop->index + 1 }}</td>
 									<td>{{ $stockpull->warehouse_name }}</td>
+									<!--<td>{{ $stockpull->box_isbn }}</td>-->
 									<td>{{ $stockpull->isbnno }}</td>
 									<td>{{ $stockpull->bookname }}</td>
 									<td>{{ $actualstock }}</td>

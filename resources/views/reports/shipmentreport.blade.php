@@ -88,7 +88,7 @@
 								<th>MarPla_acc</th>
 								<th>Ship_type</th>
 								<th>Wght</th>
-								<th>ounce</th>
+								<th>Ounce</th>
 								<th>Mrp</th>
 								<th>Track No</th>
 								<th>Download Label</th>

@@ -30,6 +30,7 @@
 				<th>ship_type</th>
 				<th>wght</th>
 				<th>listing_wgt</th>
+				<th>ounce</th>
 				<th>price</th>
 				<th>selling_price</th>
 				<th>shipping_price</th>
@@ -71,6 +72,7 @@
 					<td>{{ $shipment->ship_service_level }}</td>
 					<td>{{ $shipment->wght }}</td>
 					<td>{{ $shipment->pkg_wght }}</td>
+					<td>{{ $shipment->oz_wt }}</td>
 					<td>{{ $shipment->price }}</td>
 					<td>{{ $shipment->selling_price }}</td>
 					<td>{{ $shipment->shipping_price }}</td>

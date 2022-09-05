@@ -43,7 +43,7 @@ class ShippedOrderExport implements FromView
 		
 		if($format == "withheading"){ // data with heading
 			// get details of discounts from query
-			$query = OrderTrack::select('order_tracking.*','order_tracking.warehouse_name as wname','order_tracking.warehouse_id as wid','order_tracking.warehouse_name as wname','customer_orders.*','suppliers.name as shipper_name','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','skudetails.wght as wght','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher')
+			$query = OrderTrack::select('order_tracking.*','order_tracking.warehouse_name as wname','order_tracking.warehouse_id as wid','order_tracking.warehouse_name as wname','customer_orders.*','suppliers.name as shipper_name','market_places.name as markname','skudetails.isbn13 as isbnno','skudetails.pkg_wght as pkg_wght','skudetails.wght as wght','skudetails.oz_wt as oz_wt','book_details.name as proname', 'book_details.author as author', 'book_details.publisher as publisher')
 					->leftJoin("skudetails","skudetails.sku_code","=","order_tracking.sku")
 					->leftJoin("market_places","market_places.id","=","skudetails.market_id")
 					->leftJoin("book_details","book_details.isbnno","=","skudetails.isbn13")

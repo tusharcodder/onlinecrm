@@ -5,6 +5,7 @@
 			<tr>
 				<th>No</th>
 				<th>Warehouse</th>
+				<!--<th>Box Isbn</th>-->
 				<th>Isbn 13</th>
 				<th>Title</th>
 				<th>Stock</th>
@@ -13,6 +14,7 @@
 			</tr>
 		</thead>
 		@if(count($results) > 0)
+			@php $i = 0; @endphp
 			@foreach ($results as $key => $stockpull)
 				@php
 					$stockpull->purqty = empty($stockpull->purqty) ? 0 : $stockpull->purqty;
@@ -22,8 +24,9 @@
 				@endphp
 								
 				<tr>
-					<td>{{ ++$key }}</td>
+					<td>{{ ++$i }}</td>
 					<td>{{ $stockpull->warehouse_name }}</td>
+					<!--<td>"{{ $stockpull->box_isbn }}"</td>-->
 					<td>"{{ $stockpull->isbnno }}"</td>
 					<td>{{ $stockpull->bookname }}</td>
 					<td>{{ $actualstock }}</td>
