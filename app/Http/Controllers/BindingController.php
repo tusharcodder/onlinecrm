@@ -10,7 +10,7 @@ use Illuminate\Validation\Rule;
 use App\Rules\Emails; // multiple email rule validation
 use DB;
 
-class BindingController extends Controller
+class BindingController extends Controller 
 {
 	/**
      * Display a listing of the resource.
