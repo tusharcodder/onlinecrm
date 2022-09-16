@@ -787,7 +787,8 @@ class ShipmentReportController extends Controller
 			->where('customer_orders.quantity_to_ship', '>' ,0)
 			//->whereNull('customer_orders.label_pdf_url')
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'skudetails.isbn13')
-			->orderBy('customer_orders.reporting_date','ASC')
+			//->orderBy('customer_orders.reporting_date','ASC')
+			->orderBy('book_details.name','ASC')
 			//->limit(1)
 			->having(DB::raw('sum(customer_orders.quantity_to_be_shipped)'), '>' , 0)->get();
 		
