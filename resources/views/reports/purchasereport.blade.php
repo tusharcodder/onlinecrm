@@ -47,6 +47,7 @@
 								<th>No</th>
 								<th>Sku</th>
 								<th>Isbn 13</th>
+								<th>Child isbn</th>
 								<th>Book Name</th>
 								<th>Mrp</th>
 								<th>Author</th>
@@ -62,6 +63,7 @@
 									<td>{{ ($purchaseorders->currentPage()-1) * $purchaseorders->perPage() + $loop->index + 1 }}</td>
 									<td>{{ $purchaseorder['Sku']}}</td>
 									<td>{{ $purchaseorder['isbn13']}}</td>
+									<td>{{ $purchaseorder['cisbn13']}}</td>
 									<td>{{ $purchaseorder['book']}}</td>
 									<td >{{ $purchaseorder['mrp'] }}</td>
 									<td>{{ $purchaseorder['author']}}</td>

@@ -41,7 +41,7 @@ class TJWStockController extends Controller
     { 
         $search = $request->input('search');
         $stockreportarr = array();       
-		$stocksboxisbn = DB::table('warehouse_stocks',)
+		$stocksboxisbn = DB::table('warehouse_stocks')
 		->select('warehouses.name','warehouses.id as warehouse_id','warehouse_stocks.isbn13 as isbnno','book_details.name as book_title','skudetails.type as isbntype',
         DB::raw("IFNULL(warehouse_stocks.quantity,0) as wareqty"),
         DB::raw("IFNULL(sum(customer_orders.quantity_to_be_shipped),0) as orderqty"),
@@ -67,7 +67,7 @@ class TJWStockController extends Controller
         
 		
 
-        $stocks = DB::table('warehouse_stocks',)
+        $stocks = DB::table('warehouse_stocks')
 		->select('warehouses.name','warehouses.id as warehouse_id','warehouse_stocks.isbn13 as isbnno','book_details.name as book_title','skudetails.type as isbntype',
         DB::raw("IFNULL(warehouse_stocks.quantity,0) as wareqty"),
         DB::raw("IFNULL(sum(customer_orders.quantity_to_be_shipped),0) as orderqty"),

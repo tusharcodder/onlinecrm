@@ -15,7 +15,7 @@
 		</thead>
 		@if(count($results) > 0)
 			@foreach ($results as $key => $val)
-				@php
+				<!-- @php
 					if($val->market_qunatity < 10)
 						$quantity = (0 + $val->stock_qty);
 					else if($val->market_qunatity < 15)
@@ -28,17 +28,15 @@
 						$quantity = (25 + $val->stock_qty);	
 					else
 						$quantity = (40 + $val->stock_qty);
-				@endphp			
+				@endphp			 -->
 				<tr>
 					<td>{{ $val->sku }}</td>
 					<td></td>
 					<td></td>
 					<td></td>
-					<td>{{ $quantity }}</td>
-					<td>{{ $val->leadtime }}</td>
+					<td>{{ $val->sku }}</td>
 					<td></td>
-					<td>{{$val->market_qunatity}} </td>
-					<td>{{$val->stock_qty}}</td>
+					<td></td>					
 				</tr>
 			@endforeach
 		@endif

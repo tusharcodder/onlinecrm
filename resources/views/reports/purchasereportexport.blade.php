@@ -5,6 +5,7 @@
 			<tr>				
 				<th>Sku</th>
 				<th>Isbn 13</th>
+				<th>Child Isbn</th>
 				<th>Book Name</th>
 				<th>Mrp</th>
 				<th>Author</th>
@@ -20,6 +21,7 @@
 				<tr>
 					<td >{{ $res['Sku'] }}</td>
 					<td >{{ $res['isbn13'] }}</td>
+					<td >{{ $res['cisbn13'] }}</td>
 					<td >{{ $res['book'] }}</td>
 					<td >{{ $res['mrp'] }}</td>
 					<td >{{ $res['author'] }}</td>

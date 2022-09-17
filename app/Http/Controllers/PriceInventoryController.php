@@ -38,7 +38,14 @@ class PriceInventoryController extends Controller
     public function index(Request $request)
     {
         //		
-        return view('reports.priceinventory');
+        return view('reports.priceinventory');              
+    }
+
+    public function getEchoFunction()
+    {
+      $result = array(); 
+      	
+     
     }
 
     /**
@@ -150,7 +157,7 @@ class PriceInventoryController extends Controller
 			$extension = File::extension($request->importfile->getClientOriginalName());
 			$filesize = File::size($request->importfile->getRealPath());
 			$filetype = File::mimeType($request->importfile->getRealPath());
-			
+			DB::table('price_inventory')->truncate();
 			if($extension == "txt"){ // for text file
 				// get the contents of file in array
 				//$filedata = File::get($request->importfile->getRealPath());
@@ -184,27 +191,29 @@ class PriceInventoryController extends Controller
 				// exit;
 				// add data into order table
 				if(!empty($orderdata)){
-          DB::table('price_inventory')->truncate();
+          
 				//	DB::statement('truncate table price_inventory');
 					foreach($orderdata as $key => $val){
-            if(!empty($val['seller-sku']))
+            if(!empty($val['sku']))
             {
                 PriceInventory::create([
-                  'sku' => $val['seller-sku'],                            
+                  'sku' => $val['sku'],                            
               ]);
             }	
 					}
 				}
+        //$this->getEchoFunction();
         return Excel::download(new PriceInventoryExport($request), "PriceInventory.csv");
 				return redirect()->route('import-export-price-list')
                         ->with('success','Your Data has successfully imported.');
 			}elseif ($extension == "xlsx" || $extension == "xls" || $extension == "csv") {	// for excel
 				try{
-          DB::table('price_inventory')->truncate();
+        //  DB::table('price_inventory')->truncate();
 					// import data into the database
 					$import = new PriceInventoryImport($request);
 					$path = $request->importfile->getRealPath();
                     Excel::import($import, $request->importfile);
+                  //  $this->getEchoFunction();
                     return Excel::download(new PriceInventoryExport($request), "PriceInventory.csv");
 				}catch(\Exception $ex){
 					return redirect()->route('import-export-price-list')
