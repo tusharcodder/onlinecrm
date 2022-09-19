@@ -879,6 +879,7 @@ class ShipmentReportController extends Controller
 				}
 
 				$labelvalarr['domestic_options_contents'] = join(",", $pronames);
+				$labelvalarr['qty'] = $qty;
 				$fname = $this->labelAPICallback($labelvalarr, $val[0]->order_id, $order_item_id, $val[0]->label_pdf_url, $val[0]->pdf_attachment_code);
 				
 				if(!empty($fname)){
@@ -903,6 +904,7 @@ class ShipmentReportController extends Controller
 		$to = json_encode($val['to']);
 		$parcels = json_encode($val['parcels']);
 		$domestic_options = $val['domestic_options_contents'];
+		$qty = $val['qty'];
 
 		$postfeilds = '{
 			"date": "'.$labeldate.'",
@@ -917,7 +919,7 @@ class ShipmentReportController extends Controller
 			"references": [
 				{
 					"type": "po_number",
-					"value": "'.$order_id.'",
+					"value": "'.$qty.'",
 				},
 				{
 					"type": "customer_ref",
