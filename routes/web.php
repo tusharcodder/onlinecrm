@@ -113,6 +113,7 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::get('customer-order-import-export', 'CustomerOrderController@customerOrderImportExport')->name('customer-order-import-export');
 	Route::post('customerorderexport', 'CustomerOrderController@export')->name('customerorderexport');
 	Route::post('customerorderimport', 'CustomerOrderController@import')->name('customerorderimport');
+	Route::post('customerorderreportimport', 'CustomerOrderController@reportImport')->name('customerorderreportimport');
 
 	Route::get('purchase-order-import-export', 'PurchaseOrderController@purchaseImportExport')->name('purchase-order-import-export');
 	Route::post('purchaseorderimport', 'PurchaseOrderController@import')->name('purchaseorderimport');

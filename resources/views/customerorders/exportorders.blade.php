@@ -30,6 +30,14 @@
 				<th>is_business_order</th>
 				<th>purchase_order_number</th>
 				<th>price_designation</th>
+				<th>currency</th>
+				<th>item_price</th>
+				<th>item_tax</th>
+				<th>sales_channel</th>
+				<th>earliest_ship_date</th>
+				<th>latest_ship_date</th>
+				<th>earliest_delivery_date</th>
+				<th>latest_delivery_date</th>
 			</tr>
 		</thead>
 		@if(count($results) > 0)
@@ -62,6 +70,14 @@
 					<td >{{ $res->is_business_order }}</td>
 					<td >{{ $res->purchase_order_number }}</td>
 					<td >{{ $res->price_designation }}</td>
+					<td >{{ $res->currency }}</td>
+					<td >{{ $res->item_price }}</td>
+					<td >{{ $res->item_tax }}</td>
+					<td >{{ $res->sales_channel }}</td>
+					<td >{{ $res->earliest_ship_date }}</td>
+					<td >{{ $res->latest_ship_date }}</td>
+					<td >{{ $res->earliest_delivery_date }}</td>
+					<td >{{ $res->latest_delivery_date }}</td>
 				</tr>
 			@endforeach
 		@endif

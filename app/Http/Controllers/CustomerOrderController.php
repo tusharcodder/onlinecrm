@@ -11,6 +11,7 @@ use App\Rules\Emails; // multiple email rule validation
 use DB;
 use App\Exports\CustomerOrderExport;
 use App\Imports\CustomerOrderImport;
+use App\Imports\CustomerOrderReportImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Zip;
@@ -28,7 +29,7 @@ class CustomerOrderController extends Controller
     {
 		$this->middleware('permission:customer-order-list', ['only' => ['index']]);
 		$this->middleware('permission:customer-order-delete-refund', ['only' => ['destroy']]);
-		$this->middleware('permission:customer-order-import-export', ['only' => ['customer-order-import-export','customerorderimport','customerorderexport']]);
+		$this->middleware('permission:customer-order-import-export', ['only' => ['customer-order-import-export','customerorderimport','customerorderreportimport','customerorderexport']]);
     }
 	
     /**
@@ -419,4 +420,117 @@ class CustomerOrderController extends Controller
 		}
 		
 	}
+	
+	 /**
+    * @return \Illuminate\Support\Collection
+    */
+    public function reportImport(Request $request) 
+    {
+		 //
+		$user = Auth::user();
+		$uid = $user->id;
+		
+		if($request->input('importtype') == "newimport"){ // for new import
+			//validate required
+			$this->validate($request,
+				[
+					'importfile' => 'required|max:512000',
+				],
+				[
+					'importfile.required' => 'Please select file to import.',
+					'importfile.max' => 'Please upload upto 500MB file.'
+				]
+			);
+		}
+		
+		if($request->hasFile('importfile')){
+			$extension = File::extension($request->importfile->getClientOriginalName());
+			$filesize = File::size($request->importfile->getRealPath());
+			$filetype = File::mimeType($request->importfile->getRealPath());
+			
+			if($extension == "txt"){ // for text file
+				// get the contents of file in array
+				//$filedata = File::get($request->importfile->getRealPath());
+				
+				//start read file data
+				$filedata = fopen($request->importfile->getRealPath(), "r");
+				$tab = "\t";
+				$dataarray = array();
+				while ( !feof($filedata) )
+				{
+					$line = fgets($filedata, 2048);
+					if(!empty($line))
+						$dataarray[] = str_getcsv($line, $tab);
+				}
+				fclose($filedata);
+				//end read file data and store into variable array
+				
+				// make order data array from text file
+				$orderdata = array();
+				$datalength = count($dataarray);
+				for($i = 1;$i < $datalength;$i++){
+					$obj = array();
+					for($j=0;$j<count($dataarray[$i]);$j++){
+						$obj[$dataarray[0][$j]] = $dataarray[$i][$j];
+					}
+					$orderdata[] = $obj;
+				}
+				
+				// add data into order table
+				if(!empty($orderdata)){
+					
+					foreach($orderdata as $key => $val){
+						// check duplicate order id exits or not
+						$customerdata = CustomerOrder::where('order_id', '=', $val['order-id'])->where('order_item_id', '=', $val['order-item-id'])->get();
+						
+						if(count($customerdata) > 0){ // not inserted duplicated data
+							CustomerOrder::where('order_id', '=', $val['order-id'])
+							  ->where('order_item_id', '=', $val['order-item-id'])
+							  ->update([
+								'currency' => $val['currency'],
+								'item_price' => $val['item-price'],
+								'item_tax' => $val['item-tax'],
+								'sales_channel' => $val['sales-channel'],
+								'earliest_ship_date' => $val['earliest-ship-date'],
+								'latest_ship_date' => $val['latest-ship-date'],
+								'earliest_delivery_date' => $val['earliest-delivery-date'],
+								'latest_delivery_date' => $val['latest-delivery-date'],
+								'updated_by' => $uid,
+								'updated_at' => date('Y-m-d H:i:s')
+							]);
+						}
+					}
+				}
+				return redirect()->route('customerorders.index')
+                        ->with('success','Your Data has successfully imported.');
+			}elseif ($extension == "xlsx" || $extension == "xls" || $extension == "csv") {	// for excel
+				try{
+					// import data into the database
+					$import = new CustomerOrderReportImport($request);
+					$path = $request->importfile->getRealPath();
+                    Excel::import($import, $request->importfile);
+				}catch(\Exception $ex){
+					return redirect()->route('customer-order-import-export')
+                        ->with('error','Something wrong.');
+				}catch(\InvalidArgumentException $ex){
+					return redirect()->route('customer-order-import-export')
+                        ->with('error','Wrong date format in some column.');
+				}catch(\Error $ex){					
+					return redirect()->route('customer-order-import-export')
+                        ->with('error','Something went wrong. check your file.');
+				}
+
+				if(empty($import->getRowCount())){
+					return redirect()->route('customer-order-import-export')
+                        ->with('error','No data found to imported.');
+				}
+               
+				return redirect()->route('customerorders.index')
+                        ->with('success','Your Data has successfully imported.');
+			}else{
+				return redirect()->route('customer-order-import-export')
+                        ->with('error','File is a '.$extension.' file.!! Please upload a valid xls/xlsx/csv/txt file..!!');
+			} 
+		}
+    }
 }

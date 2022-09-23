@@ -29,8 +29,10 @@
 						</div>
 						<div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
-								<strong>Purchase date:</strong><br/>
+								<strong>Purchase Date:</strong><br/>
+								@if (!empty($customerorders[0]->purchase_date))
 								{{ \Carbon\Carbon::parse($customerorders[0]->purchase_date)->format('d-m-Y H:m:s')}}
+								@endif
 							</div>
 						</div>
 						
@@ -38,20 +40,26 @@
 					<div class="row">
 						<div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
-								<strong>Payment date:</strong><br/>
+								<strong>Payment Date:</strong><br/>
+								@if (!empty($customerorders[0]->payments_date))
 								{{ \Carbon\Carbon::parse($customerorders[0]->payments_date)->format('d-m-Y H:m:s')}}
+								@endif
 							</div>
 						</div>
 						<div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
-								<strong>Reporting date:</strong><br/>
+								<strong>Reporting Date:</strong><br/>
+								@if (!empty($customerorders[0]->reporting_date))
 								{{ \Carbon\Carbon::parse($customerorders[0]->reporting_date)->format('d-m-Y H:m:s')}}
+								@endif
 							</div>
 						</div>
                         <div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
-								<strong>Promise date:</strong><br/>
+								<strong>Promise Date:</strong><br/>
+								@if (!empty($customerorders[0]->promise_date))
 								{{ \Carbon\Carbon::parse($customerorders[0]->promise_date)->format('d-m-Y H:m:s')}}
+								@endif
 							</div>
 						</div>
                         
@@ -240,7 +248,9 @@
 						<div class="col-xs-12 col-sm-4 col-md-4">
 							<div class="form-group">
 								<strong>Shipping Date:</strong><br/>
+								@if (!empty($customerorders[0]->shipment_date))
 								{{ \Carbon\Carbon::parse($customerorders[0]->shipment_date)->format('d-m-Y H:m:s')}}
+								@endif
 							</div>
 						</div>
 						<div class="col-xs-12 col-sm-4 col-md-4">
@@ -253,6 +263,68 @@
 							<div class="form-group">
 								<strong>NCP:</strong><br/>
 								{{ $customerorders[0]->ncp }}
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12 col-sm-4 col-md-4">
+							<div class="form-group">
+								<strong>Currency:</strong><br/>
+								{{ $customerorders[0]->currency }}
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-4 col-md-4">
+							<div class="form-group">
+								<strong>Item Price:</strong><br/>
+								{{ $customerorders[0]->item_price }}
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-4 col-md-4">
+							<div class="form-group">
+								<strong>Item Tax:</strong><br/>
+								{{ $customerorders[0]->item_tax }}
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12 col-sm-4 col-md-4">
+							<div class="form-group">
+								<strong>Sales Channel:</strong><br/>
+								{{ $customerorders[0]->sales_channel }}
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-4 col-md-4">
+							<div class="form-group">
+								<strong>Earliest Ship Date:</strong><br/>
+								@if (!empty($customerorders[0]->earliest_ship_date))
+								{{ \Carbon\Carbon::parse($customerorders[0]->earliest_ship_date)->format('d-m-Y H:m:s')}}
+								@endif
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-4 col-md-4">
+							<div class="form-group">
+								<strong>Latest Ship Date:</strong><br/>
+								@if (!empty($customerorders[0]->latest_ship_date))
+								{{ \Carbon\Carbon::parse($customerorders[0]->latest_ship_date)->format('d-m-Y H:m:s')}}
+								@endif
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12 col-sm-4 col-md-4">
+							<div class="form-group">
+								<strong>Earliest Delivery Date:</strong><br/>
+								@if (!empty($customerorders[0]->earliest_delivery_date))
+								{{ \Carbon\Carbon::parse($customerorders[0]->earliest_delivery_date)->format('d-m-Y H:m:s')}}
+								@endif
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-4 col-md-4">
+							<div class="form-group">
+								<strong>Latest Delivery Date:</strong><br/>
+								@if (!empty($customerorders[0]->latest_delivery_date))
+								{{ \Carbon\Carbon::parse($customerorders[0]->latest_delivery_date)->format('d-m-Y H:m:s')}}
+								@endif
 							</div>
 						</div>
 					</div>
