@@ -67,6 +67,7 @@
                                 <th>SKU</th>
                                 <th>Quantity</th>
 								<th>Track No</th>
+								<th>Track Status</th>
 								<th>Download Label</th>
                                 <th width="250px">Action</th>
 							</tr>
@@ -85,6 +86,7 @@
 									<td>{{ $customerorder->sku }}</td>
 									<td>{{ $customerorder->quantity_purchased }}</td>
 									<td>{{ $customerorder->tracking_number }}</td>
+									<td>{{ $customerorder->tracking_status }}</td>
 									<td>@if($customerorder->label_pdf_url != '')
 											<a href="{{$customerorder->label_pdf_url}}" target="_blank" title="Download" download><img src="{{asset('images/pdficon.png')}}" width=50 height=50/></a> 
 										@endif
@@ -127,11 +129,16 @@
 												</form>
 											@endcan
 										@endif
+										
+										@if(!empty($customerorder->shipper_tracking_id))
+										<a class="btn btn-info btn-sm" href="{{ route('track-shipment',$customerorder->shipper_tracking_id) }}">Track Shipment</a>
+										@endif
+										
 									</td>
 								</tr>                               
 								@endforeach
 							@else
-								<tr><td colspan="12">No records found.</td></tr>
+								<tr><td colspan="15">No records found.</td></tr>
 							@endif
 						</table>
 						{{ $customerorders->links() }}

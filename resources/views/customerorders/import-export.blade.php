@@ -237,7 +237,8 @@
 									<label for="sku" class="col-form-label text-md-right">{{ __('Status') }}</label>
 									<select id="status" name="status" class="form-control">
 									<option value="Pending">Pending</option>
-									<option value="Pending">Shipped</option>
+									<option value="Shipped">Shipped</option>
+									<option value="Return">Delete/Refund</option>
 									</select>
 								</div>
 							</div>

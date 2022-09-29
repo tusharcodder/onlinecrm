@@ -15,6 +15,7 @@ class LoggedInDeviceManager extends Controller
     {
         //
 		$devices = \DB::table('sessions')
+			->select('*',\DB::raw("date_format(from_unixtime(sessions.last_activity),'%b %d, %Y %l:%i %p') as last_activity"))
             ->where('user_id', \Auth::user()->id)
             ->get()->reverse();
 

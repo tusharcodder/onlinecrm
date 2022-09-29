@@ -35,6 +35,8 @@ Route::get('/logout/all', 'LoggedInDeviceManager@logoutAllDevices')
 Route::get('/logout/{device_id}', 'LoggedInDeviceManager@logoutDevice')
 		->name('logged-in-devices.logoutSpecific')
 		->middleware('auth');
+		
+Route::get('/shipment-track-status', 'CommonController@shipmentTrackStatus')->name('shipment-track-status');
 
 Route::group(['middleware' => ['auth']], function() {
 	
@@ -69,6 +71,9 @@ Route::group(['middleware' => ['auth']], function() {
 	
 	//customer order reshipped
 	Route::post('order-reshipped/{id}','CustomerOrderController@orderReshipped')->name('order-reshipped');
+	//track shipment
+	Route::get('track-shipment/{id}','CustomerOrderController@trackShipment')->name('track-shipment');
+	
 	//export track order
 	Route::post('shippedorderexport','ShipmentReportController@shipmentTrackExport')->name('shippedorderexport');
 	// cancel shipment label

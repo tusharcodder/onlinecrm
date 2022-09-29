@@ -41294,3 +41294,6 @@ a.bg-twitter:hover, a.bg-twitter:focus, button.bg-twitter:hover, button.bg-twitt
 .permission-check {
     min-width: 23%;
 }
+code{
+	color: #f10075 !important;
+}

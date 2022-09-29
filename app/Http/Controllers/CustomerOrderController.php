@@ -43,18 +43,22 @@ class CustomerOrderController extends Controller
 		$search = $request->input('search');
 		$status = $request->input('status');
         //
-		$customerorders = CustomerOrder::where(function($query) use ($search) {
-					$query->Where('order_id','LIKE','%'.$search.'%')
-					->orWhere(DB::raw("DATE_FORMAT(purchase_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')
-					->orWhere(DB::raw("DATE_FORMAT(payments_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')
-					->orWhere(DB::raw("DATE_FORMAT(reporting_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')
-					->orWhere('sku','LIKE','%'.$search.'%')
-					->orWhere('product_name','LIKE','%'.$search.'%')
-					->orWhere('quantity_purchased','LIKE','%'.$search.'%')
-					->orWhere('buyer_name','LIKE','%'.$search.'%')
-					->orWhere('buyer_phone_number','LIKE','%'.$search.'%')
-					->orWhere('order_item_id','LIKE','%'.$search.'%');
-				})->orderBy('purchase_date','DESC')->paginate(10)->setPath('');
+		$customerorders = CustomerOrder::select('customer_orders.*','order_tracking.shipper_tracking_id','order_tracking.tracking_status')
+					->leftjoin('order_tracking', 'order_tracking.order_item_id', '=', 'customer_orders.order_item_id' )
+					->where(function($query) use ($search) {
+					$query->Where('customer_orders.order_id','LIKE','%'.$search.'%')
+					->orWhere(DB::raw("DATE_FORMAT(customer_orders.purchase_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')
+					->orWhere(DB::raw("DATE_FORMAT(customer_orders.payments_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')
+					->orWhere(DB::raw("DATE_FORMAT(customer_orders.reporting_date,'%d-%m-%Y')"),'LIKE','%'.$search.'%')
+					->orWhere('customer_orders.sku','LIKE','%'.$search.'%')
+					->orWhere('customer_orders.product_name','LIKE','%'.$search.'%')
+					->orWhere('customer_orders.quantity_purchased','LIKE','%'.$search.'%')
+					->orWhere('customer_orders.buyer_name','LIKE','%'.$search.'%')
+					->orWhere('customer_orders.buyer_phone_number','LIKE','%'.$search.'%')
+					->orWhere('customer_orders.order_item_id','LIKE','%'.$search.'%')
+					->orWhere('customer_orders.tracking_number','LIKE','%'.$search.'%')
+					->orWhere('order_tracking.shipper_tracking_id','LIKE','%'.$search.'%');
+				})->orderBy('customer_orders.purchase_date','DESC')->paginate(10)->setPath('');
 		
 		// bind value with pagination link
 		$pagination = $customerorders->appends ( array (
@@ -532,5 +536,68 @@ class CustomerOrderController extends Controller
                         ->with('error','File is a '.$extension.' file.!! Please upload a valid xls/xlsx/csv/txt file..!!');
 			} 
 		}
+    }
+	
+	/**
+     * Display the specified resource.
+     *
+     * @param  \App\CustomerOrder  $customerOrder
+     * @return \Illuminate\Http\Response
+     */
+    public function trackShipment($id)
+    {
+		sleep(2);
+		$track_numbers = array("references" => ["$id"]);
+		$curl = curl_init();
+
+		curl_setopt_array($curl, array(
+		  CURLOPT_URL => 'https://api.ypn.io/v2/shipping/track',
+		  CURLOPT_RETURNTRANSFER => true,
+		  CURLOPT_ENCODING => '',
+		  CURLOPT_MAXREDIRS => 10,
+		  CURLOPT_TIMEOUT => 0,
+		  CURLOPT_FOLLOWLOCATION => true,
+		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		  CURLOPT_CUSTOMREQUEST => 'POST',
+		  CURLOPT_POSTFIELDS =>json_encode($track_numbers),
+		  CURLOPT_HTTPHEADER => array(
+			'Authorization: Basic TlRRPS4rbHNORytJdVRpMzZWOHpjT0JFLzd2N1Axc3luWFh5c0VKL3pTaE41M3ZjPTo=',
+			'Content-Type: application/json'
+		  ),
+		));
+
+		$response = curl_exec($curl);
+		$http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		curl_close($curl);
+		$responsedata = json_decode($response);
+		if($http_status == 200){
+			$track_status = $responsedata->trackers[0]->status ?? '';
+			if(!empty($track_status)){
+				// save this value on orderid and order item id
+				DB::table('order_tracking')
+				->where('shipper_tracking_id', $id)
+				->update([
+					'tracking_status' => $track_status->status,
+					'tracking_api_response' => $response,
+					'api_response_code' => $http_status,
+				]);
+			}
+		}else{
+			// save this value on orderid and order item id
+			DB::table('order_tracking')
+			->where('shipper_tracking_id', $id)
+			->update([
+				'tracking_status' => 'failed',
+				'tracking_api_response' => $response,
+				'api_response_code' => $http_status,
+			]);
+		}
+				
+        $customerorders = CustomerOrder::select('customer_orders.*','customer_orders.order_id as cust_order_id','customer_orders.order_item_id as cust_order_item_id','order_tracking.*')
+		->leftjoin('order_tracking', 'order_tracking.order_item_id', '=', 'customer_orders.order_item_id')
+		->where('order_tracking.shipper_tracking_id', $id)
+		->get();
+		
+		return view('customerorders.track-shipment',compact('customerorders','id'));
     }
 }

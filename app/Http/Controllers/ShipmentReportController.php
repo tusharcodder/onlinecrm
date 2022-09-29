@@ -788,6 +788,7 @@ class ShipmentReportController extends Controller
 			//->whereNull('customer_orders.label_pdf_url')
 			->groupBy('customer_orders.order_id', 'customer_orders.order_item_id', 'skudetails.isbn13')
 			//->orderBy('customer_orders.reporting_date','ASC')
+			->orderBy('customer_orders.warehouse_id','ASC')
 			->orderBy('book_details.name','ASC')
 			//->limit(1)
 			->having(DB::raw('sum(customer_orders.quantity_to_be_shipped)'), '>' , 0)->get();
@@ -849,6 +850,7 @@ class ShipmentReportController extends Controller
 				
 				$qty = 0;
 				$oz_weight = 0;
+				$pweight = 0;
 				$maxsize = 100;
 				$pronames = array();
 				$order_item_id = array();
@@ -866,11 +868,13 @@ class ShipmentReportController extends Controller
 					
 					$proname = $labelval->product_name;
 					$pronames[$proname] = substr($proname, 0 ,$lengthsz);
+					
+					$pweight = round($oz_weight/16, 2);
 					$labelvalarr['parcels'] = [
 						"number"=> $qty,
 						"code"=> "",
 						"unit"=> "imperial",
-						"weight"=> round($oz_weight/16, 2),
+						"weight"=> $pweight,
 						"length"=> 8,
 						"width"=>  6,
 						"height"=> 1,
@@ -880,7 +884,9 @@ class ShipmentReportController extends Controller
 
 				$labelvalarr['domestic_options_contents'] = join(",", $pronames);
 				$labelvalarr['qty'] = $qty;
-				$fname = $this->labelAPICallback($labelvalarr, $val[0]->order_id, $order_item_id, $val[0]->label_pdf_url, $val[0]->pdf_attachment_code);
+				$fname = '';
+				if($pweight <= '5.5')
+					$fname = $this->labelAPICallback($labelvalarr, $val[0]->order_id, $order_item_id, $val[0]->label_pdf_url, $val[0]->pdf_attachment_code);
 				
 				if(!empty($fname)){
 					$fname = public_path("label_pdf/$fname");

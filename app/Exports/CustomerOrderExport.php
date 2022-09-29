@@ -63,8 +63,14 @@ class CustomerOrderExport implements FromView
 				$query->where(DB::raw("(DATE_FORMAT(promise_date,'%Y-%m-%d'))"), '=', $promise_date);
 			if($status=='Pending')
 				$query->where('quantity_to_ship','!=','0');
-			else				
+			elseif($status=='Shipped'){		
 				$query->where('quantity_to_ship','=','0');
+				$query->where('quantity_to_be_shipped','!=','0');
+			}else{
+				$query->where('quantity_shipped','=','0');
+				$query->where('quantity_to_ship','=','0');
+				$query->where('quantity_to_be_shipped','=','0');
+			}
 				
 			$results = $query->orderBy('id', 'ASC')->get();
 		}else // only data heading for format
