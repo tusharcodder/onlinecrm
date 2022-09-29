@@ -11,6 +11,7 @@
 				<th>carrier_code</th>
 				<th>carrier_name</th>
 				<th>tracking_number</th>
+				<th>tracking_status</th>
 				<th>ship_method</th>
 				<th>transparency_code</th>
 				<th>ship_from_address_name</th>
@@ -35,6 +36,7 @@
 					<td>{{ $shipment->carrier_service }}</td>
 					<td>{{ $shipment->carrier_name }}</td>
 					<td>"{{ $shipment->shipper_tracking_id }}"</td>
+					<td>{{ $shipment->tracking_status }}</td>
 					<td></td>
 					<td></td>
 					<td></td>
