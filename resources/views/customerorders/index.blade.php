@@ -86,7 +86,7 @@
 									<td>{{ $customerorder->sku }}</td>
 									<td>{{ $customerorder->quantity_purchased }}</td>
 									<td>{{ $customerorder->tracking_number }}</td>
-									<td>{{ $customerorder->tracking_status }}</td>
+									<td>{{ $customerorder->tracking_message }}</td>
 									<td>@if($customerorder->label_pdf_url != '')
 											<a href="{{$customerorder->label_pdf_url}}" target="_blank" title="Download" download><img src="{{asset('images/pdficon.png')}}" width=50 height=50/></a> 
 										@endif

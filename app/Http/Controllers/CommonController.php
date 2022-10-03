@@ -111,6 +111,7 @@ class CommonController extends Controller{
 						->where('shipper_tracking_id', $val->shipper_tracking_id)
 						->update([
 							'tracking_status' => $track_status->status,
+							'tracking_message' => $track_status->message,
 							'tracking_api_response' => $response,
 							'api_response_code' => $http_status,
 						]);
@@ -121,6 +122,7 @@ class CommonController extends Controller{
 					->where('shipper_tracking_id', $val->shipper_tracking_id)
 					->update([
 						'tracking_status' => 'failed',
+						'tracking_message' => 'Failed',
 						'tracking_api_response' => $response,
 						'api_response_code' => $http_status,
 					]);

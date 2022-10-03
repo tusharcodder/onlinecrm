@@ -327,6 +327,12 @@
 								@endif
 							</div>
 						</div>
+						<div class="col-xs-12 col-sm-4 col-md-4">
+							<div class="form-group">
+								<strong>Shipping Tracking Status:</strong><br/>
+								{{ $customerorders[0]->tracking_message }}
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

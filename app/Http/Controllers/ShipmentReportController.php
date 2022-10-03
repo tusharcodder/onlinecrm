@@ -976,6 +976,7 @@ class ShipmentReportController extends Controller
 
 			if(!empty($apires) && empty($apires->errors)){
 				$trackno = $apires->documents[0]->tracking_number;
+				$label_shipping_price = $apires->total->currency.' '.$apires->total->value;
 				$pdfurl = $apires->documents[0]->url;
 				$pdfattachment = $apires->documents[0]->base64;
 				$labeldate = $apires->date;
@@ -1003,6 +1004,7 @@ class ShipmentReportController extends Controller
 						'carrier_service' => $labelser,
 						'carrier_name' => $labelcarname,
 						'label_api_response' => $response,
+						'label_shipping_price' => $label_shipping_price,
 					]);
 				}
 				

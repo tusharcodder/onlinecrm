@@ -43,7 +43,7 @@ class CustomerOrderController extends Controller
 		$search = $request->input('search');
 		$status = $request->input('status');
         //
-		$customerorders = CustomerOrder::select('customer_orders.*','order_tracking.shipper_tracking_id','order_tracking.tracking_status')
+		$customerorders = CustomerOrder::select('customer_orders.*','order_tracking.shipper_tracking_id','order_tracking.tracking_message')
 					->leftjoin('order_tracking', 'order_tracking.order_item_id', '=', 'customer_orders.order_item_id' )
 					->where(function($query) use ($search) {
 					$query->Where('customer_orders.order_id','LIKE','%'.$search.'%')
@@ -578,6 +578,7 @@ class CustomerOrderController extends Controller
 				->where('shipper_tracking_id', $id)
 				->update([
 					'tracking_status' => $track_status->status,
+					'tracking_message' => $track_status->message,
 					'tracking_api_response' => $response,
 					'api_response_code' => $http_status,
 				]);
@@ -588,6 +589,7 @@ class CustomerOrderController extends Controller
 			->where('shipper_tracking_id', $id)
 			->update([
 				'tracking_status' => 'failed',
+				'tracking_message' => 'Failed',
 				'tracking_api_response' => $response,
 				'api_response_code' => $http_status,
 			]);

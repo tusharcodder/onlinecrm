@@ -39,6 +39,7 @@ class CreateOrderTrackingTable extends Migration
 			$table->longText('shipper_book_isbn')->nullable();
 			$table->longText('rack_details')->nullable();
 			$table->longText('tracking_api_response')->nullable();
+			$table->Text('tracking_message')->nullable();
 			$table->integer('created_by')->nullable();
 			$table->integer('updated_by')->nullable();
             $table->timestamps();

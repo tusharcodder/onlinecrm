@@ -64,6 +64,7 @@ class CreateCustomerOrdersTable extends Migration
 			$table->string('earliest_delivery_date')->nullable();
 			$table->string('latest_delivery_date')->nullable();
 			$table->float('selling_price')->default(0)->nullable();
+			$table->string('label_shipping_price')->default(0)->nullable();
 			$table->foreignId('warehouse_id')
                 ->references('id')
                 ->on('warehouses')

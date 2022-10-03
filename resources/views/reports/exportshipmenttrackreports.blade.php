@@ -36,7 +36,7 @@
 					<td>{{ $shipment->carrier_service }}</td>
 					<td>{{ $shipment->carrier_name }}</td>
 					<td>"{{ $shipment->shipper_tracking_id }}"</td>
-					<td>{{ $shipment->tracking_status }}</td>
+					<td>{{ $shipment->tracking_message }}</td>
 					<td></td>
 					<td></td>
 					<td></td>
