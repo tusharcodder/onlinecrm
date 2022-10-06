@@ -884,6 +884,7 @@ class ShipmentReportController extends Controller
 
 				$labelvalarr['domestic_options_contents'] = join(",", $pronames);
 				$labelvalarr['qty'] = $qty;
+				$labelvalarr['pweight'] = $pweight;
 				$fname = '';
 				if($pweight <= '5.5')
 					$fname = $this->labelAPICallback($labelvalarr, $val[0]->order_id, $order_item_id, $val[0]->label_pdf_url, $val[0]->pdf_attachment_code);
@@ -911,6 +912,7 @@ class ShipmentReportController extends Controller
 		$parcels = json_encode($val['parcels']);
 		$domestic_options = $val['domestic_options_contents'];
 		$qty = $val['qty'];
+		$pweight = $val['pweight'];
 
 		$postfeilds = '{
 			"date": "'.$labeldate.'",
@@ -1005,6 +1007,7 @@ class ShipmentReportController extends Controller
 						'carrier_name' => $labelcarname,
 						'label_api_response' => $response,
 						'label_shipping_price' => $label_shipping_price,
+						'label_shipping_weight' => $pweight,
 					]);
 				}
 				
