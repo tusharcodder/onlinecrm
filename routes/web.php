@@ -62,9 +62,16 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::resource('purchaseorders','PurchaseOrderController');
 	Route::resource('purchasereports','PurchaseReportController');
 	Route::resource('boxisbns','BoxIsbnController');
+	Route::resource('uspszone','UspsZoneController');
+	Route::resource('uspszoneprice','UspsZonePriceController');
+	Route::resource('uspsprice','UspsPriceController');
 
+	//market price
 	Route::get('import-export-price-list', 'PriceInventoryController@index')->name('import-export-price-list');
 	Route::post('download-price-inventory', 'PriceInventoryController@importexport')->name('download-price-inventory');
+	//usps api zone price
+	Route::get('import-export-price-detail', 'UspsPriceController@index')->name('import-export-price-detail');
+	Route::post('download-usps-price-detail', 'UspsPriceController@importexport')->name('download-usps-price-detail');
 
 	//customer order reshipped
 	Route::get('get-isbn','CommonController@getIsbn')->name('get-isbn');

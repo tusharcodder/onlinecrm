@@ -65,224 +65,128 @@ class PurchaseReportController extends Controller
 			foreach($result as $value){
 				$value->quantity = ((int)$value->cust_qty - (int)$value->block_qty);
 				if($value->quantity > 0){
-					//echo 'step-1  Isbn '.$value->isbn13. '';
+					
 					if($value->type == 'Single')
 					{
-						//echo 'step-2  Isbn '.$value->isbn13. '';
-						//check warehouse have this isbn
-						if(array_key_exists($value->isbn13,$isbn_stck))
-						{
-							//echo 'step-3  Isbn '.$value->isbn13. '';
-							//check isbn have quantity in stock
-							if($isbn_stck[$value->isbn13]->quantity > 0)
-							{
-								//echo 'step-4  Isbn '.$value->isbn13. '';
-								//get current stock 
-								$isbn_stck[$value->isbn13]->quantity = ((int)$isbn_stck[$value->isbn13]->quantity-(int)$value->block_qty);
-								//check again isbn have quantity in stock
-								if($isbn_stck[$value->isbn13]->quantity > 0){
-									//echo 'step-5  Isbn '.$value->isbn13. '';
-									//check customer order quantity is greater from current stock 
-									if((int)$value->quantity >= (int)$isbn_stck[$value->isbn13]->quantity)
+						
+						//check isbn in warehouse 
+						if(array_key_exists($value->isbn13,$isbn_stck) && $isbn_stck[$value->isbn13]->quantity > 0)
+						{							
+							//get current stock 
+							$isbn_stck[$value->isbn13]->quantity = ((int)$isbn_stck[$value->isbn13]->quantity-(int)$value->block_qty);
+							//check again isbn have quantity in stock
+							if($isbn_stck[$value->isbn13]->quantity > 0){
+								//echo 'step-5  Isbn '.$value->isbn13. '';
+								//check customer order quantity is greater from current stock 
+								if((int)$value->quantity >= (int)$isbn_stck[$value->isbn13]->quantity)
+								{
+									//echo 'step-6  Isbn '.$value->isbn13. '';
+									//get current customer order
+									$value->quantity = ((int)$value->quantity - (int)$isbn_stck[$value->isbn13]->quantity);
+									//set 0 to isbn current stock
+									$isbn_stck[$value->isbn13]->quantity = 0;
+
+									if($value->quantity > 0)
 									{
-										//echo 'step-6  Isbn '.$value->isbn13. '';
-										//get current customer order
-										$value->quantity = ((int)$value->quantity - (int)$isbn_stck[$value->isbn13]->quantity);
-										//set 0 to isbn current stock
-										$isbn_stck[$value->isbn13]->quantity = 0;
-
-										if($value->quantity > 0)
-										{
-											
-											$flag = 0; 
-											$istrue = false;
-											$remainquantity = $value->quantity;//set the quantity
-											$updatequantity = 0;
-											//get the vendor's stock priority wise	
-											$venderdetails = DB::table('vendor_stocks')
-											->join('vendors','vendors.id','vendor_stocks.vendor_id')
-											->select('vendor_stocks.vendor_id','vendors.name','author','publisher','vendor_stocks.quantity','price')  
-											//->where('vendors.priority',$i)
-											->where('vendor_stocks.isbnno',$value->isbn13)
-											->where('vendor_stocks.quantity','>',0)
-											->orderBy('vendors.priority','asc')
-											->get();
-
-											//set the book name
-											$bookname = (!empty($value->name)) ? $value->name : $value->product_name;	
-											if($venderdetails->count() > 0){							
-												//set other vendors details	
-												$vendordata = '';						
-												for($i = 1; $i<= $venderdetails->count()-1; $i++){
-													$vendordata = $vendordata.''. $venderdetails[$i]->name.'-'.$venderdetails[$i]->price.'-'.$venderdetails[$i]->quantity.',';
-												}                            						
-												$flag = 1;	
-												
-												$dataarray = array(
-													'Sku'=>$value->sku,
-													"isbn13"=>$value->isbn13,
-													"cisbn13"=>$value->isbn13,
-													'book'=> $bookname ,
-													'mrp'=>$venderdetails[0]->price,
-													'author'=>$venderdetails[0]->author,
-													'publisher'=>$venderdetails[0]->publisher,
-													'New'=>$remainquantity,
-													'quantity'=>$venderdetails[0]->quantity,
-													'vendor_name'=>$venderdetails[0]->name,
-													'vendordata'=>$vendordata,
-												);
-												$purchaseorders[] = $dataarray;
-														
-											}
-											else{
-												//get the vendor's stock priority wise	
-												$venderdetails = DB::table('vendor_stocks')
-												->join('vendors','vendors.id','vendor_stocks.vendor_id')
-												->select('vendor_stocks.vendor_id','vendors.name','author','publisher','vendor_stocks.quantity','price')  
-												//->where('vendors.priority',$i)
-												->where('vendor_stocks.isbnno',$value->isbn13)
-												//->where('vendor_stocks.quantity','>',0)
-												->orderBy('vendors.priority','asc')
-												->get();
-												if($venderdetails->count() > 0){							
-													//set other vendors details	
-													$vendordata = '';						
-													for($i = 0; $i<= $venderdetails->count()-1; $i++){
-														$vendordata = $vendordata.''. $venderdetails[$i]->name.'-'.$venderdetails[$i]->price.'-'.$venderdetails[$i]->quantity.',';
-													}     
-													$dataarray = array(
-														'Sku'=>$value->sku,
-														"isbn13"=>$value->isbn13,
-														"cisbn13"=>$value->isbn13,
-														'book'=> $bookname ,
-														'mrp'=>'NA',
-														'author'=>'NA',
-														'publisher'=>'NA',
-														'New'=>$remainquantity,
-														'quantity'=>'NA',
-														'vendor_name'=>'NA',
-														'vendordata'=>$vendordata,
-													);
-													$purchaseorders[] = $dataarray;
-												}else{
-													$dataarray = array(
-														'Sku'=>$value->sku,
-														"isbn13"=>$value->isbn13,
-														"cisbn13"=>$value->isbn13,
-														'book'=> $bookname ,
-														'mrp'=>'NA',
-														'author'=>'NA',
-														'publisher'=>'NA',
-														'New'=>$remainquantity,
-														'quantity'=>'NA',
-														'vendor_name'=>'NA',
-														'vendordata'=>'NA',
-													);
-													$purchaseorders[] = $dataarray;
-												}
-													
-											}
-										}
-									}
-									else{
 										
-										//update current stock after fullfill customer order
-										$isbn_stck[$value->isbn13]->quantity = ((int)$isbn_stck[$value->isbn13]->quantity-(int)$value->quantity);
-										
-									}
-								}
-								else{
-									$flag = 0; 
-									$istrue = false;
-									$remainquantity = $value->quantity;//set the quantity
-									$updatequantity = 0;
-									//get the vendor's stock priority wise	
-									$venderdetails = DB::table('vendor_stocks')
-									->join('vendors','vendors.id','vendor_stocks.vendor_id')
-									->select('vendor_stocks.vendor_id','vendors.name','author','publisher','vendor_stocks.quantity','price')  
-									//->where('vendors.priority',$i)
-									->where('vendor_stocks.isbnno',$value->isbn13)
-									->where('vendor_stocks.quantity','>',0)
-									->orderBy('vendors.priority','asc')
-									->get();
-
-									//set the book name
-									$bookname = (!empty($value->name)) ? $value->name : $value->product_name;	
-									if($venderdetails->count() > 0){							
-										//set other vendors details	
-										$vendordata = '';						
-										for($i = 1; $i<= $venderdetails->count()-1; $i++){
-											$vendordata = $vendordata.''. $venderdetails[$i]->name.'-'.$venderdetails[$i]->price.'-'.$venderdetails[$i]->quantity.',';
-										}                            						
-										$flag = 1;	
-										
-										$dataarray = array(
-											'Sku'=>$value->sku,
-											"isbn13"=>$value->isbn13,
-											"cisbn13"=>$value->isbn13,
-											'book'=> $bookname ,
-											'mrp'=>$venderdetails[0]->price,
-											'author'=>$venderdetails[0]->author,
-											'publisher'=>$venderdetails[0]->publisher,
-											'New'=>$remainquantity,
-											'quantity'=>$venderdetails[0]->quantity,
-											'vendor_name'=>$venderdetails[0]->name,
-											'vendordata'=>$vendordata,
-										);
-										$purchaseorders[] = $dataarray;
-												
-									}
-									else{
+										$flag = 0; 
+										$istrue = false;
+										$remainquantity = $value->quantity;//set the quantity
+										$updatequantity = 0;
 										//get the vendor's stock priority wise	
 										$venderdetails = DB::table('vendor_stocks')
 										->join('vendors','vendors.id','vendor_stocks.vendor_id')
 										->select('vendor_stocks.vendor_id','vendors.name','author','publisher','vendor_stocks.quantity','price')  
 										//->where('vendors.priority',$i)
 										->where('vendor_stocks.isbnno',$value->isbn13)
-										//->where('vendor_stocks.quantity','>',0)
+										->where('vendor_stocks.quantity','>',0)
 										->orderBy('vendors.priority','asc')
 										->get();
+
+										//set the book name
+										$bookname = (!empty($value->name)) ? $value->name : $value->product_name;	
 										if($venderdetails->count() > 0){							
 											//set other vendors details	
 											$vendordata = '';						
-											for($i = 0; $i<= $venderdetails->count()-1; $i++){
+											for($i = 1; $i<= $venderdetails->count()-1; $i++){
 												$vendordata = $vendordata.''. $venderdetails[$i]->name.'-'.$venderdetails[$i]->price.'-'.$venderdetails[$i]->quantity.',';
-											}     
+											}                            						
+											$flag = 1;	
+											
 											$dataarray = array(
 												'Sku'=>$value->sku,
 												"isbn13"=>$value->isbn13,
 												"cisbn13"=>$value->isbn13,
 												'book'=> $bookname ,
-												'mrp'=>'NA',
-												'author'=>'NA',
-												'publisher'=>'NA',
+												'mrp'=>$venderdetails[0]->price,
+												'author'=>$venderdetails[0]->author,
+												'publisher'=>$venderdetails[0]->publisher,
 												'New'=>$remainquantity,
-												'quantity'=>'NA',
-												'vendor_name'=>'NA',
+												'quantity'=>$venderdetails[0]->quantity,
+												'vendor_name'=>$venderdetails[0]->name,
 												'vendordata'=>$vendordata,
 											);
 											$purchaseorders[] = $dataarray;
-										}else{
-											$dataarray = array(
-												'Sku'=>$value->sku,
-												"isbn13"=>$value->isbn13,
-												"cisbn13"=>$value->isbn13,
-												'book'=> $bookname ,
-												'mrp'=>'NA',
-												'author'=>'NA',
-												'publisher'=>'NA',
-												'New'=>$remainquantity,
-												'quantity'=>'NA',
-												'vendor_name'=>'NA',
-												'vendordata'=>'NA',
-											);
-											$purchaseorders[] = $dataarray;
+													
+										}
+										else{
+											//get the vendor's stock based on isbn(zero quantity)
+											$venderdetails = DB::table('vendor_stocks')
+											->join('vendors','vendors.id','vendor_stocks.vendor_id')
+											->select('vendor_stocks.vendor_id','vendors.name','author','publisher','vendor_stocks.quantity','price')  
+											//->where('vendors.priority',$i)
+											->where('vendor_stocks.isbnno',$value->isbn13)
+											//->where('vendor_stocks.quantity','>',0)
+											->orderBy('vendors.priority','asc')
+											->get();
+											if($venderdetails->count() > 0){							
+												//set other vendors details	
+												$vendordata = '';						
+												for($i = 0; $i<= $venderdetails->count()-1; $i++){
+													$vendordata = $vendordata.''. $venderdetails[$i]->name.'-'.$venderdetails[$i]->price.'-'.$venderdetails[$i]->quantity.',';
+												}     
+												$dataarray = array(
+													'Sku'=>$value->sku,
+													"isbn13"=>$value->isbn13,
+													"cisbn13"=>$value->isbn13,
+													'book'=> $bookname ,
+													'mrp'=>'NA',
+													'author'=>'NA',
+													'publisher'=>'NA',
+													'New'=>$remainquantity,
+													'quantity'=>'NA',
+													'vendor_name'=>'NA',
+													'vendordata'=>$vendordata,
+												);
+												$purchaseorders[] = $dataarray;
+											}else{//isbn not in any vendor stock
+												$dataarray = array(
+													'Sku'=>$value->sku,
+													"isbn13"=>$value->isbn13,
+													"cisbn13"=>$value->isbn13,
+													'book'=> $bookname ,
+													'mrp'=>'NA',
+													'author'=>'NA',
+													'publisher'=>'NA',
+													'New'=>$remainquantity,
+													'quantity'=>'NA',
+													'vendor_name'=>'NA',
+													'vendordata'=>'NA',
+												);
+												$purchaseorders[] = $dataarray;
+											}
+												
 										}
 									}
 								}
+								else{
 									
+									//update current stock after fullfill customer order
+									$isbn_stck[$value->isbn13]->quantity = ((int)$isbn_stck[$value->isbn13]->quantity-(int)$value->quantity);
+									
+								}
 							}
-							else{
+							else{//when tjw stock is empty
 								$flag = 0; 
 								$istrue = false;
 								$remainquantity = $value->quantity;//set the quantity
@@ -324,7 +228,7 @@ class PurchaseReportController extends Controller
 											
 								}
 								else{
-									//get the vendor's stock priority wise	
+									//get the vendor's stock based on isbn(zero quantity)	
 									$venderdetails = DB::table('vendor_stocks')
 									->join('vendors','vendors.id','vendor_stocks.vendor_id')
 									->select('vendor_stocks.vendor_id','vendors.name','author','publisher','vendor_stocks.quantity','price')  
@@ -353,7 +257,7 @@ class PurchaseReportController extends Controller
 											'vendordata'=>$vendordata,
 										);
 										$purchaseorders[] = $dataarray;
-									}else{
+									}else{//isbn not in any vendor stock
 										$dataarray = array(
 											'Sku'=>$value->sku,
 											"isbn13"=>$value->isbn13,
@@ -414,7 +318,7 @@ class PurchaseReportController extends Controller
 										
 							}
 							else{
-								//get the vendor's stock priority wise	
+								//get all vendors stock based on isbn(zero quantity) 	
 								$venderdetails = DB::table('vendor_stocks')
 								->join('vendors','vendors.id','vendor_stocks.vendor_id')
 								->select('vendor_stocks.vendor_id','vendors.name','author','publisher','vendor_stocks.quantity','price')  
@@ -469,7 +373,9 @@ class PurchaseReportController extends Controller
 											->leftjoin('book_details','book_details.isbnno','box_child_isbns.book_isbn13')
 											->where('box_parent_isbns.box_isbn13',$value->isbn13)
 											->get();
-						if(!empty($child_box_isbn)){
+											///echo '<pre>'; print_r($child_box_isbn);echo '</pre>';
+											$remainquantity = $value->quantity;				
+						if(!empty(count($child_box_isbn))){
 							
 							$bookname = '';
 							$cisbn13 = '';
@@ -895,7 +801,7 @@ class PurchaseReportController extends Controller
 						else{//when box isbn not found in system
 							$dataarray = array(
 								'Sku'=>$value->sku,
-								"isbn13"=>'NA',
+								"isbn13"=>$value->isbn13,
 								"cisbn13"=>'NA',
 								'book'=> $value->product_name,
 								'mrp'=>'NA',
@@ -913,7 +819,7 @@ class PurchaseReportController extends Controller
 			}
 					
 		} 
-
+//exit;
 		$purchaseorders = (new Collection($purchaseorders))->sortBy('vendor_name')->paginate(1000)->setPath('');
 		return view('reports.purchasereport',compact('purchaseorders'));
 

@@ -59,6 +59,12 @@
 							@can('sku-list')
 								<li class="nav-sub-item"><a href="{{ route('boxisbns.index') }}" class="nav-sub-link">Manage Box Isbns</a></li> 
 							@endcan
+							@can('vendor-stock-list')
+								<li class="nav-sub-item"><a href="{{ route('uspszone.index') }}" class="nav-sub-link">Manage Zone List</a></li> 
+							@endcan
+							@can('vendor-stock-list')
+								<li class="nav-sub-item"><a href="{{ route('uspszoneprice.index') }}" class="nav-sub-link">Manage Zone Price List</a></li> 
+							@endcan
 						</ul>
 					</li> 
 				@endcanany
@@ -108,6 +114,9 @@
 							@endcan
 							@can('price-inventory-import-export')
 								<li class="nav-sub-item"><a href="{{ route('import-export-price-list') }}" class="nav-sub-link">Price Inventory Report</a></li>
+							@endcan
+							@can('price-inventory-import-export')
+								<li class="nav-sub-item"><a href="{{ route('import-export-price-detail') }}" class="nav-sub-link">Download Zone Price Report</a></li>
 							@endcan
 						</ul>
 					</li>

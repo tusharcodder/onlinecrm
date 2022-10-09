@@ -506,6 +506,7 @@ class PurchaseReportExport implements FromView
 											->leftjoin('book_details','book_details.isbnno','box_child_isbns.book_isbn13')
 											->where('box_parent_isbns.box_isbn13',$value->isbn13)
 											->get();
+						//echo '<pre>'; print_r($child_box_isbn);echo '</pre>';					
 						if(!empty($child_box_isbn)){
 							
 							$bookname = '';
@@ -975,7 +976,7 @@ class PurchaseReportExport implements FromView
 						else{
 							$dataarray = array(
 								'Sku'=>$value->sku,
-								"isbn13"=>'NA',
+								"isbn13"=>$value->isbn13,
 								"cisbn13"=>'NA',
 								'book'=> $value->product_name,
 								'mrp'=>'NA',
@@ -993,7 +994,7 @@ class PurchaseReportExport implements FromView
 			}
 					
 		} 	 	
-            
+        //exit;    
         return view('reports.purchasereportexport', [
 			'results' => (new Collection($purchaseorders))->sortBy('vendor_name'),
 			'exporttype' => $exporttype,
